@@ -1,0 +1,56 @@
+# ==============================================
+# APPLICATION CONFIGURATION TEMPLATE
+# ==============================================
+# Copy file này thành application.properties
+# và điền thông tin thực tế của bạn
+
+# Database Configuration
+db.url=jdbc:mysql://localhost:3306/flowerstore?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+db.username=root
+db.password=
+db.driver=com.mysql.cj.jdbc.Driver
+
+# Email Configuration (Gmail SMTP)
+# Hướng dẫn tạo App Password: https://myaccount.google.com/apppasswords
+email.smtp.host=smtp.gmail.com
+email.smtp.port=587
+email.smtp.auth=true
+email.smtp.starttls.enable=true
+email.smtp.starttls.required=true
+email.username=your_email@gmail.com
+email.password=your_16_char_app_password_here
+email.from.name=Tiệm Hoa nhà tớ
+email.from.address=your_email@gmail.com
+
+# VNPay Configuration
+# Đăng ký sandbox: https://sandbox.vnpayment.vn/devreg/
+vnpay.enabled=false
+vnpay.url=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+vnpay.return.url=http://localhost:8080/flowerstore/vnpay-return
+vnpay.tmn.code=YOUR_TMN_CODE_HERE
+vnpay.hash.secret=YOUR_HASH_SECRET_HERE
+vnpay.version=2.1.0
+vnpay.command=pay
+vnpay.order.type=other
+
+# MoMo Configuration
+# Liên hệ MoMo: https://business.momo.vn/
+momo.enabled=false
+momo.partner.code=YOUR_PARTNER_CODE_HERE
+momo.access.key=YOUR_ACCESS_KEY_HERE
+momo.secret.key=YOUR_SECRET_KEY_HERE
+momo.endpoint=https://test-payment.momo.vn/v2/gateway/api/create
+momo.return.url=http://localhost:8080/flowerstore/momo-return
+momo.notify.url=http://localhost:8080/flowerstore/momo-notify
+momo.request.type=captureWallet
+
+# Application Settings
+app.name=Flower Store
+app.url=http://localhost:8080/flowerstore
+app.upload.directory=/uploads
+
+# Session Configuration
+session.timeout=3600
+
+# Security
+password.reset.token.expiry=3600000

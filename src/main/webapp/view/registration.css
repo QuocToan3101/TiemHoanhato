@@ -1,0 +1,147 @@
+/*Ban update*/
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #fff8f5;
+    color: #4b2e05;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.register-container {
+    background: #fffaf7;
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    width: 400px;
+    text-align: center;
+    position: relative;
+}
+h2 {
+    color: #8c4a22;
+    font-weight: 700;
+}
+
+/* Ô nhập liệu */
+.form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+.form-group label {
+    font-weight: 500;
+    color: #6b3e16;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #d9b89c;
+    background-color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.25s ease;
+}
+.form-group input:focus {
+    border-color: #a05d2f;
+    box-shadow: 0 0 0 0.1rem rgba(160, 93, 47, 0.25);
+}
+
+/* Checkbox */
+.checkbox-group {
+    text-align: left;
+    margin: 15px 0 25px;
+}
+.checkbox-group label {
+    font-size: 14px;
+    color: #7c5432;
+}
+.checkbox-group a {
+    color: #a05d2f;
+    text-decoration: underline;
+}
+
+/* Nút đăng ký */
+.btn-register {
+    background-color: #a05d2f;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 14px 0;          /* 🔹 tăng chiều cao */
+    font-size: 17px;          /* 🔹 chữ to hơn một chút */
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    width: 100%;              /* 🔹 full chiều ngang form */
+    max-width: 320px;         /* 🔹 giới hạn độ rộng để không quá to */
+    display: block;
+    margin: 0 auto;           /* 🔹 căn giữa nút */
+}
+.btn-register:hover {
+    background-color: #8c4a22;
+    transform: scale(1.05);
+}
+
+
+/* Dòng đăng nhập */
+.login-link {
+    margin-top: 20px;
+    font-size: 14px;
+}
+.login-link a {
+    color: #a05d2f;
+    text-decoration: underline;
+}
+
+/* Toast */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+}
+.toast-message {
+    background-color: #a05d2f;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+.toast-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.toast-message.error {
+    background-color: #d9534f;
+}
+.toast-message.success {
+    background-color: #5cb85c;
+}
+.home-button {
+    position: absolute;
+    top: 20px;       /* Đẩy nút lên cao hơn một chút */
+    left: 20px;      /* Đẩy nút sang trái một chút */
+    background-color: #6b4f36;
+    color: #fff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: 0.25s ease;
+    z-index: 10;
+}
+
+.home-button:hover {
+    background-color: #4b3621;
+    transform: translateY(-2px);
+}
