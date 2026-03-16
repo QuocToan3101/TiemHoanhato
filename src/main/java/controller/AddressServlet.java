@@ -1,5 +1,4 @@
 package controller;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -22,7 +21,6 @@ import model.User;
  */
 @WebServlet(urlPatterns = {"/address/*", "/api/address/*"})
 public class AddressServlet extends HttpServlet {
-    
     private AddressDAO addressDAO;
     private Gson gson;
     
@@ -91,10 +89,6 @@ public class AddressServlet extends HttpServlet {
             sendJsonError(response, "Invalid action");
         }
     }
-    
-    /**
-     * Lấy danh sách địa chỉ
-     */
     private void listAddresses(HttpServletResponse response, User user) throws IOException {
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
