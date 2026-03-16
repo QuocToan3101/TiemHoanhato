@@ -740,7 +740,7 @@
 
         border-left: 4px solid var(--accent);
       }
-      
+
       /* .recent-post-date {
         font-size: 0.8rem;
 
@@ -1087,17 +1087,15 @@
                   <div class="news-meta">
                     <span class="news-category">Tips chọn hoa</span>
 
-                    <span class="news-date">10/11/2025</span>
+                    <span class="news-date">17/3/2026</span>
                   </div>
 
                   <h2 class="news-heading">
-                    Gợi ý chọn bó hoa pastel cho những ngày cần sự dịu dàng
+                    Gợi ý chọn bó hoa pastel cho ngày Giỗ Tổ Hùng Vương
                   </h2>
 
                   <p class="news-excerpt">
-                    Tone pastel luôn mang lại cảm giác nhẹ nhàng, trong trẻo –
-                    rất hợp để tặng những người mình thương vào dịp sinh nhật,
-                    kỷ niệm hoặc đơn giản là "vì nhớ bạn".
+                    Bó hoa pastel cho Giỗ Tổ nên ưu tiên Sen hồng, Cúc mẫu đơn hoặc Hồng kem. Phối màu nã nhặn (trắng - hồng phấn - xanh lơ) tạo vẻ đẹp thanh tao, thành kính. Kiểu bó tròn đầy đặn, gói giấy trung tính giúp tôn vinh sự sang trọng, thể hiện trọn vẹn đạo lý "Uống nước nhớ nguồn" và lòng tri ân sâu sắc.
                   </p>
 
                   <a href="#" class="news-link">Xem chi tiết</a>
@@ -1197,9 +1195,7 @@
                   </h2>
 
                   <p class="news-excerpt">
-                    Bạn không cần chi quá nhiều để có một bó hoa xinh – quan
-                    trọng là chọn đúng concept, tone màu và kiểu gói phù hợp với
-                    người nhận.
+                    Bạn không cần chi quá nhiều để có một bó hoa xinh – Ưu tiên hoa Cát Tường hoặc Cúc mẫu đơn nội địa tông hồng kem, trắng để tiết kiệm chi phí. Phối cùng nhiều lá bạc, hoa baby giúp bó hoa đầy đặn, sang trọng. Sử dụng giấy gói Kraft hoặc nơ tối giản giúp tổng thể trông chỉn chu, thành kính mà vẫn vừa vặn ngân sách.
                   </p>
 
                   <a href="#" class="news-link">Xem chi tiết</a>
@@ -1267,6 +1263,38 @@
                   <p class="news-excerpt">
                     Đừng để bó hoa đẹp của bạn chỉ tồn tại vài ngày. Với những
                     mẹo đơn giản này, hoa có thể tươi hơn bạn nghĩ rất nhiều.
+                  </p>
+
+                  <a href="#" class="news-link">Xem chi tiết</a>
+                </div>
+              </article>
+
+              <!-- Article 7 -->
+
+              <article class="news-card" data-category="tips">
+                <div class="news-image-wrapper">
+                  <img
+                    class="news-thumb"
+                    src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=400"
+                    alt="Chăm sóc hoa"
+                  />
+
+                  <div class="news-overlay"></div>
+                </div>
+
+                <div class="news-content">
+                  <div class="news-meta">
+                    <span class="news-category">Tips chọn hoa</span>
+
+                    <span class="news-date">05/3/2026</span>
+                  </div>
+
+                  <h2 class="news-heading">
+                    5 bí quyết giữ hoa tươi lâu mà ít ai biết
+                  </h2>
+
+                  <p class="news-excerpt">
+                    Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ..
                   </p>
 
                   <a href="#" class="news-link">Xem chi tiết</a>
