@@ -1,8 +1,9 @@
 package util;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
  * Lớp quản lý kết nối Database
@@ -15,6 +16,8 @@ public class DBConnection {
     private final String DB_URL;
     private final String DB_USER;
     private final String DB_PASSWORD;
+    private final String DB_DRIVER;
+    private BasicDataSource dataSource;
     
     // Singleton instance
     private static DBConnection instance;
@@ -25,17 +28,39 @@ public class DBConnection {
         this.DB_URL = config.getDbUrl();
         this.DB_USER = config.getDbUsername();
         this.DB_PASSWORD = config.getDbPassword();
+        this.DB_DRIVER = config.getProperty("db.driver", "com.mysql.cj.jdbc.Driver");
         
         try {
             // Load MySQL JDBC Driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("MySQL JDBC Driver đã được load thành công!");
-            System.out.println("Database URL: " + DB_URL);
-            System.out.println("Database User: " + DB_USER);
+            Class.forName(DB_DRIVER);
+            initializeDataSource();
+            System.out.println("Connection pool đã được khởi tạo thành công!");
         } catch (ClassNotFoundException e) {
             System.err.println("Lỗi: Không tìm thấy MySQL JDBC Driver!");
             System.err.println("Chi tiết lỗi: " + e.getClass().getName() + ": " + e.getMessage());
         }
+    }
+
+    private void initializeDataSource() {
+        BasicDataSource ds = new BasicDataSource();
+        ds.setDriverClassName(DB_DRIVER);
+        ds.setUrl(DB_URL);
+        ds.setUsername(DB_USER);
+        ds.setPassword(DB_PASSWORD);
+
+        ds.setInitialSize(config.getDbPoolInitialSize());
+        ds.setMaxTotal(config.getDbPoolMaxTotal());
+        ds.setMaxIdle(config.getDbPoolMaxIdle());
+        ds.setMinIdle(config.getDbPoolMinIdle());
+        ds.setMaxWaitMillis(config.getDbPoolMaxWaitMillis());
+
+        ds.setValidationQuery("SELECT 1");
+        ds.setTestOnBorrow(true);
+        ds.setTestWhileIdle(true);
+        ds.setTimeBetweenEvictionRunsMillis(30000);
+        ds.setMinEvictableIdleTimeMillis(300000);
+
+        this.dataSource = ds;
     }
     
     /**
@@ -53,14 +78,16 @@ public class DBConnection {
      * @return Connection object hoặc null nếu lỗi
      */
     public Connection getConnection() {
-        Connection conn = null;
+        if (dataSource == null) {
+            return null;
+        }
         try {
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            return dataSource.getConnection();
         } catch (SQLException e) {
             System.err.println("Lỗi kết nối database: " + e.getMessage());
             System.err.println("SQL State: " + e.getSQLState() + ", Error Code: " + e.getErrorCode());
+            return null;
         }
-        return conn;
     }
     
     /**
@@ -73,6 +100,19 @@ public class DBConnection {
                 conn.close();
             } catch (SQLException e) {
                 System.err.println("Lỗi đóng connection: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Đóng toàn bộ pool khi ứng dụng shutdown
+     */
+    public void shutdown() {
+        if (dataSource != null) {
+            try {
+                dataSource.close();
+            } catch (SQLException e) {
+                System.err.println("Lỗi đóng connection pool: " + e.getMessage());
             }
         }
     }

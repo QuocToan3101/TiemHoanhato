@@ -78,6 +78,26 @@ public class AppConfig {
     public String getDbPassword() {
         return getProperty("db.password", "");
     }
+
+    public int getDbPoolInitialSize() {
+        return getIntProperty("db.pool.initialSize", 5);
+    }
+
+    public int getDbPoolMaxTotal() {
+        return getIntProperty("db.pool.maxTotal", 30);
+    }
+
+    public int getDbPoolMaxIdle() {
+        return getIntProperty("db.pool.maxIdle", 10);
+    }
+
+    public int getDbPoolMinIdle() {
+        return getIntProperty("db.pool.minIdle", 3);
+    }
+
+    public int getDbPoolMaxWaitMillis() {
+        return getIntProperty("db.pool.maxWaitMillis", 10000);
+    }
     
     // Email Configuration
     public String getEmailHost() {
