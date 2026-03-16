@@ -58,12 +58,7 @@ public class LoginServlet extends HttpServlet {
         
         if (user != null) {
             // Đăng nhập thành công
-            HttpSession oldSession = request.getSession(false);
-            if (oldSession != null) {
-                oldSession.invalidate();
-            }
-
-            HttpSession session = request.getSession(true);
+            HttpSession session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
@@ -78,8 +73,6 @@ public class LoginServlet extends HttpServlet {
                 Cookie emailCookie = new Cookie("rememberEmail", email);
                 emailCookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
                 emailCookie.setPath("/");
-                emailCookie.setHttpOnly(true);
-                emailCookie.setSecure(request.isSecure());
                 response.addCookie(emailCookie);
             }
             

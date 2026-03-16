@@ -24,13 +24,21 @@ import com.google.gson.JsonObject;
 
 import dao.UserDAO;
 import model.User;
-import util.AppConfig;
 
 @WebServlet(urlPatterns = {"/oauth/google", "/oauth/google/callback"})
 public class GoogleOAuthServlet extends HttpServlet {
-    private static final String OAUTH_CONFIG_MISSING_MESSAGE =
-            "Dang nhap bang Google chua duoc cau hinh. Vui long lien he quan tri vien.";
-    private final AppConfig config = AppConfig.getInstance();
+    
+    private static final String CLIENT_ID = "55108743351-krncvf01f0t18ll9gb8h8jtslbs9qmu2.apps.googleusercontent.com";
+    private static final String CLIENT_SECRET = "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";
+
+    private String getRedirectUri(HttpServletRequest request) {
+        int port = request.getServerPort();
+        String scheme = request.getScheme();
+        boolean isDefaultPort = ("http".equals(scheme) && port == 80) || ("https".equals(scheme) && port == 443);
+        return scheme + "://" + request.getServerName()
+                + (isDefaultPort ? "" : ":" + port)
+                + request.getContextPath() + "/oauth/google/callback";
+    }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -49,21 +57,19 @@ public class GoogleOAuthServlet extends HttpServlet {
     
     private void initiateGoogleLogin(HttpServletRequest request, HttpServletResponse response) 
             throws IOException, ServletException {
-        String clientId = config.getGoogleClientId();
-        String clientSecret = config.getGoogleClientSecret();
-        String redirectUri = resolveRedirectUri(request);
         
         // Kiểm tra nếu chưa cấu hình OAuth
-        if (isMissingGoogleConfig(clientId, clientSecret, redirectUri)) {
-            request.setAttribute("error", OAUTH_CONFIG_MISSING_MESSAGE);
+        if (CLIENT_ID.equals("YOUR_GOOGLE_CLIENT_ID") || CLIENT_SECRET.equals("YOUR_GOOGLE_CLIENT_SECRET")) {
+            request.setAttribute("error", "🔑 Đăng nhập bằng Google chưa được cấu hình. Vui lòng xem file OAUTH_SETUP.md để cấu hình.");
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
             return;
         }
         
         // Tạo URL OAuth của Google
+        String redirectUri = getRedirectUri(request);
         String googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-            + "?client_id=" + clientId
-            + "&redirect_uri=" + redirectUri
+                + "?client_id=" + CLIENT_ID
+                + "&redirect_uri=" + java.net.URLEncoder.encode(redirectUri, "UTF-8")
                 + "&response_type=code"
                 + "&scope=openid%20email%20profile"
                 + "&access_type=offline"
@@ -74,15 +80,6 @@ public class GoogleOAuthServlet extends HttpServlet {
     
     private void handleGoogleCallback(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        String clientId = config.getGoogleClientId();
-        String clientSecret = config.getGoogleClientSecret();
-        String redirectUri = resolveRedirectUri(request);
-
-        if (isMissingGoogleConfig(clientId, clientSecret, redirectUri)) {
-            request.setAttribute("error", OAUTH_CONFIG_MISSING_MESSAGE);
-            request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
-            return;
-        }
         
         String code = request.getParameter("code");
         String error = request.getParameter("error");
@@ -106,10 +103,10 @@ public class GoogleOAuthServlet extends HttpServlet {
                     new NetHttpTransport(),
                     GsonFactory.getDefaultInstance(),
                     "https://oauth2.googleapis.com/token",
-                        clientId,
-                        clientSecret,
+                    CLIENT_ID,
+                    CLIENT_SECRET,
                     code,
-                        redirectUri
+                    getRedirectUri(request)
             ).execute();
             
             String accessToken = tokenResponse.getAccessToken();
@@ -172,36 +169,8 @@ public class GoogleOAuthServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/home");
             
         } catch (Exception e) {
-            request.setAttribute("error", "Loi khi dang nhap bang Google. Vui long thu lai sau.");
+            request.setAttribute("error", "Lỗi khi đăng nhập bằng Google: " + e.getMessage());
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
         }
-    }
-
-    private boolean isMissingGoogleConfig(String clientId, String clientSecret, String redirectUri) {
-        return isBlank(clientId) || isBlank(clientSecret) || isBlank(redirectUri)
-                || "YOUR_GOOGLE_CLIENT_ID".equals(clientId)
-                || "YOUR_GOOGLE_CLIENT_SECRET".equals(clientSecret);
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
-    }
-
-    private String resolveRedirectUri(HttpServletRequest request) {
-        String configured = config.getGoogleRedirectUri();
-        if (!isBlank(configured) && !configured.contains("YOUR_GOOGLE_REDIRECT_URI")) {
-            return configured;
-        }
-
-        StringBuilder base = new StringBuilder();
-        base.append(request.getScheme()).append("://").append(request.getServerName());
-        int port = request.getServerPort();
-        boolean isDefaultPort = ("http".equalsIgnoreCase(request.getScheme()) && port == 80)
-                || ("https".equalsIgnoreCase(request.getScheme()) && port == 443);
-        if (!isDefaultPort) {
-            base.append(":").append(port);
-        }
-        base.append(request.getContextPath()).append("/oauth/google/callback");
-        return base.toString();
     }
 }

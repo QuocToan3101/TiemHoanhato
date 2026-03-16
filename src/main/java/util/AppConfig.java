@@ -45,14 +45,6 @@ public class AppConfig {
     public String getProperty(String key, String defaultValue) {
         return properties.getProperty(key, defaultValue);
     }
-
-    private String getSecret(String envKey, String propertyKey, String defaultValue) {
-        String envValue = System.getenv(envKey);
-        if (envValue != null && !envValue.trim().isEmpty()) {
-            return envValue.trim();
-        }
-        return getProperty(propertyKey, defaultValue);
-    }
     
     public boolean getBooleanProperty(String key, boolean defaultValue) {
         String value = properties.getProperty(key);
@@ -84,27 +76,7 @@ public class AppConfig {
     }
     
     public String getDbPassword() {
-        return getSecret("FLOWERSTORE_DB_PASSWORD", "db.password", "");
-    }
-
-    public int getDbPoolInitialSize() {
-        return getIntProperty("db.pool.initialSize", 5);
-    }
-
-    public int getDbPoolMaxTotal() {
-        return getIntProperty("db.pool.maxTotal", 30);
-    }
-
-    public int getDbPoolMaxIdle() {
-        return getIntProperty("db.pool.maxIdle", 10);
-    }
-
-    public int getDbPoolMinIdle() {
-        return getIntProperty("db.pool.minIdle", 3);
-    }
-
-    public int getDbPoolMaxWaitMillis() {
-        return getIntProperty("db.pool.maxWaitMillis", 10000);
+        return getProperty("db.password", "");
     }
     
     // Email Configuration
@@ -121,7 +93,7 @@ public class AppConfig {
     }
     
     public String getEmailPassword() {
-        return getSecret("FLOWERSTORE_EMAIL_PASSWORD", "email.password", "");
+        return getProperty("email.password");
     }
     
     public String getEmailFromName() {
@@ -150,11 +122,11 @@ public class AppConfig {
     }
     
     public String getVNPayTmnCode() {
-        return getSecret("FLOWERSTORE_VNPAY_TMN_CODE", "vnpay.tmn.code", "");
+        return getProperty("vnpay.tmn.code");
     }
     
     public String getVNPayHashSecret() {
-        return getSecret("FLOWERSTORE_VNPAY_HASH_SECRET", "vnpay.hash.secret", "");
+        return getProperty("vnpay.hash.secret");
     }
     
     // MoMo Configuration
@@ -163,15 +135,15 @@ public class AppConfig {
     }
     
     public String getMoMoPartnerCode() {
-        return getSecret("FLOWERSTORE_MOMO_PARTNER_CODE", "momo.partner.code", "");
+        return getProperty("momo.partner.code");
     }
     
     public String getMoMoAccessKey() {
-        return getSecret("FLOWERSTORE_MOMO_ACCESS_KEY", "momo.access.key", "");
+        return getProperty("momo.access.key");
     }
     
     public String getMoMoSecretKey() {
-        return getSecret("FLOWERSTORE_MOMO_SECRET_KEY", "momo.secret.key", "");
+        return getProperty("momo.secret.key");
     }
     
     public String getMoMoEndpoint() {
@@ -201,20 +173,7 @@ public class AppConfig {
     }
     
     public String getGeminiApiKey() {
-        return getSecret("FLOWERSTORE_GEMINI_API_KEY", "gemini.api.key", "");
-    }
-
-    // Google OAuth Configuration
-    public String getGoogleClientId() {
-        return getSecret("FLOWERSTORE_GOOGLE_CLIENT_ID", "google.oauth.client.id", "");
-    }
-
-    public String getGoogleClientSecret() {
-        return getSecret("FLOWERSTORE_GOOGLE_CLIENT_SECRET", "google.oauth.client.secret", "");
-    }
-
-    public String getGoogleRedirectUri() {
-        return getSecret("FLOWERSTORE_GOOGLE_REDIRECT_URI", "google.oauth.redirect.uri", "");
+        return getProperty("gemini.api.key");
     }
     
     public String getGeminiApiUrl() {

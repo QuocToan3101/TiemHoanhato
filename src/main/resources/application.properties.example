@@ -9,11 +9,6 @@ db.url=jdbc:mysql://localhost:3306/flowerstore?useSSL=false&serverTimezone=Asia/
 db.username=root
 db.password=
 db.driver=com.mysql.cj.jdbc.Driver
-db.pool.initialSize=5
-db.pool.maxTotal=30
-db.pool.maxIdle=10
-db.pool.minIdle=3
-db.pool.maxWaitMillis=10000
 
 # Email Configuration (Gmail SMTP)
 # Hướng dẫn tạo App Password: https://myaccount.google.com/apppasswords
@@ -26,12 +21,6 @@ email.username=your_email@gmail.com
 email.password=your_16_char_app_password_here
 email.from.name=Tiệm Hoa nhà tớ
 email.from.address=your_email@gmail.com
-email.admin.address=your_email@gmail.com
-
-# Google OAuth Configuration
-google.oauth.client.id=YOUR_GOOGLE_CLIENT_ID
-google.oauth.client.secret=YOUR_GOOGLE_CLIENT_SECRET
-google.oauth.redirect.uri=http://localhost:8080/flowerstore/oauth/google/callback
 
 # VNPay Configuration
 # Đăng ký sandbox: https://sandbox.vnpayment.vn/devreg/
@@ -54,7 +43,6 @@ momo.endpoint=https://test-payment.momo.vn/v2/gateway/api/create
 momo.return.url=http://localhost:8080/flowerstore/momo-return
 momo.notify.url=http://localhost:8080/flowerstore/momo-notify
 momo.request.type=captureWallet
-# Production: set FLOWERSTORE_MOMO_PARTNER_CODE, FLOWERSTORE_MOMO_ACCESS_KEY, FLOWERSTORE_MOMO_SECRET_KEY
 
 # Application Settings
 app.name=Flower Store
