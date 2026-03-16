@@ -89,10 +89,7 @@ public class AddressServlet extends HttpServlet {
             sendJsonError(response, "Invalid action");
         }
     }
-    
-    /**
-     * Lấy danh sách địa chỉ
-     */
+
     private void listAddresses(HttpServletResponse response, User user) throws IOException {
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
