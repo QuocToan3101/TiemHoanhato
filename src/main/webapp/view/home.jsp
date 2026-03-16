@@ -447,6 +447,40 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         transition: transform 0.6s ease;
       }
 
+      .hero-model-wrap {
+        width: 100%;
+
+        min-height: 420px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+      }
+
+      .hero-model {
+        width: min(520px, 92%);
+
+        height: 420px;
+
+        background: transparent;
+
+        border-radius: 20px;
+      }
+
+      .hero-model-fallback {
+        width: min(520px, 92%);
+
+        height: 420px;
+
+        object-fit: cover;
+
+        border-radius: 20px;
+
+        display: none;
+      }
+
       .hero-badge {
         position: absolute;
 
@@ -1523,23 +1557,27 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
             <div class="hero-image animate">
               <div class="hero-card">
                 <span class="hero-badge">New</span>
-                <model-viewer
-                  src="/flowerstore/view/bouquet.glb"
-                  alt="Bó hoa 3D"
-                  camera-controls
-                  auto-rotate
-                  style="
-                    width: 349px;
-                    height: 384px;
-                    background: #fff;
-                    border-radius: 20px;
-                    margin-left: 100px;
-                  "
-                  ar
-                  shadow-intensity="1"
-                  exposure="1"
-                >
-                </model-viewer>
+                <div class="hero-model-wrap">
+                  <img
+                    id="hero-model-fallback"
+                    class="hero-model-fallback"
+                    src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=900&auto=format&fit=crop"
+                    alt="Hoa trang tri"
+                  />
+                  <model-viewer
+                    id="hero-model"
+                    class="hero-model"
+                    src="${pageContext.request.contextPath}/view/bouquet.glb"
+                    poster="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=900&auto=format&fit=crop"
+                    alt="Bó hoa 3D"
+                    camera-controls
+                    auto-rotate
+                    ar
+                    shadow-intensity="1"
+                    exposure="1"
+                  >
+                  </model-viewer>
+                </div>
               </div>
             </div>
           </div>
@@ -2661,6 +2699,20 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
     <script>
       AOS.init();
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const model = document.getElementById("hero-model");
+        const fallback = document.getElementById("hero-model-fallback");
+
+        if (!model || !fallback) {
+          return;
+        }
+
+        model.addEventListener("error", function () {
+          model.style.display = "none";
+          fallback.style.display = "block";
+        });
+      });
     </script>
 
     <style>

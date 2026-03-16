@@ -125,6 +125,36 @@ public class MoMoConfig {
     }
 
     /**
+     * Mapping mã lỗi MoMo sang thông điệp thân thiện.
+     */
+    public String getResultMessage(int resultCode) {
+        switch (resultCode) {
+            case 0:
+                return "Giao dich thanh cong";
+            case 10:
+                return "He thong dang bao tri";
+            case 11:
+                return "Truy cap bi tu choi";
+            case 12:
+                return "Phien ban API khong duoc ho tro";
+            case 13:
+                return "Xac thuc that bai";
+            case 20:
+                return "Yeu cau khong hop le";
+            case 21:
+                return "So tien giao dich khong hop le";
+            case 40:
+                return "Yeu cau da ton tai";
+            case 41:
+                return "Giao dich bi tu choi";
+            case 42:
+                return "Tai khoan khong du so du";
+            default:
+                return "Thanh toan that bai (ma loi: " + resultCode + ")";
+        }
+    }
+
+    /**
      * HMAC SHA256
      */
     private String hmacSHA256(String key, String data) {

@@ -9,6 +9,22 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+
+    <mime-mapping>
+        <extension>glb</extension>
+        <mime-type>model/gltf-binary</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>gltf</extension>
+        <mime-type>model/gltf+json</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
+        <extension>bin</extension>
+        <mime-type>application/octet-stream</mime-type>
+    </mime-mapping>
+
     <filter>
         <filter-name>EncodingFilter</filter-name>
         <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>

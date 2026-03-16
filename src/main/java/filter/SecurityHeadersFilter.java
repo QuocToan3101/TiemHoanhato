@@ -41,13 +41,15 @@ public class SecurityHeadersFilter implements Filter {
         httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
         
         String csp = "default-src 'self'; " +
-                     "script-src 'self' 'unsafe-inline' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://code.jquery.com https://stackpath.bootstrapcdn.com; " +
-                     "style-src 'self' 'unsafe-inline' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://stackpath.bootstrapcdn.com; " +
-                     "img-src 'self' data: https: http: blob:; " +
-                     "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
-                     "connect-src 'self' https:; " +
-                     "frame-src 'self' https://sandbox.vnpayment.vn https://pay.vnpay.vn https://test-payment.momo.vn https://*.paypal.com https://*.sandbox.paypal.com; " +
-                     "frame-ancestors 'none';";
+                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:; " +
+                 "style-src 'self' 'unsafe-inline' https: http:; " +
+                 "img-src 'self' data: https: http: blob:; " +
+                 "font-src 'self' data: https: http:; " +
+                 "connect-src 'self' https: http: ws: wss:; " +
+                 "frame-src 'self' https: http:; " +
+                 "object-src 'none'; " +
+                 "base-uri 'self'; " +
+                 "frame-ancestors 'none';";
         httpResponse.setHeader("Content-Security-Policy", csp);
         
         // Referrer-Policy: Kiểm soát thông tin referrer
