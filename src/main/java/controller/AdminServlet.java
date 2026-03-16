@@ -50,7 +50,7 @@ public class AdminServlet extends HttpServlet {
         gson = new Gson();
     }
 
-    @Override
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -111,7 +111,6 @@ public class AdminServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
-
     private boolean checkAdmin(HttpServletRequest request, HttpServletResponse response) 
             throws IOException {
         HttpSession session = request.getSession(false);
@@ -120,7 +119,6 @@ public class AdminServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login");
             return false;
         }
-
         User user = (User) session.getAttribute("user");
         if (!"admin".equals(user.getRole())) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bạn không có quyền truy cập trang này");
@@ -129,7 +127,6 @@ public class AdminServlet extends HttpServlet {
 
         return true;
     }
-
     private void showDashboard(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
