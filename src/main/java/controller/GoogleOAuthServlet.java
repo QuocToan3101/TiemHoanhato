@@ -51,7 +51,7 @@ public class GoogleOAuthServlet extends HttpServlet {
             throws IOException, ServletException {
         String clientId = config.getGoogleClientId();
         String clientSecret = config.getGoogleClientSecret();
-        String redirectUri = config.getGoogleRedirectUri();
+        String redirectUri = resolveRedirectUri(request);
         
         // Kiểm tra nếu chưa cấu hình OAuth
         if (isMissingGoogleConfig(clientId, clientSecret, redirectUri)) {
@@ -76,7 +76,7 @@ public class GoogleOAuthServlet extends HttpServlet {
             throws ServletException, IOException {
         String clientId = config.getGoogleClientId();
         String clientSecret = config.getGoogleClientSecret();
-        String redirectUri = config.getGoogleRedirectUri();
+        String redirectUri = resolveRedirectUri(request);
 
         if (isMissingGoogleConfig(clientId, clientSecret, redirectUri)) {
             request.setAttribute("error", OAUTH_CONFIG_MISSING_MESSAGE);
@@ -185,5 +185,23 @@ public class GoogleOAuthServlet extends HttpServlet {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private String resolveRedirectUri(HttpServletRequest request) {
+        String configured = config.getGoogleRedirectUri();
+        if (!isBlank(configured) && !configured.contains("YOUR_GOOGLE_REDIRECT_URI")) {
+            return configured;
+        }
+
+        StringBuilder base = new StringBuilder();
+        base.append(request.getScheme()).append("://").append(request.getServerName());
+        int port = request.getServerPort();
+        boolean isDefaultPort = ("http".equalsIgnoreCase(request.getScheme()) && port == 80)
+                || ("https".equalsIgnoreCase(request.getScheme()) && port == 443);
+        if (!isDefaultPort) {
+            base.append(":").append(port);
+        }
+        base.append(request.getContextPath()).append("/oauth/google/callback");
+        return base.toString();
     }
 }

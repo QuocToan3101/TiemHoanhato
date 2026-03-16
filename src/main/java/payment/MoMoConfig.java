@@ -40,6 +40,11 @@ public class MoMoConfig {
             String redirectUrl = config.getMoMoReturnUrl();
             String ipnUrl = config.getMoMoNotifyUrl();
 
+            if (!isValidMoMoConfig(partnerCode, accessKey, secretKey, redirectUrl, ipnUrl)) {
+                System.err.println("MoMo config is missing or placeholder. Skip MoMo payment URL generation.");
+                return null;
+            }
+
             String requestId = UUID.randomUUID().toString();
             String requestType = "captureWallet";
 
@@ -94,12 +99,25 @@ public class MoMoConfig {
         }
     }
 
+    public boolean isReady() {
+        return isValidMoMoConfig(
+                config.getMoMoPartnerCode(),
+                config.getMoMoAccessKey(),
+                config.getMoMoSecretKey(),
+                config.getMoMoReturnUrl(),
+                config.getMoMoNotifyUrl()
+        );
+    }
+
     /**
      * Validate signature từ MoMo callback
      */
     public boolean validateSignature(String rawData, String signature) {
 
         String secretKey = config.getMoMoSecretKey();
+        if (!isConfigured(secretKey) || isPlaceholder(secretKey)) {
+            return false;
+        }
 
         String computed = hmacSHA256(secretKey, rawData);
 
@@ -203,6 +221,26 @@ public class MoMoConfig {
 
             if (conn != null) conn.disconnect();
         }
+    }
+
+    private boolean isValidMoMoConfig(String partnerCode, String accessKey, String secretKey,
+                                      String redirectUrl, String ipnUrl) {
+        return isConfigured(partnerCode)
+                && isConfigured(accessKey)
+                && isConfigured(secretKey)
+                && isConfigured(redirectUrl)
+                && isConfigured(ipnUrl)
+                && !isPlaceholder(partnerCode)
+                && !isPlaceholder(accessKey)
+                && !isPlaceholder(secretKey);
+    }
+
+    private boolean isConfigured(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private boolean isPlaceholder(String value) {
+        return value.startsWith("YOUR_");
     }
 
 }

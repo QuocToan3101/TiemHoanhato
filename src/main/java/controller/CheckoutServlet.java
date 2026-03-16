@@ -200,6 +200,15 @@ public class CheckoutServlet extends HttpServlet {
                 out.print(gson.toJson(jsonResponse));
                 return;
             }
+
+            if ("momo".equals(paymentMethod)) {
+                if (!appConfig.isMoMoEnabled() || !momoConfig.isReady()) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "MoMo chưa được cấu hình đầy đủ. Vui lòng chọn phương thức thanh toán khác.");
+                    out.print(gson.toJson(jsonResponse));
+                    return;
+                }
+            }
             
             // Tạo đơn hàng
             Order order = new Order();

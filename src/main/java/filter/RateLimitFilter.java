@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * Rate Limiting Filter
  * Giới hạn số lượng request từ một IP trong khoảng thời gian
  */
-@WebFilter(urlPatterns = {"/api/*", "/ajax/*"})
+@WebFilter(urlPatterns = {"/*"})
 public class RateLimitFilter implements Filter {
     
     // Lưu trữ số request của mỗi IP
@@ -26,6 +26,7 @@ public class RateLimitFilter implements Filter {
     
     // Cấu hình
     private static final int MAX_REQUESTS_PER_MINUTE = 60; // 60 requests/phút
+    private static final int MAX_AUTH_REQUESTS_PER_MINUTE = 12; // Auth endpoints strict limit
     private static final long TIME_WINDOW_MS = 60 * 1000; // 1 phút
     
     @Override
@@ -40,11 +41,19 @@ public class RateLimitFilter implements Filter {
         
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        if (!shouldApplyRateLimit(httpRequest)) {
+            chain.doFilter(request, response);
+            return;
+        }
         
         String clientIp = getClientIP(httpRequest);
+        String bucket = getBucket(httpRequest);
+        int requestLimit = getLimitForPath(httpRequest);
         
         // Kiểm tra rate limit
-        RequestCounter counter = requestCounts.computeIfAbsent(clientIp, k -> new RequestCounter());
+        RequestCounter counter = requestCounts.computeIfAbsent(clientIp + ":" + bucket,
+            k -> new RequestCounter());
         
         long currentTime = System.currentTimeMillis();
         
@@ -56,7 +65,7 @@ public class RateLimitFilter implements Filter {
             }
             
             // Kiểm tra số lượng request
-            if (counter.count.get() >= MAX_REQUESTS_PER_MINUTE) {
+            if (counter.count.get() >= requestLimit) {
                 // Trả về 429 Too Many Requests
                 httpResponse.setStatus(429);
                 httpResponse.setContentType("application/json");
@@ -71,9 +80,9 @@ public class RateLimitFilter implements Filter {
         }
         
         // Set header để client biết rate limit
-        httpResponse.setHeader("X-RateLimit-Limit", String.valueOf(MAX_REQUESTS_PER_MINUTE));
+        httpResponse.setHeader("X-RateLimit-Limit", String.valueOf(requestLimit));
         httpResponse.setHeader("X-RateLimit-Remaining", 
-            String.valueOf(MAX_REQUESTS_PER_MINUTE - counter.count.get()));
+            String.valueOf(Math.max(0, requestLimit - counter.count.get())));
         httpResponse.setHeader("X-RateLimit-Reset", 
             String.valueOf((counter.windowStart + TIME_WINDOW_MS) / 1000));
         
@@ -101,6 +110,59 @@ public class RateLimitFilter implements Filter {
             ip = ip.split(",")[0].trim();
         }
         return ip;
+    }
+
+    private boolean shouldApplyRateLimit(HttpServletRequest request) {
+        String path = request.getServletPath();
+        if (path == null || path.isEmpty()) {
+            path = request.getRequestURI().substring(request.getContextPath().length());
+        }
+
+        return path.startsWith("/api/")
+                || path.startsWith("/ajax/")
+                || "/login".equals(path)
+                || "/register".equals(path)
+                || "/forgot-password".equals(path)
+                || "/reset-password".equals(path)
+                || path.startsWith("/oauth/");
+    }
+
+    private int getLimitForPath(HttpServletRequest request) {
+        String path = request.getServletPath();
+        if (path == null || path.isEmpty()) {
+            path = request.getRequestURI().substring(request.getContextPath().length());
+        }
+
+        if ("/login".equals(path)
+                || "/register".equals(path)
+                || "/forgot-password".equals(path)
+                || "/reset-password".equals(path)
+                || path.startsWith("/oauth/")) {
+            return MAX_AUTH_REQUESTS_PER_MINUTE;
+        }
+
+        return MAX_REQUESTS_PER_MINUTE;
+    }
+
+    private String getBucket(HttpServletRequest request) {
+        String path = request.getServletPath();
+        if (path == null || path.isEmpty()) {
+            path = request.getRequestURI().substring(request.getContextPath().length());
+        }
+
+        if ("/login".equals(path)) {
+            return "auth-login";
+        }
+        if ("/register".equals(path)) {
+            return "auth-register";
+        }
+        if ("/forgot-password".equals(path) || "/reset-password".equals(path)) {
+            return "auth-password";
+        }
+        if (path.startsWith("/oauth/")) {
+            return "auth-oauth";
+        }
+        return "api-generic";
     }
     
     /**
