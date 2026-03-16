@@ -8,7 +8,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -36,6 +39,9 @@ public class ImageUploadServlet extends HttpServlet {
     
     private static final String UPLOAD_DIR = "uploads";
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
+    private static final Set<String> ALLOWED_MIME_TYPES = new HashSet<>(Arrays.asList(
+        "image/jpeg", "image/png", "image/gif", "image/webp"
+    ));
     private Gson gson;
     
     @Override
@@ -58,6 +64,7 @@ public class ImageUploadServlet extends HttpServlet {
             if (uploadType == null || uploadType.isEmpty()) {
                 uploadType = "product";
             }
+            uploadType = sanitizeUploadType(uploadType);
             
             // Tạo thư mục upload nếu chưa có
             String applicationPath = request.getServletContext().getRealPath("");
@@ -88,9 +95,26 @@ public class ImageUploadServlet extends HttpServlet {
                     String fileExtension = fileName.substring(fileName.lastIndexOf("."));
                     String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
                     
-                    // Save file
-                    Path filePath = Paths.get(uploadPath, uniqueFileName);
-                    Files.copy(part.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                    // Save to temp file first to validate real MIME type.
+                    Path tempFile = Files.createTempFile("upload-", fileExtension);
+                    try {
+                        Files.copy(part.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+                        String detectedMime = Files.probeContentType(tempFile);
+                        if (!isValidMimeType(detectedMime)) {
+                            Files.deleteIfExists(tempFile);
+                            result.addProperty("success", false);
+                            result.addProperty("message", "Noi dung file khong phai hinh anh hop le");
+                            out.print(gson.toJson(result));
+                            return;
+                        }
+
+                        // Save final file
+                        Path filePath = Paths.get(uploadPath, uniqueFileName);
+                        Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+                    } finally {
+                        Files.deleteIfExists(tempFile);
+                    }
                     
                     // Tạo relative path để lưu vào database
                     String relativePath = request.getContextPath() + "/" + UPLOAD_DIR + 
@@ -150,5 +174,14 @@ public class ImageUploadServlet extends HttpServlet {
             }
         }
         return false;
+    }
+
+    private boolean isValidMimeType(String mimeType) {
+        return mimeType != null && ALLOWED_MIME_TYPES.contains(mimeType.toLowerCase());
+    }
+
+    private String sanitizeUploadType(String uploadType) {
+        String cleaned = uploadType.replaceAll("[^a-zA-Z0-9_-]", "").toLowerCase();
+        return cleaned.isEmpty() ? "product" : cleaned;
     }
 }

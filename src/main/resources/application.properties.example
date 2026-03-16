@@ -26,6 +26,12 @@ email.username=your_email@gmail.com
 email.password=your_16_char_app_password_here
 email.from.name=Tiệm Hoa nhà tớ
 email.from.address=your_email@gmail.com
+email.admin.address=your_email@gmail.com
+
+# Google OAuth Configuration
+google.oauth.client.id=YOUR_GOOGLE_CLIENT_ID
+google.oauth.client.secret=YOUR_GOOGLE_CLIENT_SECRET
+google.oauth.redirect.uri=http://localhost:8080/flowerstore/oauth/google/callback
 
 # VNPay Configuration
 # Đăng ký sandbox: https://sandbox.vnpayment.vn/devreg/
