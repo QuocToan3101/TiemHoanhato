@@ -175,7 +175,7 @@
         transition: var(--transition);
         border-left: 3px solid transparent;
         font-size: 0.95rem;
-        color: rgba(255, 255, 255, 0.85);
+        color: rgba(241, 239, 212, 0.85);
         text-decoration: none;
         margin: 2px 10px;
         border-radius: 8px;
@@ -197,7 +197,7 @@
 
       .menu-item:hover {
         background-color: rgba(255, 255, 255, 0.1);
-        color: white;
+        color: rgb(206, 233, 195);
         transform: translateX(5px);
       }
 
@@ -208,7 +208,7 @@
       .menu-item.active {
         background: linear-gradient(90deg, rgba(201, 147, 102, 0.2), transparent);
         border-left-color: var(--primary);
-        color: white;
+        color: rgb(140, 185, 189);
         font-weight: 600;
       }
 
@@ -294,7 +294,7 @@
         outline: none;
         border-color: var(--primary);
         box-shadow: 0 0 0 4px rgba(201, 147, 102, 0.1);
-        background: white;
+        background: rgb(170, 228, 238);
       }
 
       .header-search i {
@@ -319,7 +319,7 @@
       }
 
       .user-info:hover {
-        background: white;
+        background: rgb(160, 199, 240);
         border-color: var(--primary);
         box-shadow: var(--shadow-sm);
       }
@@ -340,7 +340,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: rgb(232, 240, 185);
         font-weight: bold;
         font-size: 1.1rem;
         border: 2px solid var(--primary-dark);
@@ -574,7 +574,7 @@
       }
 
       tr:hover {
-        background-color: #fef9f3;
+        background-color: #aca8a3;
       }
 
       tbody tr:last-child td {
@@ -4690,6 +4690,27 @@
         displayCustomers();
       }
 
+
+      async function unbanCustomer(userId) {
+        try {
+          const params = new URLSearchParams({ id: userId, status: 'active' });
+          const response = await fetch(
+            contextPath + "/admin/api/user/update-status?" + params.toString(),
+            { method: "POST" }
+          );
+          const result = await response.json();
+          
+          if (result.success) {
+            showNotification("Thành công", "Đã gỡ cấm khách hàng", "success");
+            loadCustomers();
+          } else {
+            throw new Error(result.message);
+          }
+        } catch (error) {
+          showNotification("Lỗi", error.message || "Không thể gỡ cấm", "error");
+        }
+      }
+
       async function banCustomer(userId) {
         if (!confirm('Bạn có chắc chắn muốn cấm khách hàng này?')) return;
         
@@ -4709,26 +4730,6 @@
           }
         } catch (error) {
           showNotification("Lỗi", error.message || "Không thể cấm khách hàng", "error");
-        }
-      }
-
-      async function unbanCustomer(userId) {
-        try {
-          const params = new URLSearchParams({ id: userId, status: 'active' });
-          const response = await fetch(
-            contextPath + "/admin/api/user/update-status?" + params.toString(),
-            { method: "POST" }
-          );
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification("Thành công", "Đã gỡ cấm khách hàng", "success");
-            loadCustomers();
-          } else {
-            throw new Error(result.message);
-          }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể gỡ cấm", "error");
         }
       }
 
@@ -4808,6 +4809,21 @@
         }).join('');
       }
 
+      // async function loadCategoriesTable() {
+      //   try {
+      //     const response = await fetch(contextPath + "/admin/api/categories");
+      //     const result = await response.json();
+
+      //     if (result.success) {
+      //       allCategoriesData = result.data;
+      //       displayCategories();
+      //       populateCategoryParentSelect();
+      //     }
+      //   } catch (error) {
+      //     console.error("Error loading categories:", error);
+      //   }
+      // }
+
       function populateCategoryParentSelect() {
         const select = document.getElementById("categoryParent");
         select.innerHTML = '<option value="">-- Không có --</option>';
@@ -4842,6 +4858,28 @@
           showNotification("Lỗi", error.message, "error");
         }
       }
+
+      // async function deleteCategory(categoryId, categoryName) {
+      //   if (!confirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?')) return;
+
+      //   try {
+      //     const response = await fetch(
+      //       contextPath + "/admin/api/category/" + categoryId,
+      //       { method: "DELETE" }
+      //     );
+
+      //     const result = await response.json();
+
+      //     if (!result.success) {
+      //       throw new Error(result.message || "Failed to delete category");
+      //     }
+
+      //     showNotification("Thành công", "Đã xóa danh mục", "success");
+      //     loadCategoriesTable();
+      //   } catch (error) {
+      //     showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
+      //   }
+      // }
 
       async function saveCategory() {
         const categoryId = document.getElementById("categoryId").value;
