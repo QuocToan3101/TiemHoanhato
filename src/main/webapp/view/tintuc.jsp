@@ -235,7 +235,7 @@
       /* Search & Filter Section */
 
       .search-filter-section {
-        background: #fff;
+        background: #ff0000;
 
         padding: 2rem;
 
@@ -293,7 +293,7 @@
 
         background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        color: #fff;
+        color: #001391;
 
         border: none;
 
@@ -307,13 +307,13 @@
 
         transition: all 0.3s ease;
 
-        box-shadow: 0 4px 15px rgba(201, 147, 102, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       }
 
       .search-btn:hover {
         transform: translateY(-2px);
 
-        box-shadow: 0 6px 20px rgba(201, 147, 102, 0.4);
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
       }
 
       .search-btn:active {
@@ -321,7 +321,25 @@
       }
 
       /* Filter Chips */
+      .chip {
+        padding: 0.5rem 1.25rem;
 
+        border-radius: 50px;
+
+        background: #54827f;
+
+        border: 2px solid transparent;
+
+        cursor: pointer;
+
+        font-weight: 500;
+
+        font-size: 0.9rem;
+
+        transition: all 0.3s ease;
+
+        color: var(--brown-soft);
+      }
       .filter-chips {
         display: flex;
 
@@ -342,28 +360,10 @@
         align-items: center;
       }
 
-      .chip {
-        padding: 0.5rem 1.25rem;
-
-        border-radius: 50px;
-
-        background: #f4e8dc;
-
-        border: 2px solid transparent;
-
-        cursor: pointer;
-
-        font-weight: 500;
-
-        font-size: 0.9rem;
-
-        transition: all 0.3s ease;
-
-        color: var(--brown-soft);
-      }
+      
 
       .chip:hover {
-        background: #ecddd0;
+        background: #b07d50;
 
         transform: translateY(-2px);
       }
@@ -371,7 +371,7 @@
       .chip.active {
         background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        color: #fff;
+        color: #52d76a;
 
         box-shadow: 0 4px 12px rgba(201, 147, 102, 0.3);
       }
@@ -395,17 +395,8 @@
       }
 
       /* News Grid */
-
-      .news-grid {
-        display: grid;
-
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-
-        gap: 2rem;
-      }
-
       .news-card {
-        background: #fff;
+        background: #2cb7d9;
 
         border-radius: 20px;
 
@@ -413,7 +404,7 @@
 
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 
-        border: 1px solid rgba(210, 180, 160, 0.2);
+        border: 1px solid rgba(27, 240, 165, 0.2);
 
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -423,6 +414,16 @@
 
         flex-direction: column;
       }
+
+      .news-grid {
+        display: grid;
+
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+
+        gap: 2rem;
+      }
+
+      
 
       .news-card:hover {
         transform: translateY(-8px);
@@ -479,17 +480,6 @@
       .news-card:hover .news-overlay {
         opacity: 1;
       }
-
-      .news-content {
-        padding: 1.75rem;
-
-        display: flex;
-
-        flex-direction: column;
-
-        flex: 1;
-      }
-
       .news-meta {
         display: flex;
 
@@ -501,6 +491,17 @@
 
         font-size: 0.875rem;
       }
+      .news-content {
+        padding: 1.75rem;
+
+        display: flex;
+
+        flex-direction: column;
+
+        flex: 1;
+      }
+
+      
 
       .news-category {
         display: inline-block;
@@ -542,27 +543,7 @@
         font-size: 0.6rem;
       }
 
-      .news-heading {
-        font-size: 1.35rem;
-
-        font-weight: 700;
-
-        margin-bottom: 0.75rem;
-
-        color: var(--brown-main);
-
-        line-height: 1.4;
-
-        display: -webkit-box;
-
-        -webkit-line-clamp: 2;
-
-        line-clamp: 2;
-
-        -webkit-box-orient: vertical;
-
-        overflow: hidden;
-      }
+      
 
       .news-excerpt {
         color: var(--brown-soft);
@@ -600,6 +581,28 @@
         transition: all 0.3s ease;
 
         font-size: 0.95rem;
+      }
+
+      .news-heading {
+        font-size: 1.35rem;
+
+        font-weight: 700;
+
+        margin-bottom: 0.75rem;
+
+        color: var(--brown-main);
+
+        line-height: 1.4;
+
+        display: -webkit-box;
+
+        -webkit-line-clamp: 2;
+
+        line-clamp: 2;
+
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
       }
 
       .news-link::after {
@@ -669,7 +672,7 @@
       .recent-post-item {
         padding: 1rem 0;
 
-        border-bottom: 1px solid #f0e8df;
+        border-bottom: 1px solid #764915;
 
         transition: all 0.3s ease;
 
@@ -683,7 +686,21 @@
       .recent-post-item:hover {
         padding-left: 0.75rem;
       }
+      /* .sidebar-title {
+        font-size: 1.35rem;
 
+        font-weight: 700;
+
+        margin-bottom: 1.25rem;
+
+        color: var(--brown-main);
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 0.5rem;
+      } */
       .recent-post-title {
         color: var(--brown-main);
 
@@ -724,6 +741,13 @@
         border-left: 4px solid var(--accent);
       }
 
+      /* .recent-post-date {
+        font-size: 0.8rem;
+
+        color: var(--brown-soft);
+
+        font-style: italic;
+      } */
       /* Load More Button */
 
       .load-more-section {
@@ -737,7 +761,7 @@
       .load-more-btn {
         padding: 1rem 3rem;
 
-        background: #fff;
+        background: #afc672;
 
         color: var(--accent-dark);
 
@@ -759,7 +783,7 @@
       .load-more-btn:hover {
         background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        color: #fff;
+        color: #51d4a6;
 
         transform: translateY(-3px);
 
@@ -1063,17 +1087,15 @@
                   <div class="news-meta">
                     <span class="news-category">Tips chọn hoa</span>
 
-                    <span class="news-date">10/11/2025</span>
+                    <span class="news-date">17/3/2026</span>
                   </div>
 
                   <h2 class="news-heading">
-                    Gợi ý chọn bó hoa pastel cho những ngày cần sự dịu dàng
+                    Gợi ý chọn bó hoa pastel cho ngày Giỗ Tổ Hùng Vương
                   </h2>
 
                   <p class="news-excerpt">
-                    Tone pastel luôn mang lại cảm giác nhẹ nhàng, trong trẻo –
-                    rất hợp để tặng những người mình thương vào dịp sinh nhật,
-                    kỷ niệm hoặc đơn giản là "vì nhớ bạn".
+                    Bó hoa pastel cho Giỗ Tổ nên ưu tiên Sen hồng, Cúc mẫu đơn hoặc Hồng kem. Phối màu nã nhặn (trắng - hồng phấn - xanh lơ) tạo vẻ đẹp thanh tao, thành kính. Kiểu bó tròn đầy đặn, gói giấy trung tính giúp tôn vinh sự sang trọng, thể hiện trọn vẹn đạo lý "Uống nước nhớ nguồn" và lòng tri ân sâu sắc.
                   </p>
 
                   <a href="#" class="news-link">Xem chi tiết</a>
@@ -1173,9 +1195,7 @@
                   </h2>
 
                   <p class="news-excerpt">
-                    Bạn không cần chi quá nhiều để có một bó hoa xinh – quan
-                    trọng là chọn đúng concept, tone màu và kiểu gói phù hợp với
-                    người nhận.
+                    Bạn không cần chi quá nhiều để có một bó hoa xinh – Ưu tiên hoa Cát Tường hoặc Cúc mẫu đơn nội địa tông hồng kem, trắng để tiết kiệm chi phí. Phối cùng nhiều lá bạc, hoa baby giúp bó hoa đầy đặn, sang trọng. Sử dụng giấy gói Kraft hoặc nơ tối giản giúp tổng thể trông chỉn chu, thành kính mà vẫn vừa vặn ngân sách.
                   </p>
 
                   <a href="#" class="news-link">Xem chi tiết</a>
@@ -1243,6 +1263,38 @@
                   <p class="news-excerpt">
                     Đừng để bó hoa đẹp của bạn chỉ tồn tại vài ngày. Với những
                     mẹo đơn giản này, hoa có thể tươi hơn bạn nghĩ rất nhiều.
+                  </p>
+
+                  <a href="#" class="news-link">Xem chi tiết</a>
+                </div>
+              </article>
+
+              <!-- Article 7 -->
+
+              <article class="news-card" data-category="tips">
+                <div class="news-image-wrapper">
+                  <img
+                    class="news-thumb"
+                    src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=400"
+                    alt="Chăm sóc hoa"
+                  />
+
+                  <div class="news-overlay"></div>
+                </div>
+
+                <div class="news-content">
+                  <div class="news-meta">
+                    <span class="news-category">Tips chọn hoa</span>
+
+                    <span class="news-date">05/3/2026</span>
+                  </div>
+
+                  <h2 class="news-heading">
+                    5 bí quyết giữ hoa tươi lâu mà ít ai biết
+                  </h2>
+
+                  <p class="news-excerpt">
+                    Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ..
                   </p>
 
                   <a href="#" class="news-link">Xem chi tiết</a>
@@ -1620,7 +1672,7 @@
         return categories[category] || category;
       }
       
-      function attachFilterEvents() {
+function attachFilterEvents() {
         filterButtons.forEach((btn) => {
           btn.addEventListener("click", function () {
             filterButtons.forEach((b) => b.classList.remove("active"));
@@ -1640,7 +1692,6 @@
           });
         });
       }
-
       // Async loading
 
       var checkapp = false;
