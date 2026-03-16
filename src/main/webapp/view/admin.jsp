@@ -3219,6 +3219,14 @@
         }).format(amount);
       }
 
+      // Load dashboard data
+      function loadDashboard() {
+        loadStatistics();
+        loadRevenueChart();
+        loadRecentOrders();
+        loadTopProducts();
+      }
+
       function formatNumber(num) {
         return new Intl.NumberFormat("vi-VN").format(num);
       }
@@ -3244,7 +3252,7 @@
       }
 
       // Load dashboard data
-      function loadDashboard() {
+      function loadDashboard1() {
         loadStatistics();
         loadRevenueChart();
         loadRecentOrders();
@@ -3296,6 +3304,98 @@
             "error"
           );
         }
+      }
+
+      // function formatDate(dateString) {
+      //   const date = new Date(dateString);
+      //   return date.toLocaleDateString("vi-VN", {
+      //     day: "2-digit",
+      //     month: "2-digit",
+      //     year: "numeric",
+      //   });
+      // }
+      // Create sample chart (fallback)
+      function createSampleChart() {
+        const ctx = document.getElementById("revenueChart").getContext("2d");
+        const labels = [
+          "T1",
+          "T2",
+          "T3",
+          "T4",
+          "T5",
+          "T6",
+          "T7",
+          "T8",
+          "T9",
+          "T10",
+          "T11",
+          "T12",
+        ];
+        const revenues = [
+          15000000, 18000000, 22000000, 25000000, 28000000, 32000000, 30000000,
+          35000000, 38000000, 42000000, 45000000, 48000000,
+        ];
+
+        if (revenueChart) {
+          revenueChart.destroy();
+        }
+
+        revenueChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Doanh Thu",
+                data: revenues,
+                borderColor: "#667eea",
+                backgroundColor: "rgba(102, 126, 234, 0.1)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: "#667eea",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 2,
+                pointHoverRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return "Doanh thu: " + formatCurrency(context.parsed.y);
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return formatCurrency(value);
+                  },
+                },
+                grid: {
+                  color: "rgba(0, 0, 0, 0.05)",
+                },
+              },
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+            },
+          },
+        });
       }
 
       // Load revenue chart
@@ -3388,7 +3488,7 @@
       }
 
       // Create sample chart (fallback)
-      function createSampleChart() {
+      function createSampleChart2() {
         const ctx = document.getElementById("revenueChart").getContext("2d");
         const labels = [
           "T1",
