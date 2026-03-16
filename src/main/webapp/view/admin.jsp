@@ -4955,6 +4955,34 @@
       // ============================================
       let allCoupons = [];
 
+      async function openEditCouponModal(couponId) {
+        try {
+          const coupon = allCoupons.find(c => c.id === couponId);
+          if (!coupon) throw new Error("Không tìm thấy mã giảm giá");
+
+          document.getElementById("couponModalTitle").textContent = "Sửa Mã Giảm Giá";
+          document.getElementById("couponId").value = coupon.id;
+          document.getElementById("couponCode").value = coupon.code;
+          document.getElementById("couponType").value = coupon.discountType;
+          document.getElementById("couponValue").value = coupon.discountValue;
+          document.getElementById("couponMinOrder").value = coupon.minOrderValue || 0;
+          document.getElementById("couponMaxDiscount").value = coupon.maxDiscount || '';
+          document.getElementById("couponLimit").value = coupon.usageLimit || '';
+          document.getElementById("couponDescription").value = coupon.description || '';
+          
+          if (coupon.startDate) {
+            document.getElementById("couponStartDate").value = coupon.startDate.split('T')[0];
+          }
+          if (coupon.endDate) {
+            document.getElementById("couponEndDate").value = coupon.endDate.split('T')[0];
+          }
+
+          openModal("couponModal");
+        } catch (error) {
+          showNotification("Lỗi", error.message, "error");
+        }
+      }
+
       async function loadCoupons() {
         try {
           const response = await fetch(contextPath + "/admin/api/coupons");
@@ -5005,6 +5033,8 @@
         }).join('');
       }
 
+
+
       function openAddCouponModal() {
         document.getElementById("couponModalTitle").textContent = "Thêm Mã Giảm Giá";
         document.getElementById("couponForm").reset();
@@ -5012,33 +5042,19 @@
         openModal("couponModal");
       }
 
-      async function openEditCouponModal(couponId) {
-        try {
-          const coupon = allCoupons.find(c => c.id === couponId);
-          if (!coupon) throw new Error("Không tìm thấy mã giảm giá");
+      // async function loadCoupons() {
+      //   try {
+      //     const response = await fetch(contextPath + "/admin/api/coupons");
+      //     const result = await response.json();
 
-          document.getElementById("couponModalTitle").textContent = "Sửa Mã Giảm Giá";
-          document.getElementById("couponId").value = coupon.id;
-          document.getElementById("couponCode").value = coupon.code;
-          document.getElementById("couponType").value = coupon.discountType;
-          document.getElementById("couponValue").value = coupon.discountValue;
-          document.getElementById("couponMinOrder").value = coupon.minOrderValue || 0;
-          document.getElementById("couponMaxDiscount").value = coupon.maxDiscount || '';
-          document.getElementById("couponLimit").value = coupon.usageLimit || '';
-          document.getElementById("couponDescription").value = coupon.description || '';
-          
-          if (coupon.startDate) {
-            document.getElementById("couponStartDate").value = coupon.startDate.split('T')[0];
-          }
-          if (coupon.endDate) {
-            document.getElementById("couponEndDate").value = coupon.endDate.split('T')[0];
-          }
-
-          openModal("couponModal");
-        } catch (error) {
-          showNotification("Lỗi", error.message, "error");
-        }
-      }
+      //     if (result.success) {
+      //       allCoupons = result.data;
+      //       displayCoupons();
+      //     }
+      //   } catch (error) {
+      //     console.error("Error loading coupons:", error);
+      //   }
+      // }
 
       async function saveCoupon() {
         const couponId = document.getElementById("couponId").value;
