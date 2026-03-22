@@ -79,6 +79,22 @@
 
     <!-- Shop CSS Variables -->
 
+    <!-- <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          "gtm.start": new Date().getTime(),
+          event: "gtm.js",
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
+    </script> -->
+
     <style>
       :root {
         --bg-soldout: url(//cdn.hstatic.net/themes/200000846175/1001403720/14/hethang.png?v=245);
@@ -225,6 +241,24 @@
       }
 
       .news-hero p {
+      
+        /* content: "";
+
+        position: absolute;
+
+        bottom: -30%;
+
+        left: -5%;
+
+        width: 400px;
+
+        height: 400px;
+
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.08) 0%,
+          transparent 70%
+        ); */
         font-size: 1.25rem;
 
         opacity: 0.95;

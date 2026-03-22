@@ -408,6 +408,9 @@
         color: var(--text-dark);
         font-weight: 700;
         display: flex;
+        /* margin-left: var(--sidebar-width);
+        transition: var(--transition);
+        min-height: 100vh; */
         align-items: center;
         gap: 12px;
         margin: 0;
@@ -3264,6 +3267,17 @@
           customers: "Quản Lý Khách Hàng",
           coupons: "Quản Lý Mã Giảm Giá",
           contacts: "Quản Lý Liên Hệ",
+          // dashboard: "Dashboard",
+          // orders: "Quản Lý Đơn Hàng",
+          // products: "Quản Lý Sản Phẩm",
+          // categories: "Quản Lý Danh Mục",
+          // customers: "Quản Lý Khách Hàng",
+          // coupons: "Quản Lý Mã Giảm Giá",
+          // contacts: "Quản Lý Liên Hệ",
+          // gallery: "Quản Lý Gallery",
+          // news: "Quản Lý Tin Tức",
+          // analytics: "Thống Kê & Báo Cáo",
+          // settings: "Cài Đặt Hệ Thống",
           gallery: "Quản Lý Gallery",
           news: "Quản Lý Tin Tức",
           analytics: "Thống Kê & Báo Cáo",
@@ -5485,6 +5499,15 @@
           const response = await fetch(
             contextPath + "/admin/api/contact/" + contactId,
             { method: "DELETE" }
+          //   document.getElementById("contactId").value = contact.id;
+          // document.getElementById("contactName").textContent = contact.name;
+          // document.getElementById("contactEmail").textContent = contact.email;
+          // document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+          // document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+          // document.getElementById("contactDate").textContent = contact.createdAt ? 
+          //   new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+          // document.getElementById("contactMessage").textContent = contact.message;
+          // document.getElementById("contactStatus").value = contact.status || 'new';
           );
 
           const result = await response.json();
@@ -6316,6 +6339,15 @@
       
       // Open news modal for adding
       function openNewsModal() {
+        // document.getElementById("contactId").value = contact.id;
+        //   document.getElementById("contactName").textContent = contact.name;
+        //   document.getElementById("contactEmail").textContent = contact.email;
+        //   document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+        //   document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+        //   document.getElementById("contactDate").textContent = contact.createdAt ? 
+        //     new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+        //   document.getElementById("contactMessage").textContent = contact.message;
+        //   document.getElementById("contactStatus").value = contact.status || 'new';
         document.getElementById('newsModalTitle').textContent = 'Thêm Tin Tức';
         document.getElementById('newsId').value = '';
         document.getElementById('newsForm').reset();
