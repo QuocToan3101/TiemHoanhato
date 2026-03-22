@@ -351,6 +351,28 @@ public class OrderDAO {
         }
         return false;
     }
+
+    /**
+     * Cập nhật payment status có điều kiện (idempotency)
+     * Ví dụ: chỉ cho phép pending -> paid, tránh callback trùng ghi đè trạng thái.
+     */
+    public boolean updatePaymentStatusIfCurrent(int orderId, String currentStatus, String newStatus) {
+        String sql = "UPDATE orders SET payment_status = ?, updated_at = CURRENT_TIMESTAMP " +
+                    "WHERE id = ? AND payment_status = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newStatus);
+            ps.setInt(2, orderId);
+            ps.setString(3, currentStatus);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Lỗi cập nhật payment status có điều kiện: " + e.getMessage());
+        }
+        return false;
+    }
     
     /**
      * Hủy đơn hàng
