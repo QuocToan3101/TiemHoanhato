@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.UUID;
 
 import javax.crypto.Mac;
@@ -17,192 +16,197 @@ import com.google.gson.JsonObject;
 
 import util.AppConfig;
 
+/**
+ * MoMo Payment Configuration và Helper Methods
+ */
 public class MoMoConfig {
-
-    private final AppConfig config;
-    private final Gson gson;
-
+    
+    private AppConfig config;
+    private Gson gson;
+    
     public MoMoConfig() {
         config = AppConfig.getInstance();
         gson = new Gson();
     }
-
+    
     /**
      * Tạo URL thanh toán MoMo
      */
-    public String createPaymentUrl(String orderId, long amount, String orderInfo) {
-
+    public String createPaymentUrl(String orderCode, long amount, String orderInfo) {
         try {
-
             String partnerCode = config.getMoMoPartnerCode();
             String accessKey = config.getMoMoAccessKey();
             String secretKey = config.getMoMoSecretKey();
-            String redirectUrl = config.getMoMoReturnUrl();
-            String ipnUrl = config.getMoMoNotifyUrl();
-
+            String returnUrl = config.getMoMoReturnUrl();
+            String notifyUrl = config.getMoMoNotifyUrl();
             String requestId = UUID.randomUUID().toString();
             String requestType = "captureWallet";
-
-            String extraData = Base64.getEncoder()
-                    .encodeToString("".getBytes(StandardCharsets.UTF_8));
-
-            /**
-             * Raw signature đúng format MoMo yêu cầu
-             */
-            String rawSignature =
-                    "accessKey=" + accessKey +
-                            "&amount=" + amount +
-                            "&extraData=" + extraData +
-                            "&ipnUrl=" + ipnUrl +
-                            "&orderId=" + orderId +
-                            "&orderInfo=" + orderInfo +
-                            "&partnerCode=" + partnerCode +
-                            "&redirectUrl=" + redirectUrl +
-                            "&requestId=" + requestId +
-                            "&requestType=" + requestType;
-
+            String extraData = ""; // Pass empty value or Encode base64 JsonString
+            
+            // Build raw signature
+            String rawSignature = "accessKey=" + accessKey +
+                    "&amount=" + amount +
+                    "&extraData=" + extraData +
+                    "&ipnUrl=" + notifyUrl +
+                    "&orderId=" + orderCode +
+                    "&orderInfo=" + orderInfo +
+                    "&partnerCode=" + partnerCode +
+                    "&redirectUrl=" + returnUrl +
+                    "&requestId=" + requestId +
+                    "&requestType=" + requestType;
+            
+            // Generate signature
             String signature = hmacSHA256(secretKey, rawSignature);
-
-            JsonObject body = new JsonObject();
-
-            body.addProperty("partnerCode", partnerCode);
-            body.addProperty("requestId", requestId);
-            body.addProperty("amount", amount);
-            body.addProperty("orderId", orderId);
-            body.addProperty("orderInfo", orderInfo);
-            body.addProperty("redirectUrl", redirectUrl);
-            body.addProperty("ipnUrl", ipnUrl);
-            body.addProperty("extraData", extraData);
-            body.addProperty("requestType", requestType);
-            body.addProperty("lang", "vi");
-            body.addProperty("signature", signature);
-
+            
+            // Build request body
+            JsonObject requestBody = new JsonObject();
+            requestBody.addProperty("partnerCode", partnerCode);
+            requestBody.addProperty("partnerName", "Tiệm Hoa nhà tớ");
+            requestBody.addProperty("storeId", "MomoStore");
+            requestBody.addProperty("requestId", requestId);
+            requestBody.addProperty("amount", amount);
+            requestBody.addProperty("orderId", orderCode);
+            requestBody.addProperty("orderInfo", orderInfo);
+            requestBody.addProperty("redirectUrl", returnUrl);
+            requestBody.addProperty("ipnUrl", notifyUrl);
+            requestBody.addProperty("lang", "vi");
+            requestBody.addProperty("extraData", extraData);
+            requestBody.addProperty("requestType", requestType);
+            requestBody.addProperty("signature", signature);
+            
+            // Send request to MoMo
             String endpoint = config.getMoMoEndpoint();
-
-            JsonObject response = sendPostRequest(endpoint, body.toString());
-
+            JsonObject response = sendPostRequest(endpoint, requestBody.toString());
+            
             if (response != null && response.has("payUrl")) {
                 return response.get("payUrl").getAsString();
+            } else {
+                System.err.println("✗ MoMo API Error: " + response);
+                return null;
             }
-
-            System.err.println("MoMo API Error: " + response);
-            return null;
-
+            
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("✗ Error creating MoMo payment: " + e.getMessage());
             return null;
         }
     }
-
+    
     /**
-     * Validate signature từ MoMo callback
+     * Xác thực chữ ký từ MoMo callback
      */
     public boolean validateSignature(String rawData, String signature) {
-
         String secretKey = config.getMoMoSecretKey();
-
-        String computed = hmacSHA256(secretKey, rawData);
-
-        return computed.equalsIgnoreCase(signature);
+        String computedSignature = hmacSHA256(secretKey, rawData);
+        return computedSignature.equals(signature);
     }
-
+    
     /**
      * HMAC SHA256
      */
     private String hmacSHA256(String key, String data) {
-
         try {
-
-            Mac mac = Mac.getInstance("HmacSHA256");
-
-            SecretKeySpec secretKey =
-                    new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-
-            mac.init(secretKey);
-
-            byte[] hash = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-
-            StringBuilder hex = new StringBuilder();
-
+            Mac hmac256 = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacSHA256");
+            hmac256.init(secretKeySpec);
+            byte[] hash = hmac256.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            
+            // Convert to hex
+            StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
-
-                String s = Integer.toHexString(0xff & b);
-
-                if (s.length() == 1) hex.append('0');
-
-                hex.append(s);
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
             }
-
-            return hex.toString();
-
+            return hexString.toString();
+            
         } catch (Exception e) {
-
-            e.printStackTrace();
+            System.err.println("Error generating HMAC SHA256: " + e.getMessage());
             return "";
         }
     }
-
+    
     /**
      * Send POST request
      */
-    private JsonObject sendPostRequest(String endpoint, String json) {
-
+    private JsonObject sendPostRequest(String endpoint, String jsonBody) {
         HttpURLConnection conn = null;
-
         try {
-
             URL url = new URL(endpoint);
-
             conn = (HttpURLConnection) url.openConnection();
-
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Content-Length",
-                    String.valueOf(json.getBytes().length));
-
             conn.setDoOutput(true);
-
+            
+            // Send request
             try (OutputStream os = conn.getOutputStream()) {
-
-                byte[] input = json.getBytes(StandardCharsets.UTF_8);
-
+                byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
-
+            
+            // Read response
+            int responseCode = conn.getResponseCode();
             BufferedReader br;
-
-            if (conn.getResponseCode() == 200) {
-
-                br = new BufferedReader(
-                        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+            
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
             } else {
-
-                br = new BufferedReader(
-                        new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
+                br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8));
             }
-
+            
             StringBuilder response = new StringBuilder();
-
             String line;
-
             while ((line = br.readLine()) != null) {
-
                 response.append(line);
             }
-
             br.close();
-
+            
             return gson.fromJson(response.toString(), JsonObject.class);
-
+            
         } catch (Exception e) {
-
-            e.printStackTrace();
+            System.err.println("Error sending POST request: " + e.getMessage());
             return null;
-
         } finally {
-
-            if (conn != null) conn.disconnect();
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
     }
-
+    
+    /**
+     * Get result message from result code
+     */
+    public String getResultMessage(int resultCode) {
+        switch (resultCode) {
+            case 0: return "Giao dịch thành công";
+            case 9000: return "Giao dịch đã được xác nhận thành công";
+            case 8000: return "Giao dịch đang được xử lý";
+            case 7000: return "Giao dịch đang chờ thanh toán";
+            case 1000: return "Giao dịch đã được khởi tạo, chờ người dùng xác nhận thanh toán";
+            case 11: return "Truy cập bị từ chối";
+            case 12: return "Phiên bản API không được hỗ trợ cho yêu cầu này";
+            case 13: return "Xác thực doanh nghiệp thất bại";
+            case 20: return "Yêu cầu sai định dạng";
+            case 21: return "Số tiền giao dịch không hợp lệ";
+            case 40: return "RequestId bị trùng";
+            case 41: return "OrderId bị trùng";
+            case 42: return "OrderId không hợp lệ hoặc không được tìm thấy";
+            case 43: return "Yêu cầu bị từ chối vì xung đột trong quá trình xử lý giao dịch";
+            case 1001: return "Giao dịch thanh toán thất bại do tài khoản người dùng không đủ tiền";
+            case 1002: return "Giao dịch bị từ chối do nhà phát hành tài khoản thanh toán";
+            case 1003: return "Giao dịch bị hủy";
+            case 1004: return "Giao dịch thất bại do số tiền thanh toán vượt quá hạn mức thanh toán của người dùng";
+            case 1005: return "Giao dịch thất bại do url hoặc QR code đã hết hạn";
+            case 1006: return "Giao dịch thất bại do người dùng đã từ chối xác nhận thanh toán";
+            case 1007: return "Giao dịch bị từ chối vì người dùng MoMo bị tạm khóa";
+            case 2001: return "Giao dịch thất bại do sai thông tin liên kết";
+            case 2007: return "Giao dịch thất bại do người dùng chưa đăng ký dịch vụ";
+            case 3001: return "Liên kết thanh toán không tồn tại hoặc đã hết hạn";
+            case 3002: return "orderId không hợp lệ";
+            case 3003: return "Giao dịch thanh toán bị từ chối vì requestId và orderId không giống với thông tin ban đầu";
+            case 4001: return "Giao dịch bị hạn chế theo thể lệ chương trình";
+            case 4015: return "Giao dịch thất bại vì đã vượt quá số lần thanh toán trong ngày cho phép";
+            case 4100: return "Giao dịch thất bại do người dùng không đồng ý điều khoản thanh toán";
+            default: return "Giao dịch thất bại. Mã lỗi: " + resultCode;
+        }
+    }
 }
