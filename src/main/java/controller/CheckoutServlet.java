@@ -380,7 +380,7 @@ public class CheckoutServlet extends HttpServlet {
                 }
             } else {
                 jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.");
+                jsonResponse.addProperty("message", "Không thể tạo đơn hàng. Có thể một số sản phẩm đã hết hàng hoặc không đủ tồn kho, vui lòng kiểm tra lại giỏ hàng.");
             }
             
         } catch (Exception e) {
