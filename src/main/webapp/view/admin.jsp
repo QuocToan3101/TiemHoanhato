@@ -3288,6 +3288,23 @@
         }
       }
 
+      // // Basic menu navigation
+      // document.addEventListener("DOMContentLoaded", function () {
+      //   // Menu items click handler
+      //   document.querySelectorAll(".menu-item[data-target]").forEach((item) => {
+      //     item.addEventListener("click", function () {
+      //       const target = this.getAttribute("data-target");
+      //       showSection(target);
+
+      //       // Update active menu
+      //       document
+      //         .querySelectorAll(".menu-item")
+      //         .forEach((m) => m.classList.remove("active"));
+      //       this.classList.add("active");
+      //     });
+      //   });
+      // });
+
       // Show notification function
       function showNotification(title, message, type = "success") {
         const notification = document.getElementById("notification");
@@ -3335,14 +3352,7 @@
         }).format(amount);
       }
 
-      // Load dashboard data
-      function loadDashboard() {
-        loadStatistics();
-        loadRevenueChart();
-        loadRecentOrders();
-        loadTopProducts();
-      }
-
+      
       function formatNumber(num) {
         return new Intl.NumberFormat("vi-VN").format(num);
       }
@@ -3355,6 +3365,14 @@
           year: "numeric",
         });
       }
+      // Load dashboard data
+      function loadDashboard() {
+        loadStatistics();
+        loadRevenueChart();
+        loadRecentOrders();
+        loadTopProducts();
+      }
+
 
       function formatDateTime(dateString) {
         const date = new Date(dateString);
@@ -3422,15 +3440,7 @@
         }
       }
 
-      // function formatDate(dateString) {
-      //   const date = new Date(dateString);
-      //   return date.toLocaleDateString("vi-VN", {
-      //     day: "2-digit",
-      //     month: "2-digit",
-      //     year: "numeric",
-      //   });
-      // }
-      // Create sample chart (fallback)
+      
       function createSampleChart() {
         const ctx = document.getElementById("revenueChart").getContext("2d");
         const labels = [
@@ -3740,6 +3750,13 @@
             '<tr><td colspan="4" class="text-center text-danger">Không thể tải dữ liệu</td></tr>';
         }
       }
+
+      // if (!orders || orders.length === 0) {
+      //       tbody.innerHTML =
+      //         '<tr><td colspan="4" class="text-center">Chưa có đơn hàng</td></tr>';
+      //       return;
+      //     }
+
 
       // Load top products
       async function loadTopProducts() {
