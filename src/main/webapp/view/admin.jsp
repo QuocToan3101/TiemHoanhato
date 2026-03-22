@@ -2871,6 +2871,14 @@
       </div>
     </div>
 
+    <!-- <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('couponModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="saveCoupon()">
+            <i class="fas fa-save"></i> Lưu
+          </button>
+        </div>
+      </div>
+    </div> -->
     <!-- Coupon Modal -->
     <div class="modal-overlay" id="couponModal">
       <div class="modal">
@@ -2935,6 +2943,26 @@
       </div>
     </div>
 
+<!-- <div>
+              <div class="info-group">
+                <label>Tiêu đề:</label>
+                <p id="contactSubject"></p>
+              </div>
+              <div class="info-group">
+                <label>Ngày gửi:</label>
+                <p id="contactDate"></p>
+              </div>
+              <div class="info-group">
+                <label>Trạng thái:</label>
+                <select id="contactStatus" class="form-input" onchange="updateContactStatus()">
+                  <option value="new">Mới</option>
+                  <option value="read">Đã đọc</option>
+                  <option value="replied">Đã trả lời</option>
+                </select>
+              </div>
+            </div>
+          </div> -->
+    
     <!-- Contact Detail Modal -->
     <div class="modal-overlay" id="contactModal">
       <div class="modal modal-lg">
@@ -3084,26 +3112,65 @@
               <input type="text" id="newsSlug" class="form-input" placeholder="tu-dong-tao-hoac-nhap-slug" required />
               <small style="color: #666;">Slug sẽ tự động tạo từ tiêu đề, hoặc bạn có thể tự nhập</small>
             </div>
+            <!-- <div class="modal-body">
+          <input type="hidden" id="galleryId" />
+          <form id="galleryForm">
+            <div class="form-group">
+              <label for="galleryImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
+              <input type="url" id="galleryImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
+              <small style="color: #666;">Nhập URL hình ảnh hoặc upload lên server</small>
+            </div>
             
+            <div class="form-group">
+              <label for="galleryCaption">Tiêu Đề <span style="color: red;">*</span></label>
+              <input type="text" id="galleryCaption" class="form-input" placeholder="Bó hoa đẹp" required />
+            </div>
+            
+            <div class="form-group">
+              <label for="galleryDescription">Mô Tả</label>
+              <textarea id="galleryDescription" class="form-input" rows="3" placeholder="Mô tả chi tiết về hình ảnh"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div class="form-group">
+                <label for="galleryOrder">Thứ Tự Hiển Thị</label>
+                <input type="number" id="galleryOrder" class="form-input" value="0" min="0" />
+              </div>
+              
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="galleryActive" checked />
+                  <span>Hiển thị</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- Preview image -->
+            <div class="form-group" id="galleryPreviewContainer" style="display: none;">
+              <label>Xem Trước:</label>
+              <img id="galleryPreview" style="max-width: 100%; border-radius: 8px; margin-top: 10px;" />
+            </div>
+          </form>
+        </div> -->
             <div class="form-group">
               <label for="newsExcerpt">Tóm Tắt <span style="color: red;">*</span></label>
               <textarea id="newsExcerpt" class="form-input" rows="2" placeholder="Tóm tắt ngắn gọn về bài viết" required></textarea>
             </div>
             
             <div class="form-group">
-              <label for="newsContent">Nội Dung <span style="color: red;">*</span></label>
+              <label for="newsContent">Nội Dung <span style="color: rgb(222, 156, 156);">*</span></label>
               <textarea id="newsContent" class="form-input" rows="8" placeholder="Nội dung chi tiết bài viết (hỗ trợ HTML)" required></textarea>
               <small style="color: #666;">Có thể sử dụng HTML tags: &lt;p&gt;, &lt;h3&gt;, &lt;strong&gt;, &lt;ul&gt;, &lt;li&gt;, etc.</small>
             </div>
             
             <div class="form-group">
-              <label for="newsImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
+              <label for="newsImageUrl">URL Hình Ảnh <span style="color: rgb(139, 35, 35);">*</span></label>
               <input type="url" id="newsImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
               <div class="form-group">
-                <label for="newsCategory">Danh Mục <span style="color: red;">*</span></label>
+                <label for="newsCategory">Danh Mục <span style="color: rgb(157, 109, 109);">*</span></label>
                 <select id="newsCategory" class="form-input" required>
                   <option value="">-- Chọn danh mục --</option>
                   <option value="tips">Mẹo chăm hoa</option>
