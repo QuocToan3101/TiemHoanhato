@@ -85,6 +85,23 @@ public class MoMoReturnServlet extends HttpServlet {
                 Order order = orderDAO.findByOrderCode(orderId);
                 
                 if (order != null) {
+                    long receivedAmount = Long.parseLong(amount);
+                    long expectedAmount = order.getTotal().longValue();
+
+                    if (receivedAmount != expectedAmount) {
+                        System.err.println("✗ MoMo amount mismatch for order: " + orderId);
+                        System.err.println("  Expected: " + expectedAmount + ", Received: " + receivedAmount);
+                        orderDAO.updatePaymentStatus(order.getId(), "failed");
+
+                        if (request.getServletPath().equals("/momo-notify")) {
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                            return;
+                        }
+
+                        response.sendRedirect(request.getContextPath() + "/checkout?error=amount_mismatch");
+                        return;
+                    }
+
                     // Cập nhật trạng thái thanh toán
                     orderDAO.updatePaymentStatus(order.getId(), "paid");
                     

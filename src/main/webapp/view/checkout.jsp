@@ -1234,6 +1234,7 @@
                                 <input type="hidden" name="shippingFee" id="shippingFeeInput" value="30000">
                                 <input type="hidden" name="discount" id="discountInput" value="0">
                                 <input type="hidden" name="total" id="totalInput" value="${cartTotal + 30000}">
+                                <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
                                 
                                 <!-- Submit -->
                                 <div class="checkout-submit">
@@ -1347,6 +1348,7 @@
                     
                     document.getElementById('couponApplied').style.display = 'flex';
                     document.getElementById('appliedCouponCode').textContent = code.toUpperCase();
+                    document.getElementById('appliedCouponCodeInput').value = code.toUpperCase();
                     document.getElementById('couponCode').value = '';
                     document.getElementById('couponCode').disabled = true;
                     
@@ -1356,26 +1358,7 @@
                     showToast(response.data.message || 'Mã giảm giá không hợp lệ', 'error');
                 }
             } catch (error) {
-                // For demo, apply a sample discount
-                if (code.toUpperCase() === 'WELCOME10') {
-                    discount = Math.min(subtotal * 0.1, 100000);
-                    document.getElementById('couponApplied').style.display = 'flex';
-                    document.getElementById('appliedCouponCode').textContent = code.toUpperCase();
-                    document.getElementById('couponCode').value = '';
-                    document.getElementById('couponCode').disabled = true;
-                    updateTotals();
-                    showToast('Áp dụng mã giảm giá thành công!', 'success');
-                } else if (code.toUpperCase() === 'FREESHIP') {
-                    shippingFee = 0;
-                    document.getElementById('couponApplied').style.display = 'flex';
-                    document.getElementById('appliedCouponCode').textContent = code.toUpperCase();
-                    document.getElementById('couponCode').value = '';
-                    document.getElementById('couponCode').disabled = true;
-                    updateTotals();
-                    showToast('Áp dụng mã giảm giá thành công!', 'success');
-                } else {
-                    showToast('Mã giảm giá không hợp lệ', 'error');
-                }
+                showToast('Không thể kiểm tra mã giảm giá lúc này. Vui lòng thử lại!', 'error');
             }
         }
         
@@ -1387,6 +1370,7 @@
             
             document.getElementById('couponApplied').style.display = 'none';
             document.getElementById('couponCode').disabled = false;
+            document.getElementById('appliedCouponCodeInput').value = '';
             
             updateTotals();
             showToast('Đã hủy mã giảm giá', 'success');

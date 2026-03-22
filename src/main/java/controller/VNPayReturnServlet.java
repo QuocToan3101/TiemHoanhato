@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +60,19 @@ public class VNPayReturnServlet extends HttpServlet {
                 Order order = orderDAO.findByOrderCode(vnp_TxnRef);
                 
                 if (order != null) {
+                    long receivedAmount = Long.parseLong(vnp_Amount); // VNPay trả về amount * 100
+                    long expectedAmount = order.getTotal()
+                        .multiply(new BigDecimal("100"))
+                        .longValue();
+
+                    if (receivedAmount != expectedAmount) {
+                        System.err.println("✗ VNPay amount mismatch for order: " + vnp_TxnRef);
+                        System.err.println("  Expected: " + expectedAmount + ", Received: " + receivedAmount);
+                        orderDAO.updatePaymentStatus(order.getId(), "failed");
+                        response.sendRedirect(request.getContextPath() + "/checkout?error=amount_mismatch");
+                        return;
+                    }
+
                     // Cập nhật trạng thái thanh toán
                     orderDAO.updatePaymentStatus(order.getId(), "paid");
                     
