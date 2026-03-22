@@ -277,6 +277,10 @@
       }
 
       .header-search {
+        /* outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(201, 147, 102, 0.1);
+        background: white; */
         position: relative;
       }
 
@@ -341,6 +345,13 @@
         align-items: center;
         justify-content: center;
         color: white;
+        /* gap: 12px;
+        padding: 8px 16px;
+        border-radius: 30px;
+        background: var(--bg-page);
+        transition: var(--transition);
+        cursor: pointer;
+        border: 2px solid transparent; */
         font-weight: bold;
         font-size: 1.1rem;
         border: 2px solid var(--primary-dark);
@@ -5198,6 +5209,15 @@
           const response = await fetch(
             contextPath + "/admin/api/contact/" + contactId,
             { method: "DELETE" }
+          //   document.getElementById("contactId").value = contact.id;
+          // document.getElementById("contactName").textContent = contact.name;
+          // document.getElementById("contactEmail").textContent = contact.email;
+          // document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+          // document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+          // document.getElementById("contactDate").textContent = contact.createdAt ? 
+          //   new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+          // document.getElementById("contactMessage").textContent = contact.message;
+          // document.getElementById("contactStatus").value = contact.status || 'new';
           );
 
           const result = await response.json();
@@ -6029,6 +6049,15 @@
       
       // Open news modal for adding
       function openNewsModal() {
+        // document.getElementById("contactId").value = contact.id;
+        //   document.getElementById("contactName").textContent = contact.name;
+        //   document.getElementById("contactEmail").textContent = contact.email;
+        //   document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+        //   document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+        //   document.getElementById("contactDate").textContent = contact.createdAt ? 
+        //     new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+        //   document.getElementById("contactMessage").textContent = contact.message;
+        //   document.getElementById("contactStatus").value = contact.status || 'new';
         document.getElementById('newsModalTitle').textContent = 'Thêm Tin Tức';
         document.getElementById('newsId').value = '';
         document.getElementById('newsForm').reset();
