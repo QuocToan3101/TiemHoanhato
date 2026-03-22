@@ -277,10 +277,6 @@
       }
 
       .header-search {
-        /* outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(201, 147, 102, 0.1);
-        background: white; */
         position: relative;
       }
 
@@ -345,13 +341,6 @@
         align-items: center;
         justify-content: center;
         color: white;
-        /* gap: 12px;
-        padding: 8px 16px;
-        border-radius: 30px;
-        background: var(--bg-page);
-        transition: var(--transition);
-        cursor: pointer;
-        border: 2px solid transparent; */
         font-weight: bold;
         font-size: 1.1rem;
         border: 2px solid var(--primary-dark);
@@ -419,6 +408,9 @@
         color: var(--text-dark);
         font-weight: 700;
         display: flex;
+        /* margin-left: var(--sidebar-width);
+        transition: var(--transition);
+        min-height: 100vh; */
         align-items: center;
         gap: 12px;
         margin: 0;
@@ -3159,6 +3151,17 @@
           customers: "Quản Lý Khách Hàng",
           coupons: "Quản Lý Mã Giảm Giá",
           contacts: "Quản Lý Liên Hệ",
+          // dashboard: "Dashboard",
+          // orders: "Quản Lý Đơn Hàng",
+          // products: "Quản Lý Sản Phẩm",
+          // categories: "Quản Lý Danh Mục",
+          // customers: "Quản Lý Khách Hàng",
+          // coupons: "Quản Lý Mã Giảm Giá",
+          // contacts: "Quản Lý Liên Hệ",
+          // gallery: "Quản Lý Gallery",
+          // news: "Quản Lý Tin Tức",
+          // analytics: "Thống Kê & Báo Cáo",
+          // settings: "Cài Đặt Hệ Thống",
           gallery: "Quản Lý Gallery",
           news: "Quản Lý Tin Tức",
           analytics: "Thống Kê & Báo Cáo",
