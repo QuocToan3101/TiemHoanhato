@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import dao.CartDAO;
+import dao.CouponDAO;
 import dao.OrderDAO;
 import model.CartItem;
 import model.Order;
@@ -33,8 +34,11 @@ import util.AppConfig;
  */
 @WebServlet("/checkout")
 public class CheckoutServlet extends HttpServlet {
+
+    private static final BigDecimal DEFAULT_SHIPPING_FEE = new BigDecimal("30000");
     
     private CartDAO cartDAO;
+    private CouponDAO couponDAO;
     private OrderDAO orderDAO;
     private Gson gson;
     private VNPayConfig vnpayConfig;
@@ -45,6 +49,7 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         cartDAO = new CartDAO();
+        couponDAO = new CouponDAO();
         orderDAO = new OrderDAO();
         gson = new Gson();
         vnpayConfig = new VNPayConfig();
@@ -151,20 +156,54 @@ public class CheckoutServlet extends HttpServlet {
             String attachGreetingCard = request.getParameter("attachGreetingCard");
             String printGreetingCard = request.getParameter("printGreetingCard");
             
-            // Parse số tiền - xử lý cả trường hợp null hoặc rỗng
-            String subtotalStr = request.getParameter("subtotal");
-            String shippingFeeStr = request.getParameter("shippingFee");
-            String discountStr = request.getParameter("discount");
-            String totalStr = request.getParameter("total");
-            
-            BigDecimal subtotal = (subtotalStr != null && !subtotalStr.isEmpty()) 
-                ? new BigDecimal(subtotalStr) : BigDecimal.ZERO;
-            BigDecimal shippingFee = (shippingFeeStr != null && !shippingFeeStr.isEmpty()) 
-                ? new BigDecimal(shippingFeeStr) : new BigDecimal("30000");
-            BigDecimal discount = (discountStr != null && !discountStr.isEmpty()) 
-                ? new BigDecimal(discountStr) : BigDecimal.ZERO;
-            BigDecimal total = (totalStr != null && !totalStr.isEmpty()) 
-                ? new BigDecimal(totalStr) : subtotal.add(shippingFee).subtract(discount);
+            // Chống gian lận: luôn tính tiền ở server dựa trên dữ liệu DB, không tin giá từ client
+            BigDecimal subtotal = BigDecimal.ZERO;
+            for (CartItem item : cartItems) {
+                if (item.getSubtotal() != null) {
+                    subtotal = subtotal.add(item.getSubtotal());
+                }
+            }
+
+            BigDecimal shippingFee = DEFAULT_SHIPPING_FEE;
+            BigDecimal discount = BigDecimal.ZERO;
+
+            String couponCode = request.getParameter("appliedCouponCode");
+            if (couponCode == null || couponCode.trim().isEmpty()) {
+                // Fallback cho trường hợp frontend cũ gửi trực tiếp couponCode
+                couponCode = request.getParameter("couponCode");
+            }
+
+            if (couponCode != null && !couponCode.trim().isEmpty()) {
+                String normalizedCouponCode = couponCode.trim().toUpperCase();
+                model.Coupon coupon = couponDAO.findByCode(normalizedCouponCode);
+
+                if (coupon == null || !coupon.isValid()) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Mã giảm giá không hợp lệ hoặc đã hết hạn");
+                    out.print(gson.toJson(jsonResponse));
+                    return;
+                }
+
+                if (coupon.getMinOrderValue() != null && subtotal.compareTo(coupon.getMinOrderValue()) < 0) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Đơn hàng chưa đạt giá trị tối thiểu để áp dụng mã giảm giá");
+                    out.print(gson.toJson(jsonResponse));
+                    return;
+                }
+
+                discount = coupon.calculateDiscount(subtotal);
+
+                // Không cho discount vượt quá subtotal + shipping
+                BigDecimal maxAllowedDiscount = subtotal.add(shippingFee);
+                if (discount.compareTo(maxAllowedDiscount) > 0) {
+                    discount = maxAllowedDiscount;
+                }
+            }
+
+            BigDecimal total = subtotal.add(shippingFee).subtract(discount);
+            if (total.compareTo(BigDecimal.ZERO) < 0) {
+                total = BigDecimal.ZERO;
+            }
             
             // Lấy thiệp chúc mừng từ session (nếu có)
             byte[] greetingCardImage = null;
@@ -341,13 +380,9 @@ public class CheckoutServlet extends HttpServlet {
                 }
             } else {
                 jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.");
+                jsonResponse.addProperty("message", "Không thể tạo đơn hàng. Có thể một số sản phẩm đã hết hàng hoặc không đủ tồn kho, vui lòng kiểm tra lại giỏ hàng.");
             }
             
-        } catch (NumberFormatException e) {
-            System.err.println("[CheckoutServlet] Lỗi parse số: " + e.getMessage());
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Dữ liệu không hợp lệ: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("[CheckoutServlet] Lỗi: " + e.getMessage());
             jsonResponse.addProperty("success", false);

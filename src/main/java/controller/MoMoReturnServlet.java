@@ -85,8 +85,50 @@ public class MoMoReturnServlet extends HttpServlet {
                 Order order = orderDAO.findByOrderCode(orderId);
                 
                 if (order != null) {
-                    // Cập nhật trạng thái thanh toán
-                    orderDAO.updatePaymentStatus(order.getId(), "paid");
+                    if ("paid".equals(order.getPaymentStatus())) {
+                        System.out.println("ℹ MoMo callback duplicate (already paid): " + orderId);
+
+                        if (request.getServletPath().equals("/momo-notify")) {
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                            return;
+                        }
+
+                        response.sendRedirect(request.getContextPath() +
+                            "/order-success?orderCode=" + orderId +
+                            "&payment=success");
+                        return;
+                    }
+
+                    long receivedAmount = Long.parseLong(amount);
+                    long expectedAmount = order.getTotal().longValue();
+
+                    if (receivedAmount != expectedAmount) {
+                        System.err.println("✗ MoMo amount mismatch for order: " + orderId);
+                        System.err.println("  Expected: " + expectedAmount + ", Received: " + receivedAmount);
+
+                        if ("pending".equals(order.getPaymentStatus())) {
+                            orderDAO.updatePaymentStatusIfCurrent(order.getId(), "pending", "failed");
+                        }
+
+                        if (request.getServletPath().equals("/momo-notify")) {
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                            return;
+                        }
+
+                        response.sendRedirect(request.getContextPath() + "/checkout?error=amount_mismatch");
+                        return;
+                    }
+
+                    // Idempotency: chỉ cho phép pending -> paid
+                    boolean updated = orderDAO.updatePaymentStatusIfCurrent(order.getId(), "pending", "paid");
+                    if (!updated) {
+                        Order latestOrder = orderDAO.findByOrderCode(orderId);
+                        if (latestOrder != null && "paid".equals(latestOrder.getPaymentStatus())) {
+                            System.out.println("ℹ MoMo callback duplicate after update race: " + orderId);
+                        } else {
+                            System.err.println("✗ MoMo callback ignored due to non-pending status: " + orderId);
+                        }
+                    }
                     
                     System.out.println("✓ MoMo payment successful:");
                     System.out.println("  Order Code: " + orderId);
@@ -120,7 +162,11 @@ public class MoMoReturnServlet extends HttpServlet {
                 // Cập nhật trạng thái thanh toán thất bại
                 Order order = orderDAO.findByOrderCode(orderId);
                 if (order != null) {
-                    orderDAO.updatePaymentStatus(order.getId(), "failed");
+                    if ("pending".equals(order.getPaymentStatus())) {
+                        orderDAO.updatePaymentStatusIfCurrent(order.getId(), "pending", "failed");
+                    } else if ("paid".equals(order.getPaymentStatus())) {
+                        System.out.println("ℹ MoMo failure callback ignored (order already paid): " + orderId);
+                    }
                 }
                 
                 // If this is IPN (notify), return 204

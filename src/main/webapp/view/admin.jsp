@@ -175,7 +175,7 @@
         transition: var(--transition);
         border-left: 3px solid transparent;
         font-size: 0.95rem;
-        color: rgba(255, 255, 255, 0.85);
+        color: rgba(241, 239, 212, 0.85);
         text-decoration: none;
         margin: 2px 10px;
         border-radius: 8px;
@@ -197,7 +197,7 @@
 
       .menu-item:hover {
         background-color: rgba(255, 255, 255, 0.1);
-        color: white;
+        color: rgb(206, 233, 195);
         transform: translateX(5px);
       }
 
@@ -208,7 +208,7 @@
       .menu-item.active {
         background: linear-gradient(90deg, rgba(201, 147, 102, 0.2), transparent);
         border-left-color: var(--primary);
-        color: white;
+        color: rgb(140, 185, 189);
         font-weight: 600;
       }
 
@@ -294,7 +294,7 @@
         outline: none;
         border-color: var(--primary);
         box-shadow: 0 0 0 4px rgba(201, 147, 102, 0.1);
-        background: white;
+        background: rgb(170, 228, 238);
       }
 
       .header-search i {
@@ -319,7 +319,7 @@
       }
 
       .user-info:hover {
-        background: white;
+        background: rgb(160, 199, 240);
         border-color: var(--primary);
         box-shadow: var(--shadow-sm);
       }
@@ -340,7 +340,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: rgb(232, 240, 185);
         font-weight: bold;
         font-size: 1.1rem;
         border: 2px solid var(--primary-dark);
@@ -408,6 +408,9 @@
         color: var(--text-dark);
         font-weight: 700;
         display: flex;
+        /* margin-left: var(--sidebar-width);
+        transition: var(--transition);
+        min-height: 100vh; */
         align-items: center;
         gap: 12px;
         margin: 0;
@@ -519,6 +522,15 @@
         box-shadow: 0 4px 12px var(--shadow);
       }
 
+      /* th {
+        background-color: var(--bg-light);
+        font-weight: 700;
+        color: var(--text-dark);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      } */
+
       .stat-icon.success {
         background: linear-gradient(135deg, #10b981, #059669);
       }
@@ -574,7 +586,7 @@
       }
 
       tr:hover {
-        background-color: #fef9f3;
+        background-color: #aca8a3;
       }
 
       tbody tr:last-child td {
@@ -699,6 +711,31 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
       }
+/* 
+      .badge-success {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #059669;
+      }
+      .badge-warning {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #d97706;
+      }
+      .badge-danger {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+      }
+      .badge-info {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #2563eb;
+      }
+      .badge-primary {
+        background-color: rgba(201, 147, 102, 0.15);
+        color: var(--primary-dark);
+      }
+      .badge-secondary {
+        background-color: rgba(108, 88, 69, 0.15);
+        color: var(--secondary-soft);
+      } */
 
       .btn-light {
         background-color: var(--bg-light);
@@ -819,7 +856,7 @@
       .form-control:focus {
         border-color: var(--primary);
         outline: none;
-        background-color: white;
+        background-color: rgb(61, 117, 155);
         box-shadow: 0 0 0 4px rgba(201, 147, 102, 0.15);
       }
 
@@ -949,6 +986,21 @@
           opacity: 1;
         }
       }
+
+      /* .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.2s ease;
+      } */
 
       .modal-header {
         padding: 20px 25px;
@@ -2822,6 +2874,14 @@
       </div>
     </div>
 
+    <!-- <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('couponModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="saveCoupon()">
+            <i class="fas fa-save"></i> Lưu
+          </button>
+        </div>
+      </div>
+    </div> -->
     <!-- Coupon Modal -->
     <div class="modal-overlay" id="couponModal">
       <div class="modal">
@@ -2886,6 +2946,26 @@
       </div>
     </div>
 
+<!-- <div>
+              <div class="info-group">
+                <label>Tiêu đề:</label>
+                <p id="contactSubject"></p>
+              </div>
+              <div class="info-group">
+                <label>Ngày gửi:</label>
+                <p id="contactDate"></p>
+              </div>
+              <div class="info-group">
+                <label>Trạng thái:</label>
+                <select id="contactStatus" class="form-input" onchange="updateContactStatus()">
+                  <option value="new">Mới</option>
+                  <option value="read">Đã đọc</option>
+                  <option value="replied">Đã trả lời</option>
+                </select>
+              </div>
+            </div>
+          </div> -->
+    
     <!-- Contact Detail Modal -->
     <div class="modal-overlay" id="contactModal">
       <div class="modal modal-lg">
@@ -3035,26 +3115,65 @@
               <input type="text" id="newsSlug" class="form-input" placeholder="tu-dong-tao-hoac-nhap-slug" required />
               <small style="color: #666;">Slug sẽ tự động tạo từ tiêu đề, hoặc bạn có thể tự nhập</small>
             </div>
+            <!-- <div class="modal-body">
+          <input type="hidden" id="galleryId" />
+          <form id="galleryForm">
+            <div class="form-group">
+              <label for="galleryImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
+              <input type="url" id="galleryImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
+              <small style="color: #666;">Nhập URL hình ảnh hoặc upload lên server</small>
+            </div>
             
+            <div class="form-group">
+              <label for="galleryCaption">Tiêu Đề <span style="color: red;">*</span></label>
+              <input type="text" id="galleryCaption" class="form-input" placeholder="Bó hoa đẹp" required />
+            </div>
+            
+            <div class="form-group">
+              <label for="galleryDescription">Mô Tả</label>
+              <textarea id="galleryDescription" class="form-input" rows="3" placeholder="Mô tả chi tiết về hình ảnh"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div class="form-group">
+                <label for="galleryOrder">Thứ Tự Hiển Thị</label>
+                <input type="number" id="galleryOrder" class="form-input" value="0" min="0" />
+              </div>
+              
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="galleryActive" checked />
+                  <span>Hiển thị</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- Preview image -->
+            <div class="form-group" id="galleryPreviewContainer" style="display: none;">
+              <label>Xem Trước:</label>
+              <img id="galleryPreview" style="max-width: 100%; border-radius: 8px; margin-top: 10px;" />
+            </div>
+          </form>
+        </div> -->
             <div class="form-group">
               <label for="newsExcerpt">Tóm Tắt <span style="color: red;">*</span></label>
               <textarea id="newsExcerpt" class="form-input" rows="2" placeholder="Tóm tắt ngắn gọn về bài viết" required></textarea>
             </div>
             
             <div class="form-group">
-              <label for="newsContent">Nội Dung <span style="color: red;">*</span></label>
+              <label for="newsContent">Nội Dung <span style="color: rgb(222, 156, 156);">*</span></label>
               <textarea id="newsContent" class="form-input" rows="8" placeholder="Nội dung chi tiết bài viết (hỗ trợ HTML)" required></textarea>
               <small style="color: #666;">Có thể sử dụng HTML tags: &lt;p&gt;, &lt;h3&gt;, &lt;strong&gt;, &lt;ul&gt;, &lt;li&gt;, etc.</small>
             </div>
             
             <div class="form-group">
-              <label for="newsImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
+              <label for="newsImageUrl">URL Hình Ảnh <span style="color: rgb(139, 35, 35);">*</span></label>
               <input type="url" id="newsImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
               <div class="form-group">
-                <label for="newsCategory">Danh Mục <span style="color: red;">*</span></label>
+                <label for="newsCategory">Danh Mục <span style="color: rgb(157, 109, 109);">*</span></label>
                 <select id="newsCategory" class="form-input" required>
                   <option value="">-- Chọn danh mục --</option>
                   <option value="tips">Mẹo chăm hoa</option>
@@ -3148,6 +3267,17 @@
           customers: "Quản Lý Khách Hàng",
           coupons: "Quản Lý Mã Giảm Giá",
           contacts: "Quản Lý Liên Hệ",
+          // dashboard: "Dashboard",
+          // orders: "Quản Lý Đơn Hàng",
+          // products: "Quản Lý Sản Phẩm",
+          // categories: "Quản Lý Danh Mục",
+          // customers: "Quản Lý Khách Hàng",
+          // coupons: "Quản Lý Mã Giảm Giá",
+          // contacts: "Quản Lý Liên Hệ",
+          // gallery: "Quản Lý Gallery",
+          // news: "Quản Lý Tin Tức",
+          // analytics: "Thống Kê & Báo Cáo",
+          // settings: "Cài Đặt Hệ Thống",
           gallery: "Quản Lý Gallery",
           news: "Quản Lý Tin Tức",
           analytics: "Thống Kê & Báo Cáo",
@@ -3171,6 +3301,23 @@
           setTimeout(() => loadSettings(), 100);
         }
       }
+
+      // // Basic menu navigation
+      // document.addEventListener("DOMContentLoaded", function () {
+      //   // Menu items click handler
+      //   document.querySelectorAll(".menu-item[data-target]").forEach((item) => {
+      //     item.addEventListener("click", function () {
+      //       const target = this.getAttribute("data-target");
+      //       showSection(target);
+
+      //       // Update active menu
+      //       document
+      //         .querySelectorAll(".menu-item")
+      //         .forEach((m) => m.classList.remove("active"));
+      //       this.classList.add("active");
+      //     });
+      //   });
+      // });
 
       // Show notification function
       function showNotification(title, message, type = "success") {
@@ -3219,6 +3366,7 @@
         }).format(amount);
       }
 
+      
       function formatNumber(num) {
         return new Intl.NumberFormat("vi-VN").format(num);
       }
@@ -3231,6 +3379,14 @@
           year: "numeric",
         });
       }
+      // Load dashboard data
+      function loadDashboard() {
+        loadStatistics();
+        loadRevenueChart();
+        loadRecentOrders();
+        loadTopProducts();
+      }
+
 
       function formatDateTime(dateString) {
         const date = new Date(dateString);
@@ -3244,7 +3400,7 @@
       }
 
       // Load dashboard data
-      function loadDashboard() {
+      function loadDashboard1() {
         loadStatistics();
         loadRevenueChart();
         loadRecentOrders();
@@ -3296,6 +3452,90 @@
             "error"
           );
         }
+      }
+
+      
+      function createSampleChart() {
+        const ctx = document.getElementById("revenueChart").getContext("2d");
+        const labels = [
+          "T1",
+          "T2",
+          "T3",
+          "T4",
+          "T5",
+          "T6",
+          "T7",
+          "T8",
+          "T9",
+          "T10",
+          "T11",
+          "T12",
+        ];
+        const revenues = [
+          15000000, 18000000, 22000000, 25000000, 28000000, 32000000, 30000000,
+          35000000, 38000000, 42000000, 45000000, 48000000,
+        ];
+
+        if (revenueChart) {
+          revenueChart.destroy();
+        }
+
+        revenueChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Doanh Thu",
+                data: revenues,
+                borderColor: "#667eea",
+                backgroundColor: "rgba(102, 126, 234, 0.1)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: "#667eea",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 2,
+                pointHoverRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return "Doanh thu: " + formatCurrency(context.parsed.y);
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return formatCurrency(value);
+                  },
+                },
+                grid: {
+                  color: "rgba(0, 0, 0, 0.05)",
+                },
+              },
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+            },
+          },
+        });
       }
 
       // Load revenue chart
@@ -3388,7 +3628,7 @@
       }
 
       // Create sample chart (fallback)
-      function createSampleChart() {
+      function createSampleChart2() {
         const ctx = document.getElementById("revenueChart").getContext("2d");
         const labels = [
           "T1",
@@ -3524,6 +3764,13 @@
             '<tr><td colspan="4" class="text-center text-danger">Không thể tải dữ liệu</td></tr>';
         }
       }
+
+      // if (!orders || orders.length === 0) {
+      //       tbody.innerHTML =
+      //         '<tr><td colspan="4" class="text-center">Chưa có đơn hàng</td></tr>';
+      //       return;
+      //     }
+
 
       // Load top products
       async function loadTopProducts() {
@@ -4690,6 +4937,27 @@
         displayCustomers();
       }
 
+
+      async function unbanCustomer(userId) {
+        try {
+          const params = new URLSearchParams({ id: userId, status: 'active' });
+          const response = await fetch(
+            contextPath + "/admin/api/user/update-status?" + params.toString(),
+            { method: "POST" }
+          );
+          const result = await response.json();
+          
+          if (result.success) {
+            showNotification("Thành công", "Đã gỡ cấm khách hàng", "success");
+            loadCustomers();
+          } else {
+            throw new Error(result.message);
+          }
+        } catch (error) {
+          showNotification("Lỗi", error.message || "Không thể gỡ cấm", "error");
+        }
+      }
+
       async function banCustomer(userId) {
         if (!confirm('Bạn có chắc chắn muốn cấm khách hàng này?')) return;
         
@@ -4709,26 +4977,6 @@
           }
         } catch (error) {
           showNotification("Lỗi", error.message || "Không thể cấm khách hàng", "error");
-        }
-      }
-
-      async function unbanCustomer(userId) {
-        try {
-          const params = new URLSearchParams({ id: userId, status: 'active' });
-          const response = await fetch(
-            contextPath + "/admin/api/user/update-status?" + params.toString(),
-            { method: "POST" }
-          );
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification("Thành công", "Đã gỡ cấm khách hàng", "success");
-            loadCustomers();
-          } else {
-            throw new Error(result.message);
-          }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể gỡ cấm", "error");
         }
       }
 
@@ -4808,6 +5056,21 @@
         }).join('');
       }
 
+      // async function loadCategoriesTable() {
+      //   try {
+      //     const response = await fetch(contextPath + "/admin/api/categories");
+      //     const result = await response.json();
+
+      //     if (result.success) {
+      //       allCategoriesData = result.data;
+      //       displayCategories();
+      //       populateCategoryParentSelect();
+      //     }
+      //   } catch (error) {
+      //     console.error("Error loading categories:", error);
+      //   }
+      // }
+
       function populateCategoryParentSelect() {
         const select = document.getElementById("categoryParent");
         select.innerHTML = '<option value="">-- Không có --</option>';
@@ -4842,6 +5105,28 @@
           showNotification("Lỗi", error.message, "error");
         }
       }
+
+      // async function deleteCategory(categoryId, categoryName) {
+      //   if (!confirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?')) return;
+
+      //   try {
+      //     const response = await fetch(
+      //       contextPath + "/admin/api/category/" + categoryId,
+      //       { method: "DELETE" }
+      //     );
+
+      //     const result = await response.json();
+
+      //     if (!result.success) {
+      //       throw new Error(result.message || "Failed to delete category");
+      //     }
+
+      //     showNotification("Thành công", "Đã xóa danh mục", "success");
+      //     loadCategoriesTable();
+      //   } catch (error) {
+      //     showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
+      //   }
+      // }
 
       async function saveCategory() {
         const categoryId = document.getElementById("categoryId").value;
@@ -4917,6 +5202,34 @@
       // ============================================
       let allCoupons = [];
 
+      async function openEditCouponModal(couponId) {
+        try {
+          const coupon = allCoupons.find(c => c.id === couponId);
+          if (!coupon) throw new Error("Không tìm thấy mã giảm giá");
+
+          document.getElementById("couponModalTitle").textContent = "Sửa Mã Giảm Giá";
+          document.getElementById("couponId").value = coupon.id;
+          document.getElementById("couponCode").value = coupon.code;
+          document.getElementById("couponType").value = coupon.discountType;
+          document.getElementById("couponValue").value = coupon.discountValue;
+          document.getElementById("couponMinOrder").value = coupon.minOrderValue || 0;
+          document.getElementById("couponMaxDiscount").value = coupon.maxDiscount || '';
+          document.getElementById("couponLimit").value = coupon.usageLimit || '';
+          document.getElementById("couponDescription").value = coupon.description || '';
+          
+          if (coupon.startDate) {
+            document.getElementById("couponStartDate").value = coupon.startDate.split('T')[0];
+          }
+          if (coupon.endDate) {
+            document.getElementById("couponEndDate").value = coupon.endDate.split('T')[0];
+          }
+
+          openModal("couponModal");
+        } catch (error) {
+          showNotification("Lỗi", error.message, "error");
+        }
+      }
+
       async function loadCoupons() {
         try {
           const response = await fetch(contextPath + "/admin/api/coupons");
@@ -4967,6 +5280,8 @@
         }).join('');
       }
 
+
+
       function openAddCouponModal() {
         document.getElementById("couponModalTitle").textContent = "Thêm Mã Giảm Giá";
         document.getElementById("couponForm").reset();
@@ -4974,33 +5289,19 @@
         openModal("couponModal");
       }
 
-      async function openEditCouponModal(couponId) {
-        try {
-          const coupon = allCoupons.find(c => c.id === couponId);
-          if (!coupon) throw new Error("Không tìm thấy mã giảm giá");
+      // async function loadCoupons() {
+      //   try {
+      //     const response = await fetch(contextPath + "/admin/api/coupons");
+      //     const result = await response.json();
 
-          document.getElementById("couponModalTitle").textContent = "Sửa Mã Giảm Giá";
-          document.getElementById("couponId").value = coupon.id;
-          document.getElementById("couponCode").value = coupon.code;
-          document.getElementById("couponType").value = coupon.discountType;
-          document.getElementById("couponValue").value = coupon.discountValue;
-          document.getElementById("couponMinOrder").value = coupon.minOrderValue || 0;
-          document.getElementById("couponMaxDiscount").value = coupon.maxDiscount || '';
-          document.getElementById("couponLimit").value = coupon.usageLimit || '';
-          document.getElementById("couponDescription").value = coupon.description || '';
-          
-          if (coupon.startDate) {
-            document.getElementById("couponStartDate").value = coupon.startDate.split('T')[0];
-          }
-          if (coupon.endDate) {
-            document.getElementById("couponEndDate").value = coupon.endDate.split('T')[0];
-          }
-
-          openModal("couponModal");
-        } catch (error) {
-          showNotification("Lỗi", error.message, "error");
-        }
-      }
+      //     if (result.success) {
+      //       allCoupons = result.data;
+      //       displayCoupons();
+      //     }
+      //   } catch (error) {
+      //     console.error("Error loading coupons:", error);
+      //   }
+      // }
 
       async function saveCoupon() {
         const couponId = document.getElementById("couponId").value;
@@ -5198,6 +5499,15 @@
           const response = await fetch(
             contextPath + "/admin/api/contact/" + contactId,
             { method: "DELETE" }
+          //   document.getElementById("contactId").value = contact.id;
+          // document.getElementById("contactName").textContent = contact.name;
+          // document.getElementById("contactEmail").textContent = contact.email;
+          // document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+          // document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+          // document.getElementById("contactDate").textContent = contact.createdAt ? 
+          //   new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+          // document.getElementById("contactMessage").textContent = contact.message;
+          // document.getElementById("contactStatus").value = contact.status || 'new';
           );
 
           const result = await response.json();
@@ -6029,6 +6339,15 @@
       
       // Open news modal for adding
       function openNewsModal() {
+        // document.getElementById("contactId").value = contact.id;
+        //   document.getElementById("contactName").textContent = contact.name;
+        //   document.getElementById("contactEmail").textContent = contact.email;
+        //   document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+        //   document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+        //   document.getElementById("contactDate").textContent = contact.createdAt ? 
+        //     new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+        //   document.getElementById("contactMessage").textContent = contact.message;
+        //   document.getElementById("contactStatus").value = contact.status || 'new';
         document.getElementById('newsModalTitle').textContent = 'Thêm Tin Tức';
         document.getElementById('newsId').value = '';
         document.getElementById('newsForm').reset();

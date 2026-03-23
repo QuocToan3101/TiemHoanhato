@@ -28,10 +28,17 @@ import model.User;
 @WebServlet(urlPatterns = {"/oauth/google", "/oauth/google/callback"})
 public class GoogleOAuthServlet extends HttpServlet {
     
-    // TODO: Thay bằng Client ID và Secret từ Google Cloud Console
     private static final String CLIENT_ID = "55108743351-krncvf01f0t18ll9gb8h8jtslbs9qmu2.apps.googleusercontent.com";
     private static final String CLIENT_SECRET = "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";
-    private static final String REDIRECT_URI_BASE = "http://tiemhoanhato.site/flowerstore/oauth/google/callback";
+
+    private String getRedirectUri(HttpServletRequest request) {
+        int port = request.getServerPort();
+        String scheme = request.getScheme();
+        boolean isDefaultPort = ("http".equals(scheme) && port == 80) || ("https".equals(scheme) && port == 443);
+        return scheme + "://" + request.getServerName()
+                + (isDefaultPort ? "" : ":" + port)
+                + request.getContextPath() + "/oauth/google/callback";
+    }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -59,9 +66,10 @@ public class GoogleOAuthServlet extends HttpServlet {
         }
         
         // Tạo URL OAuth của Google
+        String redirectUri = getRedirectUri(request);
         String googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth"
                 + "?client_id=" + CLIENT_ID
-                + "&redirect_uri=" + REDIRECT_URI_BASE
+                + "&redirect_uri=" + java.net.URLEncoder.encode(redirectUri, "UTF-8")
                 + "&response_type=code"
                 + "&scope=openid%20email%20profile"
                 + "&access_type=offline"
@@ -98,7 +106,7 @@ public class GoogleOAuthServlet extends HttpServlet {
                     CLIENT_ID,
                     CLIENT_SECRET,
                     code,
-                    REDIRECT_URI_BASE
+                    getRedirectUri(request)
             ).execute();
             
             String accessToken = tokenResponse.getAccessToken();
