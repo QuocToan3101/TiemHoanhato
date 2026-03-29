@@ -1,14 +1,15 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
     <title>Tin Tức - La Vie Est Belle - Flower & Gift</title>
     
     <!-- CSRF Token -->
-    <meta name="csrf-token" content="${csrfToken}">
-    <script>window.csrfToken = '${csrfToken}';</script>
+    <meta name="csrf-token" content="${fn:escapeXml(csrfToken)}">
+    <script>window.csrfToken = '<c:out value="${csrfToken}" />';</script>
 
     <!-- Google Tag Manager -->
     <script>

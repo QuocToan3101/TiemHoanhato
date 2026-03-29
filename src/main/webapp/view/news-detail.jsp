@@ -1,12 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${news.title} - Tiệm Hoa nhà tớ</title>
+    <title>${fn:escapeXml(news.title)} - Tiệm Hoa nhà tớ</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -274,8 +275,8 @@
         <c:if test="${not empty news}">
             <article class="news-detail">
                 <div class="news-header">
-                    <span class="news-category">${news.categoryName}</span>
-                    <h1 class="news-title">${news.title}</h1>
+                    <span class="news-category"><c:out value="${news.categoryName}" /></span>
+                    <h1 class="news-title"><c:out value="${news.title}" /></h1>
                     <div class="news-meta">
                         <div class="meta-item">
                             <i class="far fa-calendar"></i>
@@ -283,26 +284,26 @@
                         </div>
                         <div class="meta-item">
                             <i class="far fa-user"></i>
-                            ${news.author != null ? news.author : 'Admin'}
+                            <c:out value="${news.author != null ? news.author : 'Admin'}" />
                         </div>
                         <div class="meta-item">
                             <i class="far fa-eye"></i>
-                            ${news.views} lượt xem
+                            <c:out value="${news.views}" /> lượt xem
                         </div>
                     </div>
                 </div>
                 
                 <c:if test="${not empty news.imageUrl}">
-                    <img src="${news.imageUrl}" alt="${news.title}" class="news-featured-image" onerror="this.style.display='none'" />
+                    <img src="${news.imageUrl}" alt="${fn:escapeXml(news.title)}" class="news-featured-image" onerror="this.style.display='none'" />
                 </c:if>
                 
                 <div class="news-body">
                     <c:if test="${not empty news.excerpt}">
-                        <div class="news-excerpt">${news.excerpt}</div>
+                        <div class="news-excerpt"><c:out value="${news.excerpt}" /></div>
                     </c:if>
                     
                     <div class="news-content">
-                        ${news.content}
+                        <c:out value="${news.content}" />
                     </div>
                 </div>
             </article>
@@ -314,9 +315,9 @@
                     <div class="related-grid">
                         <c:forEach var="related" items="${relatedNews}">
                             <a href="${pageContext.request.contextPath}/news/${related.slug}" class="related-card">
-                                <img src="${related.imageUrl}" alt="${related.title}" class="related-image" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" />
+                                <img src="${related.imageUrl}" alt="${fn:escapeXml(related.title)}" class="related-image" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'" />
                                 <div class="related-content">
-                                    <h3 class="related-title">${related.title}</h3>
+                                    <h3 class="related-title"><c:out value="${related.title}" /></h3>
                                     <div class="related-date">
                                         <fmt:formatDate value="${related.publishedDate}" pattern="dd/MM/yyyy" />
                                     </div>

@@ -955,13 +955,13 @@
                 <!-- Thông tin sản phẩm -->
                 <div class="product-info">
                     <c:if test="${category != null}">
-                        <div class="product-category">${category.name}</div>
+                        <div class="product-category"><c:out value="${category.name}" /></div>
                     </c:if>
                     
-                    <h1 class="product-title">${product.name}</h1>
+                    <h1 class="product-title"><c:out value="${product.name}" /></h1>
                     
                     <p class="product-subtitle">
-                        ${product.shortDescription != null ? product.shortDescription : 'Hoa tươi mỗi ngày – Gửi trọn yêu thương tới người bạn thương.'}
+                        <c:out value="${product.shortDescription != null ? product.shortDescription : 'Hoa tươi mỗi ngày – Gửi trọn yêu thương tới người bạn thương.'}" />
                     </p>
                     
                     <div class="product-rating">
@@ -982,7 +982,7 @@
                     </div>
                     
                     <c:if test="${product.description != null}">
-                        <p class="product-description">${product.description}</p>
+                        <p class="product-description"><c:out value="${product.description}" /></p>
                     </c:if>
                     
                     <div class="product-meta">
@@ -1001,14 +1001,14 @@
                                 </c:otherwise>
                             </c:choose>
                         </div>
-                        <div><strong>Mã sản phẩm:</strong> SP${product.id}</div>
-                        <div><strong>Đã bán:</strong> ${product.soldCount} sản phẩm</div>
+                        <div><strong>Mã sản phẩm:</strong> SP<c:out value="${product.id}" /></div>
+                        <div><strong>Đã bán:</strong> <c:out value="${product.soldCount}" /> sản phẩm</div>
                     </div>
                     
                     <div class="product-tags">
-                        <span class="tag">#${product.name}</span>
+                        <span class="tag">#<c:out value="${product.name}" /></span>
                         <c:if test="${category != null}">
-                            <span class="tag">#${category.name}</span>
+                            <span class="tag">#<c:out value="${category.name}" /></span>
                         </c:if>
                         <span class="tag">#Hoa tươi</span>
                         <span class="tag">#Tiệm Hoa nhà tớ</span>

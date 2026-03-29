@@ -846,9 +846,9 @@
                                 <a href="${pageContext.request.contextPath}/products/${product.slug}" style="text-decoration: none; color: inherit; display: block;">
                                     <div class="product-image-wrap">
                                         <img class="product-image" 
-                                             src="${product.image != null ? product.image : 'https://via.placeholder.com/300x300?text=No+Image'}" 
-                                             alt="${product.name}"
-                                             onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'" />
+                                            src="${product.image != null ? product.image : 'https://via.placeholder.com/300x300?text=No+Image'}" 
+                                            alt="<c:out value='${product.name}'/>"
+                                            onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'" />
                                         
                                         <c:if test="${product.onSale}">
                                             <span class="product-badge">-${product.discountPercent}%</span>
@@ -860,10 +860,10 @@
                                     
                                     <div class="product-body">
                                         <c:if test="${product.category != null}">
-                                            <div class="product-category">${product.category.name}</div>
+                                            <div class="product-category"><c:out value="${product.category.name}" /></div>
                                         </c:if>
                                         
-                                        <h3 class="product-name">${product.name}</h3>
+                                        <h3 class="product-name"><c:out value="${product.name}" /></h3>
                                         
                                         <div class="product-price-wrap">
                                             <c:choose>
