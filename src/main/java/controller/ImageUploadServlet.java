@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -17,6 +18,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import com.google.gson.Gson;
@@ -36,6 +38,7 @@ public class ImageUploadServlet extends HttpServlet {
     
     private static final String UPLOAD_DIR = "uploads";
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
+    private static final Set<String> ALLOWED_TYPES = Set.of("product", "avatar", "banner");
     private Gson gson;
     
     @Override
@@ -53,10 +56,23 @@ public class ImageUploadServlet extends HttpServlet {
         JsonObject result = new JsonObject();
         
         try {
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("user") == null) {
+                result.addProperty("success", false);
+                result.addProperty("message", "Vui lòng đăng nhập trước khi upload");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.print(gson.toJson(result));
+                return;
+            }
+
             // Lấy upload type (product, avatar, banner, v.v.)
-            String uploadType = request.getParameter("type");
-            if (uploadType == null || uploadType.isEmpty()) {
-                uploadType = "product";
+            String uploadType = sanitizeUploadType(request.getParameter("type"));
+            if (!ALLOWED_TYPES.contains(uploadType)) {
+                result.addProperty("success", false);
+                result.addProperty("message", "Loại upload không hợp lệ");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(gson.toJson(result));
+                return;
             }
             
             // Tạo thư mục upload nếu chưa có
@@ -80,6 +96,12 @@ public class ImageUploadServlet extends HttpServlet {
                     if (!isValidExtension(fileName)) {
                         result.addProperty("success", false);
                         result.addProperty("message", "File không hợp lệ. Chỉ chấp nhận: jpg, jpeg, png, gif, webp");
+                        out.print(gson.toJson(result));
+                        return;
+                    }
+                    if (!isValidMimeType(part.getContentType())) {
+                        result.addProperty("success", false);
+                        result.addProperty("message", "File không hợp lệ. Sai định dạng MIME");
                         out.print(gson.toJson(result));
                         return;
                     }
@@ -150,5 +172,22 @@ public class ImageUploadServlet extends HttpServlet {
             }
         }
         return false;
+    }
+
+    private boolean isValidMimeType(String contentType) {
+        if (contentType == null) return false;
+        String lower = contentType.toLowerCase();
+        return lower.startsWith("image/");
+    }
+
+    private String sanitizeUploadType(String rawType) {
+        if (rawType == null || rawType.isEmpty()) {
+            return "product";
+        }
+        String cleaned = rawType.replaceAll("[^a-zA-Z0-9_-]", "");
+        if (cleaned.isEmpty()) {
+            return "product";
+        }
+        return cleaned;
     }
 }

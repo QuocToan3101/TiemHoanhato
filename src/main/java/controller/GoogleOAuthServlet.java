@@ -28,8 +28,9 @@ import model.User;
 @WebServlet(urlPatterns = {"/oauth/google", "/oauth/google/callback"})
 public class GoogleOAuthServlet extends HttpServlet {
     
-    private static final String CLIENT_ID = "55108743351-krncvf01f0t18ll9gb8h8jtslbs9qmu2.apps.googleusercontent.com";
-    private static final String CLIENT_SECRET = "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";
+    private static final String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID");
+    private static final String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET");
+    private static final String STATE_SESSION_KEY = "oauth_google_state";
 
     private String getRedirectUri(HttpServletRequest request) {
         int port = request.getServerPort();
@@ -59,7 +60,7 @@ public class GoogleOAuthServlet extends HttpServlet {
             throws IOException, ServletException {
         
         // Kiểm tra nếu chưa cấu hình OAuth
-        if (CLIENT_ID.equals("YOUR_GOOGLE_CLIENT_ID") || CLIENT_SECRET.equals("YOUR_GOOGLE_CLIENT_SECRET")) {
+        if (!isConfigured()) {
             request.setAttribute("error", "🔑 Đăng nhập bằng Google chưa được cấu hình. Vui lòng xem file OAUTH_SETUP.md để cấu hình.");
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
             return;
@@ -67,13 +68,15 @@ public class GoogleOAuthServlet extends HttpServlet {
         
         // Tạo URL OAuth của Google
         String redirectUri = getRedirectUri(request);
+        String state = generateStateToken(request);
         String googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth"
                 + "?client_id=" + CLIENT_ID
                 + "&redirect_uri=" + java.net.URLEncoder.encode(redirectUri, "UTF-8")
                 + "&response_type=code"
                 + "&scope=openid%20email%20profile"
                 + "&access_type=offline"
-                + "&prompt=consent";
+            + "&prompt=consent"
+            + "&state=" + java.net.URLEncoder.encode(state, "UTF-8");
         
         response.sendRedirect(googleAuthUrl);
     }
@@ -83,6 +86,8 @@ public class GoogleOAuthServlet extends HttpServlet {
         
         String code = request.getParameter("code");
         String error = request.getParameter("error");
+        String state = request.getParameter("state");
+        HttpSession session = request.getSession(false);
         
         if (error != null) {
             // User từ chối hoặc có lỗi
@@ -93,6 +98,12 @@ public class GoogleOAuthServlet extends HttpServlet {
         
         if (code == null) {
             request.setAttribute("error", "Không nhận được mã xác thực từ Google");
+            request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
+            return;
+        }
+
+        if (session == null || !validateState(session, state)) {
+            request.setAttribute("error", "Yêu cầu không hợp lệ (state mismatch)");
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
             return;
         }
@@ -142,7 +153,7 @@ public class GoogleOAuthServlet extends HttpServlet {
                 user = new User();
                 user.setEmail(email);
                 user.setFullname(name);
-                user.setPassword(BCrypt.hashpw(googleId, BCrypt.gensalt())); // Dùng Google ID làm password
+                user.setPassword(BCrypt.hashpw(java.util.UUID.randomUUID().toString(), BCrypt.gensalt()));
                 user.setRole("customer");
                 user.setStatus("active");
                 
@@ -158,7 +169,8 @@ public class GoogleOAuthServlet extends HttpServlet {
             }
             
             // Bước 4: Đăng nhập thành công - Tạo session
-            HttpSession session = request.getSession();
+            session.removeAttribute(STATE_SESSION_KEY);
+            session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
@@ -172,5 +184,24 @@ public class GoogleOAuthServlet extends HttpServlet {
             request.setAttribute("error", "Lỗi khi đăng nhập bằng Google: " + e.getMessage());
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
         }
+    }
+
+    private boolean isConfigured() {
+        return CLIENT_ID != null && !CLIENT_ID.isEmpty() && CLIENT_SECRET != null && !CLIENT_SECRET.isEmpty();
+    }
+
+    private String generateStateToken(HttpServletRequest request) {
+        String state = java.util.UUID.randomUUID().toString();
+        HttpSession session = request.getSession(true);
+        session.setAttribute(STATE_SESSION_KEY, state);
+        return state;
+    }
+
+    private boolean validateState(HttpSession session, String state) {
+        if (state == null) {
+            return false;
+        }
+        String sessionState = (String) session.getAttribute(STATE_SESSION_KEY);
+        return state.equals(sessionState);
     }
 }
