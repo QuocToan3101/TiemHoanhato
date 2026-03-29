@@ -1,4 +1,5 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 
@@ -415,37 +416,35 @@
 
       <div class="login-title">Đăng nhập</div>
 
-      <% if (request.getAttribute("error") != null) { %>
+      <c:if test="${not empty error}">
+        <div
+          style="
+            color: #dc3545;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 8px;
+          "
+        >
+          <c:out value="${error}" />
+        </div>
+      </c:if>
 
-      <div
-        style="
-          color: #dc3545;
-          text-align: center;
-          margin-bottom: 1rem;
-          padding: 10px;
-          background-color: #f8d7da;
-          border-radius: 8px;
-        "
-      >
-        <%= request.getAttribute("error") %>
-      </div>
-
-      <% } %> <% if (request.getAttribute("success") != null) { %>
-
-      <div
-        style="
-          color: #155724;
-          text-align: center;
-          margin-bottom: 1rem;
-          padding: 10px;
-          background-color: #d4edda;
-          border-radius: 8px;
-        "
-      >
-        <%= request.getAttribute("success") %>
-      </div>
-
-      <% } %>
+      <c:if test="${not empty success}">
+        <div
+          style="
+            color: #155724;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 10px;
+            background-color: #d4edda;
+            border-radius: 8px;
+          "
+        >
+          <c:out value="${success}" />
+        </div>
+      </c:if>
 
       <form action="${pageContext.request.contextPath}/login" method="post">
         <!-- Email input -->
@@ -456,7 +455,7 @@
             id="email"
             name="email"
             placeholder=" "
-            value="${email != null ? email : ''}"
+            value="${email}"
             required
           />
 

@@ -142,12 +142,12 @@
             </a>
         </div>
         
-        <% if (exception != null && request.getAttribute("showDetails") != null) { %>
+        <c:if test="${not empty exception and not empty requestScope.showDetails}">
         <div class="error-details">
             <h3>Chi tiết lỗi (Development mode):</h3>
             <pre><c:out value="${exception.message}" /></pre>
         </div>
-        <% } %>
+        </c:if>
     </div>
 </body>
 </html>

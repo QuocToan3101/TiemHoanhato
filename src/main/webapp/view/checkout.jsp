@@ -1048,12 +1048,7 @@
                                         </div>
                                         
                                         <!-- Greeting Card Option -->
-                                        <%
-                                            byte[] cardImage = (byte[]) session.getAttribute("greetingCardImage");
-                                            String cardMessage = (String) session.getAttribute("greetingCardMessage");
-                                            boolean hasGreetingCard = (cardImage != null && cardMessage != null);
-                                        %>
-                                        <% if (hasGreetingCard) { %>
+                                        <c:if test="${not empty sessionScope.greetingCardImage and not empty sessionScope.greetingCardMessage}">
                                         <div class="form-group mt-4">
                                             <div class="greeting-card-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; color: white;">
                                                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -1081,7 +1076,7 @@
                                                 </small>
                                             </div>
                                         </div>
-                                        <% } %>
+                                        </c:if>
                                     </div>
                                 </div>
                             </div>
