@@ -117,12 +117,32 @@ public class CartApiServlet extends HttpServlet {
                 System.out.println("Received JSON: " + jsonString);
                 
                 JsonObject jsonRequest = gson.fromJson(jsonString, JsonObject.class);
-                productId = jsonRequest.get("productId").getAsInt();
-                quantity = jsonRequest.has("quantity") ? jsonRequest.get("quantity").getAsInt() : 1;
+                if (jsonRequest == null || !jsonRequest.has("productId")) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Thiếu productId");
+                    out.print(gson.toJson(jsonResponse));
+                    return;
+                }
+                try {
+                    productId = jsonRequest.get("productId").getAsInt();
+                    quantity = jsonRequest.has("quantity") ? jsonRequest.get("quantity").getAsInt() : 1;
+                } catch (Exception ex) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Tham số không hợp lệ");
+                    out.print(gson.toJson(jsonResponse));
+                    return;
+                }
             } else {
                 // Đọc từ parameters (backward compatibility)
-                productId = Integer.parseInt(request.getParameter("productId"));
-                quantity = Integer.parseInt(request.getParameter("quantity"));
+                try {
+                    productId = Integer.parseInt(request.getParameter("productId"));
+                    quantity = Integer.parseInt(request.getParameter("quantity"));
+                } catch (NumberFormatException ex) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Tham số không hợp lệ");
+                    out.print(gson.toJson(jsonResponse));
+                    return;
+                }
             }
             
             if (quantity <= 0) {
@@ -171,8 +191,17 @@ public class CartApiServlet extends HttpServlet {
         
         try {
             User user = (User) session.getAttribute("user");
-            int productId = Integer.parseInt(request.getParameter("productId"));
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int productId;
+            int quantity;
+            try {
+                productId = Integer.parseInt(request.getParameter("productId"));
+                quantity = Integer.parseInt(request.getParameter("quantity"));
+            } catch (NumberFormatException ex) {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Tham số không hợp lệ");
+                out.print(gson.toJson(jsonResponse));
+                return;
+            }
             
             boolean success;
             if (quantity <= 0) {
@@ -239,7 +268,15 @@ public class CartApiServlet extends HttpServlet {
                 jsonResponse.addProperty("message", success ? "Đã xóa giỏ hàng" : "Không thể xóa giỏ hàng");
             } else {
                 // Xóa một sản phẩm
-                int productId = Integer.parseInt(request.getParameter("productId"));
+                int productId;
+                try {
+                    productId = Integer.parseInt(request.getParameter("productId"));
+                } catch (NumberFormatException ex) {
+                    jsonResponse.addProperty("success", false);
+                    jsonResponse.addProperty("message", "Tham số không hợp lệ");
+                    out.print(gson.toJson(jsonResponse));
+                    return;
+                }
                 boolean success = cartDAO.removeFromCart(user.getId(), productId);
                 
                 if (success) {
