@@ -974,6 +974,7 @@
             </c:when>
             <c:otherwise>
                 <form id="checkoutForm" action="${pageContext.request.contextPath}/checkout" method="POST">
+                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                     <div class="checkout-grid">
                         <!-- Left Column - Form -->
                         <div class="checkout-form">
