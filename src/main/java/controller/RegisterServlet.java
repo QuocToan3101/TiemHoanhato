@@ -16,18 +16,17 @@ import service.EmailService;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
-    
+
     private UserDAO userDAO;
-    
+
     @Override
     public void init() throws ServletException {
         userDAO = new UserDAO();
     }
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Nếu đã đăng nhập rồi thì chuyển về home
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             response.sendRedirect(request.getContextPath() + "/view/home.jsp");
@@ -39,7 +38,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
@@ -51,86 +50,64 @@ public class RegisterServlet extends HttpServlet {
         String phone = request.getParameter("phone");
         String agree = request.getParameter("agree");
 
-        // Validate input
-        if (fullname == null || fullname.trim().isEmpty()) {
-            sendError(request, response, "Vui lòng nhập họ tên!", fullname, email);
-            return;
-        }
-        
-        if (email == null || email.trim().isEmpty()) {
-            sendError(request, response, "Vui lòng nhập email!", fullname, email);
-            return;
-        }
-        
-        // Validate email format
-        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            sendError(request, response, "Email không hợp lệ!", fullname, email);
-            return;
-        }
-        
-        if (password == null || password.length() < 6) {
-            sendError(request, response, "Mật khẩu phải có ít nhất 6 ký tự!", fullname, email);
-            return;
-        }
-        
-        if (!password.equals(repassword)) {
-            sendError(request, response, "Mật khẩu nhập lại không khớp!", fullname, email);
-            return;
-        }
-        
-        if (!"on".equals(agree)) {
-            sendError(request, response, "Vui lòng đồng ý với chính sách dịch vụ!", fullname, email);
+        // 1. Gọi hàm Validation riêng cho code gọn gàng
+        String validationError = validateInput(fullname, email, password, repassword, agree);
+        if (validationError != null) {
+            sendError(request, response, validationError, fullname, email);
             return;
         }
 
-        // Kiểm tra email đã tồn tại chưa
+        // 2. Kiểm tra email tồn tại
         if (userDAO.emailExists(email.trim())) {
             sendError(request, response, "Email này đã được đăng ký!", fullname, email);
             return;
         }
 
-        // Tạo user mới với status = pending (chờ xác thực)
+        // 3. Tiến hành tạo User
         User newUser = new User();
         newUser.setFullname(fullname.trim());
         newUser.setEmail(email.trim());
         newUser.setPassword(password);
         newUser.setPhone(phone != null ? phone.trim() : null);
         newUser.setRole("customer");
-        newUser.setStatus("pending"); // Đặt pending cho đến khi xác thực email
+        newUser.setStatus("pending");
 
-        // Tạo verification token
         String verificationToken = UUID.randomUUID().toString();
-
-        // Lưu vào database
         boolean success = userDAO.registerWithVerification(newUser, verificationToken);
-        
+
+        // 4. Xử lý kết quả và gửi Email
         if (success) {
-            // Gửi email xác thực
             try {
-                EmailService emailService = EmailService.getInstance();
-                String verificationLink = request.getScheme() + "://" + 
-                                         request.getServerName() + ":" + 
-                                         request.getServerPort() + 
-                                         request.getContextPath() + 
-                                         "/verify-email?token=" + verificationToken;
-                
-                emailService.sendVerificationEmail(email.trim(), fullname.trim(), verificationLink);
-                
-                // Đăng ký thành công
+                String verificationLink = request.getScheme() + "://" +
+                        request.getServerName() + ":" +
+                        request.getServerPort() +
+                        request.getContextPath() +
+                        "/verify-email?token=" + verificationToken;
+
+                EmailService.getInstance().sendVerificationEmail(email.trim(), fullname.trim(), verificationLink);
                 request.setAttribute("success", "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
-                request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
             } catch (Exception e) {
-                // Vẫn cho đăng ký thành công nhưng thông báo lỗi email
-                request.setAttribute("success", "Đăng ký thành công nhưng không gửi được email xác thực. Vui lòng liên hệ admin.");
-                request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
+                request.setAttribute("success", "Đăng ký thành công nhưng hệ thống đang lỗi gửi email xác thực. Vui lòng liên hệ Admin.");
             }
+            request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
         } else {
-            sendError(request, response, "Đăng ký thất bại! Vui lòng thử lại.", fullname, email);
+            sendError(request, response, "Đăng ký thất bại do lỗi hệ thống! Vui lòng thử lại.", fullname, email);
         }
     }
-    
-    private void sendError(HttpServletRequest request, HttpServletResponse response, 
-                          String error, String fullname, String email) 
+
+    // Hàm phụ trợ: Tách logic kiểm tra đầu vào
+    private String validateInput(String fullname, String email, String password, String repassword, String agree) {
+        if (fullname == null || fullname.trim().isEmpty()) return "Vui lòng nhập họ tên!";
+        if (email == null || email.trim().isEmpty()) return "Vui lòng nhập email!";
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) return "Email không hợp lệ!";
+        if (password == null || password.length() < 6) return "Mật khẩu phải có ít nhất 6 ký tự!";
+        if (!password.equals(repassword)) return "Mật khẩu nhập lại không khớp!";
+        if (!"on".equals(agree)) return "Vui lòng đồng ý với chính sách dịch vụ!";
+        return null; // Không có lỗi
+    }
+
+    private void sendError(HttpServletRequest request, HttpServletResponse response,
+                           String error, String fullname, String email)
             throws ServletException, IOException {
         request.setAttribute("error", error);
         request.setAttribute("fullname", fullname);
