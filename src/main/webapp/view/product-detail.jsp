@@ -2,6 +2,7 @@
 <%@ page isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -116,6 +117,7 @@
             overflow: hidden;
             background: linear-gradient(145deg, #f7e0cf, #fdf5ef);
             margin-bottom: 15px;
+            cursor: zoom-in;
         }
         
         .main-image {
@@ -123,6 +125,71 @@
             height: 450px;
             object-fit: cover;
             display: block;
+            transition: transform 0.25s ease;
+            transform-origin: center center;
+        }
+
+        .main-image-container.zoom-active .main-image {
+            transform: scale(1.75);
+        }
+
+        .main-image-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(28, 20, 14, 0.42);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease, background 0.2s ease;
+            z-index: 3;
+        }
+
+        .main-image-container:hover .main-image-nav,
+        .main-image-container:focus-within .main-image-nav {
+            opacity: 1;
+        }
+
+        .main-image-nav:hover {
+            background: rgba(28, 20, 14, 0.65);
+        }
+
+        .main-image-nav.prev {
+            left: 14px;
+        }
+
+        .main-image-nav.next {
+            right: 14px;
+        }
+
+        .btn-zoom-toggle {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 3;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .btn-zoom-toggle:hover {
+            background: var(--accent);
+            color: #fff;
         }
         
         .image-badge {
@@ -155,11 +222,45 @@
             border-radius: 999px;
         }
         
+        .thumbnail-slider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .thumbnail-nav {
+            width: 34px;
+            height: 34px;
+            border: 1px solid var(--border-soft);
+            background: #fff;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .thumbnail-nav:hover {
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: #fff8f3;
+        }
+
+        .thumbnail-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .thumbnail-list {
             display: flex;
             gap: 10px;
             overflow-x: auto;
             padding: 5px 0;
+            scroll-behavior: smooth;
+            flex: 1;
+            scrollbar-width: thin;
         }
         
         .thumbnail {
@@ -175,6 +276,10 @@
         .thumbnail:hover,
         .thumbnail.active {
             border-color: var(--accent);
+        }
+
+        .thumbnail.active {
+            box-shadow: 0 0 0 1px rgba(201,147,102,0.22);
         }
         
         /* Thông tin sản phẩm */
@@ -575,6 +680,15 @@
             .main-image {
                 height: 320px;
             }
+            .main-image-nav {
+                width: 36px;
+                height: 36px;
+                opacity: 1;
+            }
+            .btn-zoom-toggle {
+                width: 34px;
+                height: 34px;
+            }
             .product-actions {
                 flex-direction: column;
                 align-items: stretch;
@@ -606,6 +720,10 @@
             }
             .related-image {
                 height: 150px;
+            }
+            .thumbnail-nav {
+                width: 30px;
+                height: 30px;
             }
         }
         
@@ -932,6 +1050,15 @@
                              src="${primaryImage}" 
                              alt="${product.name}"
                              onerror="this.src='${fallbackImage}'" />
+                        <button type="button" class="main-image-nav prev" id="btnPrevImage" aria-label="Ảnh trước" onclick="showPrevImage()">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button type="button" class="main-image-nav next" id="btnNextImage" aria-label="Ảnh sau" onclick="showNextImage()">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <button type="button" class="btn-zoom-toggle" id="btnZoomToggle" aria-label="Bật hoặc tắt phóng to ảnh" onclick="toggleZoom()">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
                         
                         <c:if test="${product.featured}">
                             <span class="image-badge">Best Seller</span>
@@ -947,15 +1074,24 @@
                     
                     <!-- Thumbnail images -->
                     <c:if test="${not empty productImages}">
-                        <div class="thumbnail-list">
-                            <c:forEach var="imageUrl" items="${productImages}" varStatus="status">
-                                <img class="thumbnail ${status.first ? 'active' : ''}"
-                                     src="${imageUrl}"
-                                     data-image-src="${imageUrl}"
-                                     alt="${product.name} - ảnh ${status.index + 1}"
-                                     onclick="changeImage(this, this.dataset.imageSrc)"
-                                     onerror="this.src='${fallbackImage}'; this.dataset.imageSrc='${fallbackImage}';" />
-                            </c:forEach>
+                        <div class="thumbnail-slider">
+                            <button type="button" class="thumbnail-nav" id="thumbPrev" aria-label="Cuộn thumbnail sang trái" onclick="scrollThumbnails(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="thumbnail-list" id="thumbnailList">
+                                <c:forEach var="imageUrl" items="${productImages}" varStatus="status">
+                                    <img class="thumbnail ${status.first ? 'active' : ''}"
+                                         src="${imageUrl}"
+                                         data-image-src="${imageUrl}"
+                                         data-image-index="${status.index}"
+                                         alt="${product.name} - ảnh ${status.index + 1}"
+                                         onclick="changeImageByIndex(${status.index})"
+                                         onerror="this.src='${fallbackImage}'; this.dataset.imageSrc='${fallbackImage}';" />
+                                </c:forEach>
+                            </div>
+                            <button type="button" class="thumbnail-nav" id="thumbNext" aria-label="Cuộn thumbnail sang phải" onclick="scrollThumbnails(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
                     </c:if>
                 </div>
@@ -1257,12 +1393,121 @@
     <script>
         const contextPath = '${pageContext.request.contextPath}';
         const maxQuantity = <c:out value="${product.quantity > 0 ? product.quantity : 99}"/>;
+        const galleryImages = [
+            <c:forEach var="imageUrl" items="${productImages}" varStatus="status">
+                '<c:out value="${imageUrl}"/>'<c:if test="${!status.last}">,</c:if>
+            </c:forEach>
+        ];
+        const fallbackImage = '<c:out value="${fallbackImage}"/>';
+        let currentImageIndex = 0;
+        let zoomLocked = false;
         
-        // Change main image
-        function changeImage(thumbnail, imageSrc) {
-            document.getElementById('mainImage').src = imageSrc;
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-            thumbnail.classList.add('active');
+        function getMainImageElement() {
+            return document.getElementById('mainImage');
+        }
+
+        function getMainImageContainer() {
+            return document.querySelector('.main-image-container');
+        }
+
+        function updateMainImageByIndex(index) {
+            if (!galleryImages.length) {
+                return;
+            }
+
+            const normalizedIndex = ((index % galleryImages.length) + galleryImages.length) % galleryImages.length;
+            currentImageIndex = normalizedIndex;
+
+            const mainImage = getMainImageElement();
+            const imageSrc = galleryImages[normalizedIndex] || fallbackImage;
+            mainImage.src = imageSrc;
+
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+
+            const activeThumbnail = document.querySelector('.thumbnail[data-image-index="' + normalizedIndex + '"]');
+            if (activeThumbnail) {
+                activeThumbnail.classList.add('active');
+                activeThumbnail.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+
+            updateGalleryControls();
+        }
+
+        function changeImageByIndex(index) {
+            updateMainImageByIndex(index);
+        }
+
+        function showPrevImage() {
+            updateMainImageByIndex(currentImageIndex - 1);
+        }
+
+        function showNextImage() {
+            updateMainImageByIndex(currentImageIndex + 1);
+        }
+
+        function scrollThumbnails(direction) {
+            const thumbnailList = document.getElementById('thumbnailList');
+            if (!thumbnailList) {
+                return;
+            }
+            const offset = Math.max(180, Math.floor(thumbnailList.clientWidth * 0.65));
+            thumbnailList.scrollBy({ left: direction * offset, behavior: 'smooth' });
+        }
+
+        function updateGalleryControls() {
+            const hasMultiple = galleryImages.length > 1;
+            const prevBtn = document.getElementById('btnPrevImage');
+            const nextBtn = document.getElementById('btnNextImage');
+            const thumbPrev = document.getElementById('thumbPrev');
+            const thumbNext = document.getElementById('thumbNext');
+
+            if (prevBtn) prevBtn.style.display = hasMultiple ? 'flex' : 'none';
+            if (nextBtn) nextBtn.style.display = hasMultiple ? 'flex' : 'none';
+
+            const thumbnailList = document.getElementById('thumbnailList');
+            if (!thumbnailList || !thumbPrev || !thumbNext) {
+                return;
+            }
+
+            const isScrollable = thumbnailList.scrollWidth > thumbnailList.clientWidth + 2;
+            thumbPrev.style.visibility = isScrollable ? 'visible' : 'hidden';
+            thumbNext.style.visibility = isScrollable ? 'visible' : 'hidden';
+            thumbPrev.disabled = !isScrollable || thumbnailList.scrollLeft <= 2;
+            thumbNext.disabled = !isScrollable || (thumbnailList.scrollLeft + thumbnailList.clientWidth >= thumbnailList.scrollWidth - 2);
+        }
+
+        function setZoomState(locked) {
+            zoomLocked = locked;
+            const container = getMainImageContainer();
+            const btn = document.getElementById('btnZoomToggle');
+            if (!container || !btn) {
+                return;
+            }
+
+            container.classList.toggle('zoom-active', zoomLocked);
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = zoomLocked ? 'fas fa-search-minus' : 'fas fa-search-plus';
+            }
+        }
+
+        function toggleZoom() {
+            setZoomState(!zoomLocked);
+        }
+
+        function handleImageMouseMove(event) {
+            const container = getMainImageContainer();
+            if (!container) {
+                return;
+            }
+            const rect = container.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+            const mainImage = getMainImageElement();
+            if (mainImage) {
+                mainImage.style.transformOrigin = x + '% ' + y + '%';
+            }
         }
         
         // Quantity controls
@@ -1472,6 +1717,38 @@
         const reviewsPerPage = 3;
         
         window.addEventListener('DOMContentLoaded', function() {
+            if (galleryImages.length > 0) {
+                updateMainImageByIndex(0);
+            }
+
+            const thumbnailList = document.getElementById('thumbnailList');
+            if (thumbnailList) {
+                thumbnailList.addEventListener('scroll', updateGalleryControls, { passive: true });
+                window.addEventListener('resize', updateGalleryControls);
+            }
+
+            const mainImageContainer = getMainImageContainer();
+            if (mainImageContainer) {
+                mainImageContainer.addEventListener('mousemove', handleImageMouseMove);
+                mainImageContainer.addEventListener('mouseleave', function() {
+                    if (!zoomLocked) {
+                        setZoomState(false);
+                    }
+                });
+                mainImageContainer.addEventListener('dblclick', toggleZoom);
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (!galleryImages.length) {
+                    return;
+                }
+                if (event.key === 'ArrowLeft') {
+                    showPrevImage();
+                } else if (event.key === 'ArrowRight') {
+                    showNextImage();
+                }
+            });
+
             loadReviews();
             loadRatingStats();
             checkWishlistStatus(productId);
