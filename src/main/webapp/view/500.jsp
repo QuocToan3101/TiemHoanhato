@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isErrorPage="true" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -141,12 +142,12 @@
             </a>
         </div>
         
-        <% if (exception != null && request.getAttribute("showDetails") != null) { %>
+        <c:if test="${not empty exception and not empty requestScope.showDetails}">
         <div class="error-details">
             <h3>Chi tiết lỗi (Development mode):</h3>
-            <pre><%= exception.getMessage() %></pre>
+            <pre><c:out value="${exception.message}" /></pre>
         </div>
-        <% } %>
+        </c:if>
     </div>
 </body>
 </html>

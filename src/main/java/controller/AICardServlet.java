@@ -60,11 +60,11 @@ public class AICardServlet extends HttpServlet {
         // Set response type
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
-        // CORS headers (nếu cần)
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+        if (!ensureAuthenticated(request, response)) {
+            return;
+        }
+        setCorsForSameOrigin(request, response);
         
         PrintWriter out = response.getWriter();
         JsonObject result = new JsonObject();
@@ -145,6 +145,11 @@ public class AICardServlet extends HttpServlet {
         
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        if (!ensureAuthenticated(request, response)) {
+            return;
+        }
+        setCorsForSameOrigin(request, response);
         
         PrintWriter out = response.getWriter();
         JsonObject result = new JsonObject();
@@ -212,6 +217,10 @@ public class AICardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
+        if (!ensureAuthenticated(request, response)) {
+            return;
+        }
+
         HttpSession session = request.getSession();
         byte[] imageBytes = (byte[]) session.getAttribute("greetingCardImage");
         
@@ -236,9 +245,27 @@ public class AICardServlet extends HttpServlet {
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         // Handle CORS preflight
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        setCorsForSameOrigin(request, response);
         response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type");
         response.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    private boolean ensureAuthenticated(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"success\":false,\"error\":\"Unauthorized\"}");
+            return false;
+        }
+        return true;
+    }
+
+    private void setCorsForSameOrigin(HttpServletRequest request, HttpServletResponse response) {
+        String origin = request.getHeader("Origin");
+        if (origin != null && origin.contains(request.getServerName())) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
     }
 }

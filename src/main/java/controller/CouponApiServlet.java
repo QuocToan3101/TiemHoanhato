@@ -45,6 +45,16 @@ public class CouponApiServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
         
+        // Require authenticated user to limit brute-force coupon abuse
+        javax.servlet.http.HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Vui lòng đăng nhập để áp dụng mã giảm giá");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.print(gson.toJson(jsonResponse));
+            return;
+        }
+
         String pathInfo = request.getPathInfo();
         
         if (pathInfo != null && pathInfo.equals("/validate")) {

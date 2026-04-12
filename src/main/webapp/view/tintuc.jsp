@@ -80,7 +80,21 @@
 
     <!-- Shop CSS Variables -->
 
-
+    <!-- <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          "gtm.start": new Date().getTime(),
+          event: "gtm.js",
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
+    </script> -->
 
     <style>
       :root {
@@ -228,6 +242,24 @@
       }
 
       .news-hero p {
+      
+        /* content: "";
+
+        position: absolute;
+
+        bottom: -30%;
+
+        left: -5%;
+
+        width: 400px;
+
+        height: 400px;
+
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.08) 0%,
+          transparent 70%
+        ); */
         font-size: 1.25rem;
 
         opacity: 0.95;
@@ -1577,9 +1609,6 @@
       
       // Load news function
       const contextPath = '${pageContext.request.contextPath}';
-      const PAGE_SIZE = 9;
-      let currentPage = 1;
-      let isLoadingMore = false;
 
       function escapeHtml(value) {
         return String(value == null ? '' : value)
@@ -1608,12 +1637,9 @@
         return date && !isNaN(date) ? date.toLocaleDateString('vi-VN') : '';
       }
 
-      async function loadNewsFromDB(page, append) {
-        page = page || 1;
-        append = append || false;
+      async function loadNewsFromDB() {
         try {
-          const url = contextPath + '/api/news/list?page=' + page + '&pageSize=' + PAGE_SIZE;
-          const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+          const response = await fetch(contextPath + '/api/news/list', { headers: { 'Accept': 'application/json' } });
           const result = await response.json();
           
           if (result.success && Array.isArray(result.data) && result.data.length > 0) {
@@ -1623,20 +1649,34 @@
             }
             
             result.data.forEach(news => {
-              newsGrid.appendChild(buildNewsCard(news));
+              const title = escapeHtml(news.title || 'Bài viết');
+              const excerpt = escapeHtml(news.excerpt || '');
+              const category = escapeHtml(getCategoryName(news.category));
+              const imageUrl = safeImageUrl(news.imageUrl);
+              const formattedDate = formatPublishedDate(news.publishedDate);
+              const slugPath = news.slug ? '/news/' + safeSlug(news.slug) : '/news';
+
+              const article = document.createElement('article');
+              article.className = 'news-card';
+              article.setAttribute('data-category', news.category || 'all');
+              
+              article.innerHTML = '<div class="news-image-wrapper">' +
+                '<img class="news-thumb" src="' + imageUrl + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
+                '<div class="news-overlay"></div>' +
+                '</div>' +
+                '<div class="news-content">' +
+                  '<div class="news-meta">' +
+                    '<span class="news-category">' + category + '</span>' +
+                    '<span class="news-date">' + formattedDate + '</span>' +
+                  '</div>' +
+                  '<h2 class="news-heading">' + title + '</h2>' +
+                  '<p class="news-excerpt">' + excerpt + '</p>' +
+                  '<a href="' + contextPath + slugPath + '" class="news-link">Xem chi tiết</a>' +
+                '</div>';
+              
+              newsGrid.appendChild(article);
             });
             
-            // Ẩn nút nếu đã hết dữ liệu (trả về ít hơn PAGE_SIZE hoặc server báo hasMore=false)
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
-            const hasMore = result.hasMore !== undefined ? result.hasMore : (result.data.length === PAGE_SIZE);
-            if (!hasMore) {
-              loadMoreBtn.textContent = 'Đã hiển thị tất cả';
-              loadMoreBtn.disabled = true;
-            } else {
-              loadMoreBtn.textContent = 'Xem thêm bài viết';
-              loadMoreBtn.disabled = false;
-            }
-
             // Re-attach filter events with fresh nodes
             attachFilterEvents();
           } else if (!append) {

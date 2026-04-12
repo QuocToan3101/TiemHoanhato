@@ -1,14 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%
-    // Check admin access
-    model.User user = (model.User) session.getAttribute("user");
-    if (user == null || !"admin".equals(user.getRole())) {
-        response.sendRedirect(request.getContextPath() + "/view/login_1.jsp");
-        return;
-    }
-%>
+<c:if test="${empty sessionScope.user or sessionScope.user.role ne 'admin'}">
+  <c:redirect url="/view/login_1.jsp" />
+</c:if>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -408,6 +403,9 @@
         color: var(--text-dark);
         font-weight: 700;
         display: flex;
+        /* margin-left: var(--sidebar-width);
+        transition: var(--transition);
+        min-height: 100vh; */
         align-items: center;
         gap: 12px;
         margin: 0;
@@ -518,6 +516,15 @@
         );
         box-shadow: 0 4px 12px var(--shadow);
       }
+
+      /* th {
+        background-color: var(--bg-light);
+        font-weight: 700;
+        color: var(--text-dark);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      } */
 
       .stat-icon.success {
         background: linear-gradient(135deg, #10b981, #059669);
@@ -699,6 +706,31 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
       }
+/* 
+      .badge-success {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #059669;
+      }
+      .badge-warning {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #d97706;
+      }
+      .badge-danger {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+      }
+      .badge-info {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #2563eb;
+      }
+      .badge-primary {
+        background-color: rgba(201, 147, 102, 0.15);
+        color: var(--primary-dark);
+      }
+      .badge-secondary {
+        background-color: rgba(108, 88, 69, 0.15);
+        color: var(--secondary-soft);
+      } */
 
       .btn-light {
         background-color: var(--bg-light);
@@ -819,7 +851,7 @@
       .form-control:focus {
         border-color: var(--primary);
         outline: none;
-        background-color: white;
+        background-color: rgb(61, 117, 155);
         box-shadow: 0 0 0 4px rgba(201, 147, 102, 0.15);
       }
 
@@ -949,6 +981,21 @@
           opacity: 1;
         }
       }
+
+      /* .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.2s ease;
+      } */
 
       .modal-header {
         padding: 20px 25px;
@@ -2822,6 +2869,14 @@
       </div>
     </div>
 
+    <!-- <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('couponModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="saveCoupon()">
+            <i class="fas fa-save"></i> Lưu
+          </button>
+        </div>
+      </div>
+    </div> -->
     <!-- Coupon Modal -->
     <div class="modal-overlay" id="couponModal">
       <div class="modal">
@@ -2886,6 +2941,26 @@
       </div>
     </div>
 
+<!-- <div>
+              <div class="info-group">
+                <label>Tiêu đề:</label>
+                <p id="contactSubject"></p>
+              </div>
+              <div class="info-group">
+                <label>Ngày gửi:</label>
+                <p id="contactDate"></p>
+              </div>
+              <div class="info-group">
+                <label>Trạng thái:</label>
+                <select id="contactStatus" class="form-input" onchange="updateContactStatus()">
+                  <option value="new">Mới</option>
+                  <option value="read">Đã đọc</option>
+                  <option value="replied">Đã trả lời</option>
+                </select>
+              </div>
+            </div>
+          </div> -->
+    
     <!-- Contact Detail Modal -->
     <div class="modal-overlay" id="contactModal">
       <div class="modal modal-lg">
@@ -3035,26 +3110,65 @@
               <input type="text" id="newsSlug" class="form-input" placeholder="tu-dong-tao-hoac-nhap-slug" required />
               <small style="color: #666;">Slug sẽ tự động tạo từ tiêu đề, hoặc bạn có thể tự nhập</small>
             </div>
+            <!-- <div class="modal-body">
+          <input type="hidden" id="galleryId" />
+          <form id="galleryForm">
+            <div class="form-group">
+              <label for="galleryImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
+              <input type="url" id="galleryImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
+              <small style="color: #666;">Nhập URL hình ảnh hoặc upload lên server</small>
+            </div>
             
+            <div class="form-group">
+              <label for="galleryCaption">Tiêu Đề <span style="color: red;">*</span></label>
+              <input type="text" id="galleryCaption" class="form-input" placeholder="Bó hoa đẹp" required />
+            </div>
+            
+            <div class="form-group">
+              <label for="galleryDescription">Mô Tả</label>
+              <textarea id="galleryDescription" class="form-input" rows="3" placeholder="Mô tả chi tiết về hình ảnh"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div class="form-group">
+                <label for="galleryOrder">Thứ Tự Hiển Thị</label>
+                <input type="number" id="galleryOrder" class="form-input" value="0" min="0" />
+              </div>
+              
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" id="galleryActive" checked />
+                  <span>Hiển thị</span>
+                </label>
+              </div>
+            </div>
+            
+            <!-- Preview image -->
+            <div class="form-group" id="galleryPreviewContainer" style="display: none;">
+              <label>Xem Trước:</label>
+              <img id="galleryPreview" style="max-width: 100%; border-radius: 8px; margin-top: 10px;" />
+            </div>
+          </form>
+        </div> -->
             <div class="form-group">
               <label for="newsExcerpt">Tóm Tắt <span style="color: red;">*</span></label>
               <textarea id="newsExcerpt" class="form-input" rows="2" placeholder="Tóm tắt ngắn gọn về bài viết" required></textarea>
             </div>
             
             <div class="form-group">
-              <label for="newsContent">Nội Dung <span style="color: red;">*</span></label>
+              <label for="newsContent">Nội Dung <span style="color: rgb(222, 156, 156);">*</span></label>
               <textarea id="newsContent" class="form-input" rows="8" placeholder="Nội dung chi tiết bài viết (hỗ trợ HTML)" required></textarea>
               <small style="color: #666;">Có thể sử dụng HTML tags: &lt;p&gt;, &lt;h3&gt;, &lt;strong&gt;, &lt;ul&gt;, &lt;li&gt;, etc.</small>
             </div>
             
             <div class="form-group">
-              <label for="newsImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
+              <label for="newsImageUrl">URL Hình Ảnh <span style="color: rgb(139, 35, 35);">*</span></label>
               <input type="url" id="newsImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
               <div class="form-group">
-                <label for="newsCategory">Danh Mục <span style="color: red;">*</span></label>
+                <label for="newsCategory">Danh Mục <span style="color: rgb(157, 109, 109);">*</span></label>
                 <select id="newsCategory" class="form-input" required>
                   <option value="">-- Chọn danh mục --</option>
                   <option value="tips">Mẹo chăm hoa</option>
@@ -3148,6 +3262,17 @@
           customers: "Quản Lý Khách Hàng",
           coupons: "Quản Lý Mã Giảm Giá",
           contacts: "Quản Lý Liên Hệ",
+          // dashboard: "Dashboard",
+          // orders: "Quản Lý Đơn Hàng",
+          // products: "Quản Lý Sản Phẩm",
+          // categories: "Quản Lý Danh Mục",
+          // customers: "Quản Lý Khách Hàng",
+          // coupons: "Quản Lý Mã Giảm Giá",
+          // contacts: "Quản Lý Liên Hệ",
+          // gallery: "Quản Lý Gallery",
+          // news: "Quản Lý Tin Tức",
+          // analytics: "Thống Kê & Báo Cáo",
+          // settings: "Cài Đặt Hệ Thống",
           gallery: "Quản Lý Gallery",
           news: "Quản Lý Tin Tức",
           analytics: "Thống Kê & Báo Cáo",
@@ -5369,6 +5494,15 @@
           const response = await fetch(
             contextPath + "/admin/api/contact/" + contactId,
             { method: "DELETE" }
+          //   document.getElementById("contactId").value = contact.id;
+          // document.getElementById("contactName").textContent = contact.name;
+          // document.getElementById("contactEmail").textContent = contact.email;
+          // document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+          // document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+          // document.getElementById("contactDate").textContent = contact.createdAt ? 
+          //   new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+          // document.getElementById("contactMessage").textContent = contact.message;
+          // document.getElementById("contactStatus").value = contact.status || 'new';
           );
 
           const result = await response.json();
@@ -6200,6 +6334,15 @@
       
       // Open news modal for adding
       function openNewsModal() {
+        // document.getElementById("contactId").value = contact.id;
+        //   document.getElementById("contactName").textContent = contact.name;
+        //   document.getElementById("contactEmail").textContent = contact.email;
+        //   document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
+        //   document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
+        //   document.getElementById("contactDate").textContent = contact.createdAt ? 
+        //     new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
+        //   document.getElementById("contactMessage").textContent = contact.message;
+        //   document.getElementById("contactStatus").value = contact.status || 'new';
         document.getElementById('newsModalTitle').textContent = 'Thêm Tin Tức';
         document.getElementById('newsId').value = '';
         document.getElementById('newsForm').reset();

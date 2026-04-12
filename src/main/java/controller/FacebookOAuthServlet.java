@@ -23,10 +23,10 @@ import dao.UserDAO;
 @WebServlet(urlPatterns = {"/oauth/facebook", "/oauth/facebook/callback"})
 public class FacebookOAuthServlet extends HttpServlet {
     
-    // TODO: Thay bằng App ID và Secret từ Facebook Developers
-    private static final String APP_ID = "YOUR_FACEBOOK_APP_ID";
-    private static final String APP_SECRET = "YOUR_FACEBOOK_APP_SECRET";
-    private static final String REDIRECT_URI = "http://tiemhoanhato.site/flowerstore/oauth/facebook/callback";
+    private static final String APP_ID = System.getenv("FACEBOOK_APP_ID");
+    private static final String APP_SECRET = System.getenv("FACEBOOK_APP_SECRET");
+    private static final String REDIRECT_URI = System.getenv("FACEBOOK_REDIRECT_URI");
+    private static final String STATE_SESSION_KEY = "oauth_facebook_state";
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -47,18 +47,20 @@ public class FacebookOAuthServlet extends HttpServlet {
             throws IOException, ServletException {
         
         // Kiểm tra nếu chưa cấu hình OAuth
-        if (APP_ID.equals("YOUR_FACEBOOK_APP_ID") || APP_SECRET.equals("YOUR_FACEBOOK_APP_SECRET")) {
+        if (!isConfigured()) {
             request.setAttribute("error", "🔑 Đăng nhập bằng Facebook chưa được cấu hình. Vui lòng xem file OAUTH_SETUP.md để cấu hình.");
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
             return;
         }
         
+        String state = generateStateToken(request);
         // Tạo URL OAuth của Facebook
         String facebookAuthUrl = "https://www.facebook.com/v19.0/dialog/oauth"
                 + "?client_id=" + APP_ID
                 + "&redirect_uri=" + REDIRECT_URI
                 + "&scope=email,public_profile"
-                + "&response_type=code";
+            + "&response_type=code"
+            + "&state=" + java.net.URLEncoder.encode(state, "UTF-8");
         
         response.sendRedirect(facebookAuthUrl);
     }
@@ -68,6 +70,8 @@ public class FacebookOAuthServlet extends HttpServlet {
         
         String code = request.getParameter("code");
         String error = request.getParameter("error");
+        String state = request.getParameter("state");
+        HttpSession session = request.getSession(false);
         
         if (error != null) {
             // User từ chối hoặc có lỗi
@@ -78,6 +82,12 @@ public class FacebookOAuthServlet extends HttpServlet {
         
         if (code == null) {
             request.setAttribute("error", "Không nhận được mã xác thực từ Facebook");
+            request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
+            return;
+        }
+
+        if (session == null || !validateState(session, state)) {
+            request.setAttribute("error", "Yêu cầu không hợp lệ (state mismatch)");
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
             return;
         }
@@ -117,7 +127,7 @@ public class FacebookOAuthServlet extends HttpServlet {
                 user = new model.User();
                 user.setEmail(email);
                 user.setFullname(name);
-                user.setPassword(BCrypt.hashpw(facebookId, BCrypt.gensalt())); // Dùng Facebook ID làm password
+                user.setPassword(BCrypt.hashpw(java.util.UUID.randomUUID().toString(), BCrypt.gensalt()));
                 user.setRole("customer");
                 user.setStatus("active");
                 
@@ -133,7 +143,8 @@ public class FacebookOAuthServlet extends HttpServlet {
             }
             
             // Bước 4: Đăng nhập thành công - Tạo session
-            HttpSession session = request.getSession();
+            session.removeAttribute(STATE_SESSION_KEY);
+            session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
@@ -150,5 +161,26 @@ public class FacebookOAuthServlet extends HttpServlet {
             request.setAttribute("error", "Lỗi khi đăng nhập bằng Facebook: " + e.getMessage());
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
         }
+    }
+
+    private boolean isConfigured() {
+        return APP_ID != null && !APP_ID.isEmpty() &&
+               APP_SECRET != null && !APP_SECRET.isEmpty() &&
+               REDIRECT_URI != null && !REDIRECT_URI.isEmpty();
+    }
+
+    private String generateStateToken(HttpServletRequest request) {
+        String state = java.util.UUID.randomUUID().toString();
+        HttpSession session = request.getSession(true);
+        session.setAttribute(STATE_SESSION_KEY, state);
+        return state;
+    }
+
+    private boolean validateState(HttpSession session, String state) {
+        if (state == null) {
+            return false;
+        }
+        String sessionState = (String) session.getAttribute(STATE_SESSION_KEY);
+        return state.equals(sessionState);
     }
 }
