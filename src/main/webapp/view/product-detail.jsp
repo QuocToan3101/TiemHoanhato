@@ -725,6 +725,17 @@
                 width: 30px;
                 height: 30px;
             }
+            .lightbox {
+                padding: 12px;
+            }
+            .lightbox-nav {
+                width: 38px;
+                height: 38px;
+            }
+            .lightbox-thumb {
+                width: 56px;
+                height: 56px;
+            }
         }
         
         /* Reviews Section */
@@ -1023,6 +1034,104 @@
             text-align: center;
             padding: 40px;
             color: #999;
+        }
+
+        /* Fullscreen lightbox */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 10, 8, 0.92);
+            z-index: 12000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+        }
+
+        .lightbox.show {
+            display: flex;
+        }
+
+        .lightbox-content {
+            width: min(1100px, 94vw);
+            max-height: 92vh;
+            display: grid;
+            grid-template-rows: 1fr auto;
+            gap: 14px;
+        }
+
+        .lightbox-image-wrap {
+            position: relative;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            overflow: hidden;
+            min-height: 360px;
+        }
+
+        .lightbox-image {
+            width: 100%;
+            height: min(74vh, 760px);
+            object-fit: contain;
+            display: block;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.92);
+            color: #1a120e;
+            cursor: pointer;
+            z-index: 4;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(22, 16, 13, 0.56);
+            color: #fff;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        .lightbox-nav.prev {
+            left: 12px;
+        }
+
+        .lightbox-nav.next {
+            right: 12px;
+        }
+
+        .lightbox-thumbs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 2px;
+            justify-content: center;
+        }
+
+        .lightbox-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid transparent;
+            cursor: pointer;
+            opacity: 0.72;
+        }
+
+        .lightbox-thumb.active {
+            border-color: #fff;
+            opacity: 1;
         }
     </style>
     
@@ -1389,6 +1498,24 @@
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage"></span>
     </div>
+
+    <div id="imageLightbox" class="lightbox" aria-hidden="true">
+        <div class="lightbox-content">
+            <div class="lightbox-image-wrap">
+                <button type="button" class="lightbox-close" aria-label="Đóng" onclick="closeLightbox()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button type="button" class="lightbox-nav prev" aria-label="Ảnh trước" onclick="showPrevImage(true)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button type="button" class="lightbox-nav next" aria-label="Ảnh sau" onclick="showNextImage(true)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <img id="lightboxImage" class="lightbox-image" src="${primaryImage}" alt="${product.name}" onerror="this.src='${fallbackImage}'" />
+            </div>
+            <div id="lightboxThumbs" class="lightbox-thumbs"></div>
+        </div>
+    </div>
     
     <script>
         const contextPath = '${pageContext.request.contextPath}';
@@ -1401,6 +1528,7 @@
         const fallbackImage = '<c:out value="${fallbackImage}"/>';
         let currentImageIndex = 0;
         let zoomLocked = false;
+        let lightboxOpen = false;
         
         function getMainImageElement() {
             return document.getElementById('mainImage');
@@ -1438,12 +1566,86 @@
             updateMainImageByIndex(index);
         }
 
-        function showPrevImage() {
+        function showPrevImage(fromLightbox) {
             updateMainImageByIndex(currentImageIndex - 1);
+            if (fromLightbox) {
+                updateLightboxUI();
+            }
         }
 
-        function showNextImage() {
+        function showNextImage(fromLightbox) {
             updateMainImageByIndex(currentImageIndex + 1);
+            if (fromLightbox) {
+                updateLightboxUI();
+            }
+        }
+
+        function renderLightboxThumbnails() {
+            const thumbsContainer = document.getElementById('lightboxThumbs');
+            if (!thumbsContainer) {
+                return;
+            }
+
+            thumbsContainer.innerHTML = galleryImages.map(function(img, index) {
+                return '<img class="lightbox-thumb' + (index === currentImageIndex ? ' active' : '') +
+                    '" src="' + img + '" alt="Thumbnail ' + (index + 1) +
+                    '" onclick="selectLightboxImage(' + index + ')" onerror="this.src=\'' + fallbackImage + '\'" />';
+            }).join('');
+        }
+
+        function updateLightboxUI() {
+            const lightboxImage = document.getElementById('lightboxImage');
+            if (lightboxImage) {
+                lightboxImage.src = galleryImages[currentImageIndex] || fallbackImage;
+            }
+
+            const thumbs = document.querySelectorAll('.lightbox-thumb');
+            thumbs.forEach(function(thumb, index) {
+                thumb.classList.toggle('active', index === currentImageIndex);
+                if (index === currentImageIndex) {
+                    thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            });
+        }
+
+        function selectLightboxImage(index) {
+            updateMainImageByIndex(index);
+            updateLightboxUI();
+        }
+
+        function openLightbox(index) {
+            if (!galleryImages.length) {
+                return;
+            }
+
+            if (typeof index === 'number') {
+                updateMainImageByIndex(index);
+            }
+
+            const lightbox = document.getElementById('imageLightbox');
+            if (!lightbox) {
+                return;
+            }
+
+            lightbox.classList.add('show');
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            lightboxOpen = true;
+
+            renderLightboxThumbnails();
+            updateLightboxUI();
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('imageLightbox');
+            if (!lightbox) {
+                return;
+            }
+
+            lightbox.classList.remove('show');
+            lightbox.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            lightboxOpen = false;
         }
 
         function scrollThumbnails(direction) {
@@ -1721,10 +1923,26 @@
                 updateMainImageByIndex(0);
             }
 
+            const mainImage = getMainImageElement();
+            if (mainImage) {
+                mainImage.addEventListener('click', function() {
+                    openLightbox(currentImageIndex);
+                });
+            }
+
             const thumbnailList = document.getElementById('thumbnailList');
             if (thumbnailList) {
                 thumbnailList.addEventListener('scroll', updateGalleryControls, { passive: true });
                 window.addEventListener('resize', updateGalleryControls);
+            }
+
+            const lightbox = document.getElementById('imageLightbox');
+            if (lightbox) {
+                lightbox.addEventListener('click', function(event) {
+                    if (event.target === lightbox) {
+                        closeLightbox();
+                    }
+                });
             }
 
             const mainImageContainer = getMainImageContainer();
@@ -1742,10 +1960,14 @@
                 if (!galleryImages.length) {
                     return;
                 }
+                if (event.key === 'Escape' && lightboxOpen) {
+                    closeLightbox();
+                    return;
+                }
                 if (event.key === 'ArrowLeft') {
-                    showPrevImage();
+                    showPrevImage(lightboxOpen);
                 } else if (event.key === 'ArrowRight') {
-                    showNextImage();
+                    showNextImage(lightboxOpen);
                 }
             });
 
