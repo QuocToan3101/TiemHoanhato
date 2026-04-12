@@ -1,14 +1,15 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
     <title>Tin Tức - La Vie Est Belle - Flower & Gift</title>
     
     <!-- CSRF Token -->
-    <meta name="csrf-token" content="${csrfToken}">
-    <script>window.csrfToken = '${csrfToken}';</script>
+    <meta name="csrf-token" content="${fn:escapeXml(csrfToken)}">
+    <script>window.csrfToken = '<c:out value="${csrfToken}" />';</script>
 
     <!-- Google Tag Manager -->
     <script>
@@ -1453,8 +1454,7 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         const chips = document.querySelectorAll(".chip");
-
-        const newsCards = document.querySelectorAll(".news-card");
+        const getNewsCards = () => document.querySelectorAll(".news-card");
 
         const searchInput = document.getElementById("searchInput");
 
@@ -1463,7 +1463,6 @@
         const loadMoreBtn = document.getElementById("loadMoreBtn");
 
         // Filter chips
-
         chips.forEach((chip) => {
           chip.addEventListener("click", function () {
             chips.forEach((c) => c.classList.remove("active"));
@@ -1472,7 +1471,7 @@
 
             const filter = this.getAttribute("data-filter");
 
-            newsCards.forEach((card) => {
+            getNewsCards().forEach((card) => {
               if (
                 filter === "all" ||
                 card.getAttribute("data-category") === filter
@@ -1493,7 +1492,7 @@
           const searchTerm = searchInput.value.toLowerCase().trim();
 
           if (searchTerm === "") {
-            newsCards.forEach((card) => {
+            getNewsCards().forEach((card) => {
               card.style.display = "flex";
             });
 
@@ -1502,7 +1501,7 @@
 
           let foundCount = 0;
 
-          newsCards.forEach((card) => {
+          getNewsCards().forEach((card) => {
             const title = card
               .querySelector(".news-heading")
               .textContent.toLowerCase();
@@ -1542,30 +1541,11 @@
         // Load more functionality
 
         loadMoreBtn.addEventListener("click", function () {
-          this.textContent = "Đang tải...";
-
-          this.disabled = true;
-
-          setTimeout(() => {
-            alert("Đã hiển thị tất cả bài viết!");
-
-            this.textContent = "Đã tải hết";
-          }, 1000);
+          loadMoreNews();
         });
 
-        // Click on news card
-
-        newsCards.forEach((card) => {
-          card.addEventListener("click", function (e) {
-            if (!e.target.classList.contains("news-link")) {
-              const link = this.querySelector(".news-link");
-
-              if (link) {
-                window.location.href = link.getAttribute("href");
-              }
-            }
-          });
-        });
+        // Initial binding for existing cards
+        attachFilterEvents();
 
         // Recent posts click
 
@@ -1596,48 +1576,121 @@
       });
       
       // Load news function
-      async function loadNewsFromDB() {
+      const contextPath = '${pageContext.request.contextPath}';
+      const PAGE_SIZE = 9;
+      let currentPage = 1;
+      let isLoadingMore = false;
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function safeImageUrl(url) {
+        const clean = (url || '').trim();
+        if (!clean) return 'https://via.placeholder.com/400x300?text=No+Image';
+        if (/^(https?:)?\/\//i.test(clean) || clean.startsWith(contextPath + '/')) {
+          return clean;
+        }
+        return 'https://via.placeholder.com/400x300?text=No+Image';
+      }
+
+      function safeSlug(slug) {
+        return slug ? encodeURIComponent(slug) : '';
+      }
+
+      function formatPublishedDate(rawDate) {
+        const date = rawDate ? new Date(rawDate) : null;
+        return date && !isNaN(date) ? date.toLocaleDateString('vi-VN') : '';
+      }
+
+      async function loadNewsFromDB(page, append) {
+        page = page || 1;
+        append = append || false;
         try {
-          const response = await fetch('${pageContext.request.contextPath}/api/news/list');
+          const url = contextPath + '/api/news/list?page=' + page + '&pageSize=' + PAGE_SIZE;
+          const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
           const result = await response.json();
           
-          if (result.success && result.data && result.data.length > 0) {
+          if (result.success && Array.isArray(result.data) && result.data.length > 0) {
             const newsGrid = document.getElementById('newsGrid');
-            newsGrid.innerHTML = '';
+            if (!append) {
+              newsGrid.innerHTML = '';
+            }
             
             result.data.forEach(news => {
-              const article = document.createElement('article');
-              article.className = 'news-card';
-              article.setAttribute('data-category', news.category);
-              
-              const publishedDate = new Date(news.publishedDate);
-              const formattedDate = publishedDate.toLocaleDateString('vi-VN');
-              
-              article.innerHTML = '<div class="news-image-wrapper">' +
-                '<img class="news-thumb" src="' + news.imageUrl + '" alt="' + news.title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
-                '<div class="news-overlay"></div>' +
-                '</div>' +
-                '<div class="news-content">' +
-                  '<div class="news-meta">' +
-                    '<span class="news-category">' + getCategoryName(news.category) + '</span>' +
-                    '<span class="news-date">' + formattedDate + '</span>' +
-                  '</div>' +
-                  '<h2 class="news-heading">' + news.title + '</h2>' +
-                  '<p class="news-excerpt">' + (news.excerpt || '') + '</p>' +
-                  '<a href="${pageContext.request.contextPath}/news/' + news.slug + '" class="news-link">Xem chi tiết</a>' +
-                '</div>';
-              
-              newsGrid.appendChild(article);
+              newsGrid.appendChild(buildNewsCard(news));
             });
             
-            // Re-attach filter events
-            filterButtons = document.querySelectorAll(".filter-btn");
-            newsCards = document.querySelectorAll(".news-card");
+            // Ẩn nút nếu đã hết dữ liệu (trả về ít hơn PAGE_SIZE hoặc server báo hasMore=false)
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const hasMore = result.hasMore !== undefined ? result.hasMore : (result.data.length === PAGE_SIZE);
+            if (!hasMore) {
+              loadMoreBtn.textContent = 'Đã hiển thị tất cả';
+              loadMoreBtn.disabled = true;
+            } else {
+              loadMoreBtn.textContent = 'Xem thêm bài viết';
+              loadMoreBtn.disabled = false;
+            }
+
+            // Re-attach filter events with fresh nodes
             attachFilterEvents();
+          } else if (!append) {
+            // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
           }
         } catch (error) {
           console.error('Error loading news:', error);
         }
+      }
+
+      function buildNewsCard(news) {
+        const title = escapeHtml(news.title || 'Bài viết');
+        const excerpt = escapeHtml(news.excerpt || '');
+        const category = escapeHtml(getCategoryName(news.category));
+        const imageUrl = safeImageUrl(news.imageUrl);
+        const formattedDate = formatPublishedDate(news.publishedDate);
+        const slugPath = news.slug ? '/news/' + safeSlug(news.slug) : '/news';
+
+        const article = document.createElement('article');
+        article.className = 'news-card';
+        article.setAttribute('data-category', news.category || 'all');
+        article.style.animation = 'fadeInUp 0.6s ease-out';
+        
+        article.innerHTML = '<div class="news-image-wrapper">' +
+          '<img class="news-thumb" src="' + imageUrl + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
+          '<div class="news-overlay"></div>' +
+          '</div>' +
+          '<div class="news-content">' +
+            '<div class="news-meta">' +
+              '<span class="news-category">' + category + '</span>' +
+              '<span class="news-date">' + formattedDate + '</span>' +
+            '</div>' +
+            '<h2 class="news-heading">' + title + '</h2>' +
+            '<p class="news-excerpt">' + excerpt + '</p>' +
+            '<a href="' + contextPath + slugPath + '" class="news-link">Xem chi tiết</a>' +
+          '</div>';
+        
+        return article;
+      }
+
+      async function loadMoreNews() {
+        if (isLoadingMore) return;
+        isLoadingMore = true;
+
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const originalText = loadMoreBtn.textContent;
+        loadMoreBtn.textContent = 'Đang tải...';
+        loadMoreBtn.disabled = true;
+
+        currentPage += 1;
+        await loadNewsFromDB(currentPage, true);
+
+        isLoadingMore = false;
+        // Nút sẽ được bật lại bên trong loadNewsFromDB nếu còn dữ liệu
       }
       
       function getCategoryName(category) {
@@ -1653,8 +1706,11 @@
       }
       
 function attachFilterEvents() {
+        const filterButtons = document.querySelectorAll(".chip");
+        const newsCards = document.querySelectorAll(".news-card");
+
         filterButtons.forEach((btn) => {
-          btn.addEventListener("click", function () {
+          btn.onclick = function () {
             filterButtons.forEach((b) => b.classList.remove("active"));
             this.classList.add("active");
 
@@ -1664,12 +1720,24 @@ function attachFilterEvents() {
               const category = card.getAttribute("data-category");
 
               if (filter === "all" || category === filter) {
-                card.style.display = "block";
+                card.style.display = "flex";
               } else {
                 card.style.display = "none";
               }
             });
-          });
+          };
+        });
+
+        newsCards.forEach((card) => {
+          card.onclick = function (e) {
+            if (!e.target.classList.contains("news-link")) {
+              const link = this.querySelector(".news-link");
+
+              if (link) {
+                window.location.href = link.getAttribute("href");
+              }
+            }
+          };
         });
       }
       // Async loading
