@@ -1638,7 +1638,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
                 <div class="product-image">
                   <img
                     src="${product.image != null ? product.image : 'https://via.placeholder.com/300x300?text=No+Image'}"
-                    alt="${product.name}"
+                    alt="<c:out value='${product.name}'/>"
                     onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'"
                   />
                   <c:if
@@ -1670,7 +1670,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
                 </div>
 
                 <div class="product-info">
-                  <h3 class="product-name">${product.name}</h3>
+                  <h3 class="product-name"><c:out value="${product.name}" /></h3>
                   <div class="product-price">
                     <c:choose>
                       <c:when

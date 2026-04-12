@@ -3,16 +3,9 @@
 <%@ page isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%
-    // Security check
-    response.setCharacterEncoding("UTF-8");
-    request.setCharacterEncoding("UTF-8");
-    
-    if (session == null || session.getAttribute("user") == null) {
-        response.sendRedirect(request.getContextPath() + "/view/login_1.jsp");
-        return;
-    }
-%>
+<c:if test="${empty sessionScope.user}">
+    <c:redirect url="/view/login_1.jsp" />
+</c:if>
 <!DOCTYPE html>
 <html lang="vi">
 <head>

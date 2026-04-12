@@ -974,6 +974,7 @@
             </c:when>
             <c:otherwise>
                 <form id="checkoutForm" action="${pageContext.request.contextPath}/checkout" method="POST">
+                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                     <div class="checkout-grid">
                         <!-- Left Column - Form -->
                         <div class="checkout-form">
@@ -1048,12 +1049,7 @@
                                         </div>
                                         
                                         <!-- Greeting Card Option -->
-                                        <%
-                                            byte[] cardImage = (byte[]) session.getAttribute("greetingCardImage");
-                                            String cardMessage = (String) session.getAttribute("greetingCardMessage");
-                                            boolean hasGreetingCard = (cardImage != null && cardMessage != null);
-                                        %>
-                                        <% if (hasGreetingCard) { %>
+                                        <c:if test="${not empty sessionScope.greetingCardImage and not empty sessionScope.greetingCardMessage}">
                                         <div class="form-group mt-4">
                                             <div class="greeting-card-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; color: white;">
                                                 <div style="display: flex; align-items: center; gap: 15px;">
@@ -1081,7 +1077,7 @@
                                                 </small>
                                             </div>
                                         </div>
-                                        <% } %>
+                                        </c:if>
                                     </div>
                                 </div>
                             </div>
@@ -1234,6 +1230,7 @@
                                 <input type="hidden" name="shippingFee" id="shippingFeeInput" value="30000">
                                 <input type="hidden" name="discount" id="discountInput" value="0">
                                 <input type="hidden" name="total" id="totalInput" value="${cartTotal + 30000}">
+                                <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
                                 
                                 <!-- Submit -->
                                 <div class="checkout-submit">
@@ -1347,6 +1344,7 @@
                     
                     document.getElementById('couponApplied').style.display = 'flex';
                     document.getElementById('appliedCouponCode').textContent = code.toUpperCase();
+                    document.getElementById('appliedCouponCodeInput').value = code.toUpperCase();
                     document.getElementById('couponCode').value = '';
                     document.getElementById('couponCode').disabled = true;
                     
@@ -1356,26 +1354,7 @@
                     showToast(response.data.message || 'Mã giảm giá không hợp lệ', 'error');
                 }
             } catch (error) {
-                // For demo, apply a sample discount
-                if (code.toUpperCase() === 'WELCOME10') {
-                    discount = Math.min(subtotal * 0.1, 100000);
-                    document.getElementById('couponApplied').style.display = 'flex';
-                    document.getElementById('appliedCouponCode').textContent = code.toUpperCase();
-                    document.getElementById('couponCode').value = '';
-                    document.getElementById('couponCode').disabled = true;
-                    updateTotals();
-                    showToast('Áp dụng mã giảm giá thành công!', 'success');
-                } else if (code.toUpperCase() === 'FREESHIP') {
-                    shippingFee = 0;
-                    document.getElementById('couponApplied').style.display = 'flex';
-                    document.getElementById('appliedCouponCode').textContent = code.toUpperCase();
-                    document.getElementById('couponCode').value = '';
-                    document.getElementById('couponCode').disabled = true;
-                    updateTotals();
-                    showToast('Áp dụng mã giảm giá thành công!', 'success');
-                } else {
-                    showToast('Mã giảm giá không hợp lệ', 'error');
-                }
+                showToast('Không thể kiểm tra mã giảm giá lúc này. Vui lòng thử lại!', 'error');
             }
         }
         
@@ -1387,6 +1366,7 @@
             
             document.getElementById('couponApplied').style.display = 'none';
             document.getElementById('couponCode').disabled = false;
+            document.getElementById('appliedCouponCodeInput').value = '';
             
             updateTotals();
             showToast('Đã hủy mã giảm giá', 'success');

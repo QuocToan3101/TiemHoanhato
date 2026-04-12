@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,8 +60,41 @@ public class VNPayReturnServlet extends HttpServlet {
                 Order order = orderDAO.findByOrderCode(vnp_TxnRef);
                 
                 if (order != null) {
-                    // Cập nhật trạng thái thanh toán
-                    orderDAO.updatePaymentStatus(order.getId(), "paid");
+                    if ("paid".equals(order.getPaymentStatus())) {
+                        System.out.println("ℹ VNPay callback duplicate (already paid): " + vnp_TxnRef);
+                        response.sendRedirect(request.getContextPath() +
+                            "/order-success?orderCode=" + vnp_TxnRef +
+                            "&payment=success");
+                        return;
+                    }
+
+                    long receivedAmount = Long.parseLong(vnp_Amount); // VNPay trả về amount * 100
+                    long expectedAmount = order.getTotal()
+                        .multiply(new BigDecimal("100"))
+                        .longValue();
+
+                    if (receivedAmount != expectedAmount) {
+                        System.err.println("✗ VNPay amount mismatch for order: " + vnp_TxnRef);
+                        System.err.println("  Expected: " + expectedAmount + ", Received: " + receivedAmount);
+
+                        if ("pending".equals(order.getPaymentStatus())) {
+                            orderDAO.updatePaymentStatusIfCurrent(order.getId(), "pending", "failed");
+                        }
+
+                        response.sendRedirect(request.getContextPath() + "/checkout?error=amount_mismatch");
+                        return;
+                    }
+
+                    // Idempotency: chỉ cho phép pending -> paid
+                    boolean updated = orderDAO.updatePaymentStatusIfCurrent(order.getId(), "pending", "paid");
+                    if (!updated) {
+                        Order latestOrder = orderDAO.findByOrderCode(vnp_TxnRef);
+                        if (latestOrder != null && "paid".equals(latestOrder.getPaymentStatus())) {
+                            System.out.println("ℹ VNPay callback duplicate after update race: " + vnp_TxnRef);
+                        } else {
+                            System.err.println("✗ VNPay callback ignored due to non-pending status: " + vnp_TxnRef);
+                        }
+                    }
                     
                     // Log transaction
                     System.out.println("✓ VNPay payment successful:");
@@ -89,7 +123,11 @@ public class VNPayReturnServlet extends HttpServlet {
                 // Cập nhật trạng thái thanh toán thất bại
                 Order order = orderDAO.findByOrderCode(vnp_TxnRef);
                 if (order != null) {
-                    orderDAO.updatePaymentStatus(order.getId(), "failed");
+                    if ("pending".equals(order.getPaymentStatus())) {
+                        orderDAO.updatePaymentStatusIfCurrent(order.getId(), "pending", "failed");
+                    } else if ("paid".equals(order.getPaymentStatus())) {
+                        System.out.println("ℹ VNPay failure callback ignored (order already paid): " + vnp_TxnRef);
+                    }
                 }
                 
                 // Redirect to error page

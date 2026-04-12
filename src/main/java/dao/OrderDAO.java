@@ -32,6 +32,48 @@ public class OrderDAO {
         try {
             conn = getConnection();
             conn.setAutoCommit(false); // Bắt đầu transaction
+
+            // Khóa tồn kho để chống oversell khi nhiều request checkout đồng thời.
+            String lockProductSql = "SELECT quantity, is_active FROM products WHERE id = ? FOR UPDATE";
+            String updateStockSql = "UPDATE products SET quantity = quantity - ?, sold_count = sold_count + ? WHERE id = ?";
+
+            try (PreparedStatement psLock = conn.prepareStatement(lockProductSql);
+                 PreparedStatement psUpdateStock = conn.prepareStatement(updateStockSql)) {
+
+                for (OrderItem item : items) {
+                    Integer productId = item.getProductId();
+                    if (productId == null) {
+                        conn.rollback();
+                        return false;
+                    }
+
+                    psLock.setInt(1, productId);
+                    try (ResultSet rsProduct = psLock.executeQuery()) {
+                        if (!rsProduct.next()) {
+                            conn.rollback();
+                            return false;
+                        }
+
+                        boolean isActive = rsProduct.getBoolean("is_active");
+                        int availableQty = rsProduct.getInt("quantity");
+                        int requestedQty = item.getQuantity();
+
+                        if (!isActive || requestedQty <= 0 || availableQty < requestedQty) {
+                            conn.rollback();
+                            return false;
+                        }
+                    }
+
+                    psUpdateStock.setInt(1, item.getQuantity());
+                    psUpdateStock.setInt(2, item.getQuantity());
+                    psUpdateStock.setInt(3, productId);
+
+                    if (psUpdateStock.executeUpdate() == 0) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+            }
             
             // Tạo mã đơn hàng
             if (order.getOrderCode() == null) {
@@ -306,6 +348,28 @@ public class OrderDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi cập nhật payment status: " + e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Cập nhật payment status có điều kiện (idempotency)
+     * Ví dụ: chỉ cho phép pending -> paid, tránh callback trùng ghi đè trạng thái.
+     */
+    public boolean updatePaymentStatusIfCurrent(int orderId, String currentStatus, String newStatus) {
+        String sql = "UPDATE orders SET payment_status = ?, updated_at = CURRENT_TIMESTAMP " +
+                    "WHERE id = ? AND payment_status = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newStatus);
+            ps.setInt(2, orderId);
+            ps.setString(3, currentStatus);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Lỗi cập nhật payment status có điều kiện: " + e.getMessage());
         }
         return false;
     }

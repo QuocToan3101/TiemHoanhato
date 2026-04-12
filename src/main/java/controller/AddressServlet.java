@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,401 +16,223 @@ import com.google.gson.JsonObject;
 import dao.AddressDAO;
 import model.Address;
 import model.User;
-/**
- * Servlet xử lý sổ địa chỉ
- */
-@WebServlet(urlPatterns = {"/address/*", "/api/address/*"})
+
+@WebServlet(urlPatterns = {"/address/*"})
 public class AddressServlet extends HttpServlet {
-    
+
     private AddressDAO addressDAO;
     private Gson gson;
-    
+
     @Override
-    public void init() throws ServletException {
+    public void init() {
         addressDAO = new AddressDAO();
         gson = new Gson();
     }
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=UTF-8");
-        
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        
-        if (user == null) {
-            sendJsonError(response, "Vui lòng đăng nhập");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+
+        User user = getUser(req, resp);
+        if (user == null) return;
+
+        String path = getPath(req);
+
+        if (path.equals("") || path.equals("/")) {
+            handleList(resp, user);
+        } else {
+            int id = parseId(path);
+            handleDetail(resp, user, id);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+
+        User user = getUser(req, resp);
+        if (user == null) return;
+
+        String path = getPath(req);
+
+        switch (path) {
+            case "/add":
+            case "":
+                handleAdd(req, resp, user);
+                break;
+            case "/update":
+                handleUpdate(req, resp, user);
+                break;
+            default:
+                if (path.startsWith("/delete/")) {
+                    handleDelete(resp, user, parseId(path));
+                } else if (path.startsWith("/default/")) {
+                    handleSetDefault(resp, user, parseId(path));
+                } else {
+                    writeError(resp, "Invalid API");
+                }
+        }
+    }
+
+    private void handleList(HttpServletResponse resp, User user) throws IOException {
+        List<Address> list = addressDAO.findByUserId(user.getId());
+
+        JsonObject json = new JsonObject();
+        json.addProperty("success", true);
+        json.add("data", gson.toJsonTree(list));
+
+        writeJson(resp, json);
+    }
+
+    private void handleDetail(HttpServletResponse resp, User user, int id) throws IOException {
+        Address a = addressDAO.findById(id);
+
+        if (a == null || a.getUserId() != user.getId()) {
+            writeError(resp, "Không tìm thấy địa chỉ");
             return;
         }
-        String pathInfo = request.getPathInfo();
-        
-        if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("/list")) {
-            // Lấy danh sách địa chỉ
-            listAddresses(response, user);
-        } else if (pathInfo.startsWith("/detail/")) {
-            // Lấy chi tiết địa chỉ
-            getAddressDetail(request, response, user);
-        } else {
-            sendJsonError(response, "Invalid action");
-        }
+
+        JsonObject json = new JsonObject();
+        json.addProperty("success", true);
+        json.add("data", gson.toJsonTree(a));
+
+        writeJson(resp, json);
     }
-    
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=UTF-8");
-        
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        
-        if (user == null) {
-            sendJsonError(response, "Vui lòng đăng nhập");
+
+    private void handleAdd(HttpServletRequest req, HttpServletResponse resp, User user)
+            throws IOException {
+
+        Address a = buildAddress(req, user);
+
+        String error = validate(a);
+        if (error != null) {
+            writeError(resp, error);
             return;
         }
-        
-        String pathInfo = request.getPathInfo();
-        
-        if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("/add")) {
-            // Thêm địa chỉ mới
-            addAddress(request, response, user);
-        } else if (pathInfo.equals("/update")) {
-            // Cập nhật địa chỉ
-            updateAddress(request, response, user);
-        } else if (pathInfo.startsWith("/delete/")) {
-            // Xóa địa chỉ
-            deleteAddress(request, response, user);
-        } else if (pathInfo.startsWith("/set-default/")) {
-            // Đặt địa chỉ mặc định
-            setDefaultAddress(request, response, user);
-        } else {
-            sendJsonError(response, "Invalid action");
+
+        int count = addressDAO.countByUserId(user.getId());
+        if (count >= 10) {
+            writeError(resp, "Tối đa 10 địa chỉ");
+            return;
         }
+
+        if (count == 0) a.setDefault(true);
+
+        int id = addressDAO.add(a);
+
+        JsonObject json = new JsonObject();
+        json.addProperty("success", id > 0);
+        json.addProperty("message", id > 0 ? "Thêm thành công" : "Thêm thất bại");
+
+        writeJson(resp, json);
     }
-    
-    /**
-     * Lấy danh sách địa chỉ
-     */
-    private void listAddresses(HttpServletResponse response, User user) throws IOException {
-        PrintWriter out = response.getWriter();
-        JsonObject jsonResponse = new JsonObject();
-        
+
+    private void handleUpdate(HttpServletRequest req, HttpServletResponse resp, User user)
+            throws IOException {
+
+        int id = Integer.parseInt(req.getParameter("id"));
+        Address old = addressDAO.findById(id);
+
+        if (old == null || old.getUserId() != user.getId()) {
+            writeError(resp, "Không có quyền");
+            return;
+        }
+
+        Address updated = buildAddress(req, user);
+        updated.setId(id);
+
+        String error = validate(updated);
+        if (error != null) {
+            writeError(resp, error);
+            return;
+        }
+
+        boolean ok = addressDAO.update(updated);
+
+        writeJson(resp, createMessage(ok, "Cập nhật thành công", "Cập nhật thất bại"));
+    }
+
+    private void handleDelete(HttpServletResponse resp, User user, int id)
+            throws IOException {
+
+        boolean ok = addressDAO.delete(id, user.getId());
+        writeJson(resp, createMessage(ok, "Xóa thành công", "Xóa thất bại"));
+    }
+
+    private void handleSetDefault(HttpServletResponse resp, User user, int id)
+            throws IOException {
+
+        boolean ok = addressDAO.setDefault(id, user.getId());
+        writeJson(resp, createMessage(ok, "Đã đặt mặc định", "Thất bại"));
+    }
+
+    private User getUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            writeError(resp, "Vui lòng đăng nhập");
+        }
+        return user;
+    }
+
+    private String getPath(HttpServletRequest req) {
+        String path = req.getPathInfo();
+        return path == null ? "" : path;
+    }
+
+    private int parseId(String path) {
         try {
-            List<Address> addresses = addressDAO.findByUserId(user.getId());
-            jsonResponse.addProperty("success", true);
-            jsonResponse.add("addresses", gson.toJsonTree(addresses));
-            jsonResponse.addProperty("count", addresses.size());
+            return Integer.parseInt(path.replaceAll("\\D+", ""));
         } catch (Exception e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Lỗi: " + e.getMessage());
+            return -1;
         }
-        
-        out.print(gson.toJson(jsonResponse));
     }
-    
-    /**
-     * Lấy chi tiết địa chỉ
-     */
-    private void getAddressDetail(HttpServletRequest request, HttpServletResponse response, User user) 
-            throws IOException {
-        PrintWriter out = response.getWriter();
-        JsonObject jsonResponse = new JsonObject();
-        
-        try {
-            String pathInfo = request.getPathInfo();
-            int addressId = Integer.parseInt(pathInfo.substring("/detail/".length()));
-            
-            Address address = addressDAO.findById(addressId);
-            
-            if (address == null) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không tìm thấy địa chỉ");
-            } else if (address.getUserId() != user.getId()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Bạn không có quyền xem địa chỉ này");
-            } else {
-                jsonResponse.addProperty("success", true);
-                jsonResponse.add("address", gson.toJsonTree(address));
-            }
-        } catch (NumberFormatException e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "ID địa chỉ không hợp lệ");
-        }
-        
-        out.print(gson.toJson(jsonResponse));
+
+    private Address buildAddress(HttpServletRequest req, User user) {
+        Address a = new Address();
+        a.setUserId(user.getId());
+        a.setReceiverName(req.getParameter("receiverName"));
+        a.setPhone(req.getParameter("phone"));
+        a.setProvince(req.getParameter("province"));
+        a.setDistrict(req.getParameter("district"));
+        a.setWard(req.getParameter("ward"));
+        a.setAddressDetail(req.getParameter("addressDetail"));
+        a.setNote(req.getParameter("note"));
+        a.setDefault("true".equals(req.getParameter("isDefault")));
+        return a;
     }
-    
-    /**
-     * Thêm địa chỉ mới
-     */
-    private void addAddress(HttpServletRequest request, HttpServletResponse response, User user)
-            throws IOException {
-        PrintWriter out = response.getWriter();
-        JsonObject jsonResponse = new JsonObject();
-        
-        try {
-            String receiverName = request.getParameter("receiverName");
-            String phone = request.getParameter("phone");
-            String province = request.getParameter("province");
-            String district = request.getParameter("district");
-            String ward = request.getParameter("ward");
-            String addressDetail = request.getParameter("addressDetail");
-            String note = request.getParameter("note");
-            boolean isDefault = "true".equals(request.getParameter("isDefault"));
-            
-            // Validate
-            if (receiverName == null || receiverName.trim().isEmpty()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Vui lòng nhập tên người nhận");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            if (phone == null || phone.trim().isEmpty()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Vui lòng nhập số điện thoại");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            if (addressDetail == null || addressDetail.trim().isEmpty()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Vui lòng nhập địa chỉ chi tiết");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            // Kiểm tra giới hạn số lượng địa chỉ (tối đa 10)
-            int currentCount = addressDAO.countByUserId(user.getId());
-            if (currentCount >= 10) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Bạn chỉ có thể lưu tối đa 10 địa chỉ");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            // Nếu là địa chỉ đầu tiên, tự động đặt làm mặc định
-            if (currentCount == 0) {
-                isDefault = true;
-            }
-            
-            Address address = new Address();
-            address.setUserId(user.getId());
-            address.setReceiverName(receiverName.trim());
-            address.setPhone(phone.trim());
-            address.setProvince(province != null ? province.trim() : "");
-            address.setDistrict(district != null ? district.trim() : "");
-            address.setWard(ward != null ? ward.trim() : "");
-            address.setAddressDetail(addressDetail.trim());
-            address.setNote(note != null ? note.trim() : "");
-            address.setDefault(isDefault);
-            
-            int newId = addressDAO.add(address);
-            
-            if (newId > 0) {
-                address.setId(newId);
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Đã thêm địa chỉ mới");
-                jsonResponse.add("address", gson.toJsonTree(address));
-            } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không thể thêm địa chỉ");
-            }
-        } catch (Exception e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Lỗi: " + e.getMessage());
-        }
-        
-        out.print(gson.toJson(jsonResponse));
+
+    private String validate(Address a) {
+        if (a.getReceiverName() == null || a.getReceiverName().isEmpty())
+            return "Thiếu tên";
+
+        if (a.getPhone() == null || a.getPhone().isEmpty())
+            return "Thiếu SĐT";
+
+        if (a.getAddressDetail() == null || a.getAddressDetail().isEmpty())
+            return "Thiếu địa chỉ";
+
+        return null;
     }
-    
-    /**
-     * Cập nhật địa chỉ
-     */
-    private void updateAddress(HttpServletRequest request, HttpServletResponse response, User user)
-            throws IOException {
-        PrintWriter out = response.getWriter();
-        JsonObject jsonResponse = new JsonObject();
-        
-        try {
-            int addressId = Integer.parseInt(request.getParameter("id"));
-            
-            // Kiểm tra quyền
-            Address existingAddress = addressDAO.findById(addressId);
-            if (existingAddress == null) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không tìm thấy địa chỉ");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            if (existingAddress.getUserId() != user.getId()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Bạn không có quyền sửa địa chỉ này");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            String receiverName = request.getParameter("receiverName");
-            String phone = request.getParameter("phone");
-            String province = request.getParameter("province");
-            String district = request.getParameter("district");
-            String ward = request.getParameter("ward");
-            String addressDetail = request.getParameter("addressDetail");
-            String note = request.getParameter("note");
-            boolean isDefault = "true".equals(request.getParameter("isDefault"));
-            
-            // Validate
-            if (receiverName == null || receiverName.trim().isEmpty()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Vui lòng nhập tên người nhận");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            if (phone == null || phone.trim().isEmpty()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Vui lòng nhập số điện thoại");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            if (addressDetail == null || addressDetail.trim().isEmpty()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Vui lòng nhập địa chỉ chi tiết");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            existingAddress.setReceiverName(receiverName.trim());
-            existingAddress.setPhone(phone.trim());
-            existingAddress.setProvince(province != null ? province.trim() : "");
-            existingAddress.setDistrict(district != null ? district.trim() : "");
-            existingAddress.setWard(ward != null ? ward.trim() : "");
-            existingAddress.setAddressDetail(addressDetail.trim());
-            existingAddress.setNote(note != null ? note.trim() : "");
-            existingAddress.setDefault(isDefault);
-            
-            boolean success = addressDAO.update(existingAddress);
-            
-            if (success) {
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Đã cập nhật địa chỉ");
-                jsonResponse.add("address", gson.toJsonTree(existingAddress));
-            } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không thể cập nhật địa chỉ");
-            }
-        } catch (NumberFormatException e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "ID địa chỉ không hợp lệ");
-        } catch (Exception e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Lỗi: " + e.getMessage());
-        }
-        
-        out.print(gson.toJson(jsonResponse));
+
+    private JsonObject createMessage(boolean success, String okMsg, String failMsg) {
+        JsonObject json = new JsonObject();
+        json.addProperty("success", success);
+        json.addProperty("message", success ? okMsg : failMsg);
+        return json;
     }
-    
-    /**
-     * Xóa địa chỉ
-     */
-    private void deleteAddress(HttpServletRequest request, HttpServletResponse response, User user)
-            throws IOException {
-        PrintWriter out = response.getWriter();
-        JsonObject jsonResponse = new JsonObject();
-        
-        try {
-            String pathInfo = request.getPathInfo();
-            int addressId = Integer.parseInt(pathInfo.substring("/delete/".length()));
-            
-            // Kiểm tra quyền
-            Address address = addressDAO.findById(addressId);
-            if (address == null) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không tìm thấy địa chỉ");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            if (address.getUserId() != user.getId()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Bạn không có quyền xóa địa chỉ này");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            boolean success = addressDAO.delete(addressId, user.getId());
-            
-            if (success) {
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Đã xóa địa chỉ");
-            } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không thể xóa địa chỉ");
-            }
-        } catch (NumberFormatException e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "ID địa chỉ không hợp lệ");
-        }
-        
-        out.print(gson.toJson(jsonResponse));
+
+    private void writeJson(HttpServletResponse resp, JsonObject json) throws IOException {
+        resp.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = resp.getWriter();
+        out.print(gson.toJson(json));
     }
-    
-    /**
-     * Đặt địa chỉ mặc định
-     */
-    private void setDefaultAddress(HttpServletRequest request, HttpServletResponse response, User user)
-            throws IOException {
-        PrintWriter out = response.getWriter();
-        JsonObject jsonResponse = new JsonObject();
-        
-        try {
-            String pathInfo = request.getPathInfo();
-            int addressId = Integer.parseInt(pathInfo.substring("/set-default/".length()));
-            
-            // Kiểm tra quyền
-            Address address = addressDAO.findById(addressId);
-            if (address == null) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không tìm thấy địa chỉ");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            if (address.getUserId() != user.getId()) {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Bạn không có quyền thao tác địa chỉ này");
-                out.print(gson.toJson(jsonResponse));
-                return;
-            }
-            
-            boolean success = addressDAO.setDefault(addressId, user.getId());
-            
-            if (success) {
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Đã đặt làm địa chỉ mặc định");
-            } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không thể đặt địa chỉ mặc định");
-            }
-        } catch (NumberFormatException e) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "ID địa chỉ không hợp lệ");
-        }
-        
-        out.print(gson.toJson(jsonResponse));
-    }
-    
-    private void sendJsonError(HttpServletResponse response, String message) throws IOException {
-        response.setContentType("application/json; charset=UTF-8");
-        PrintWriter out = response.getWriter();
+
+    private void writeError(HttpServletResponse resp, String msg) throws IOException {
         JsonObject json = new JsonObject();
         json.addProperty("success", false);
-        json.addProperty("message", message);
-        out.print(gson.toJson(json));
+        json.addProperty("message", msg);
+        writeJson(resp, json);
     }
 }

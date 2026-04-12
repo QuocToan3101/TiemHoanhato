@@ -59,8 +59,7 @@ public class CSRFFilter implements Filter {
             "PATCH".equalsIgnoreCase(method)) {
             
             // Bỏ qua một số path không cần CSRF (login, register, OAuth)
-            String path = httpRequest.getRequestURI();
-            if (shouldSkipCSRFCheck(path)) {
+            if (shouldSkipCSRFCheck(httpRequest)) {
                 chain.doFilter(request, response);
                 return;
             }
@@ -99,12 +98,18 @@ public class CSRFFilter implements Filter {
     /**
      * Kiểm tra xem path có cần skip CSRF check không
      */
-    private boolean shouldSkipCSRFCheck(String path) {
-        return path.contains("/login") || 
-               path.contains("/register") ||
-               path.contains("/verify-email") ||
-               path.contains("/oauth/") ||
-               path.contains("/reset-password") ||
-               path.contains("/forgot-password");
+    private boolean shouldSkipCSRFCheck(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String context = request.getContextPath();
+        if (context != null && !context.isEmpty() && uri.startsWith(context)) {
+            uri = uri.substring(context.length());
+        }
+
+        return uri.equals("/login") ||
+               uri.equals("/register") ||
+               uri.equals("/verify-email") ||
+               uri.startsWith("/oauth/") ||
+               uri.equals("/reset-password") ||
+               uri.equals("/forgot-password");
     }
 }
