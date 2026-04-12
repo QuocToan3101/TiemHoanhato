@@ -1573,15 +1573,7 @@
         // Load more functionality
 
         loadMoreBtn.addEventListener("click", function () {
-          this.textContent = "Đang tải...";
-
-          this.disabled = true;
-
-          setTimeout(() => {
-            alert("Đã hiển thị tất cả bài viết!");
-
-            this.textContent = "Đã tải hết";
-          }, 1000);
+          loadMoreNews();
         });
 
         // Initial binding for existing cards
@@ -1652,7 +1644,9 @@
           
           if (result.success && Array.isArray(result.data) && result.data.length > 0) {
             const newsGrid = document.getElementById('newsGrid');
-            newsGrid.innerHTML = '';
+            if (!append) {
+              newsGrid.innerHTML = '';
+            }
             
             result.data.forEach(news => {
               const title = escapeHtml(news.title || 'Bài viết');
@@ -1685,10 +1679,58 @@
             
             // Re-attach filter events with fresh nodes
             attachFilterEvents();
+          } else if (!append) {
+            // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
           }
         } catch (error) {
           console.error('Error loading news:', error);
         }
+      }
+
+      function buildNewsCard(news) {
+        const title = escapeHtml(news.title || 'Bài viết');
+        const excerpt = escapeHtml(news.excerpt || '');
+        const category = escapeHtml(getCategoryName(news.category));
+        const imageUrl = safeImageUrl(news.imageUrl);
+        const formattedDate = formatPublishedDate(news.publishedDate);
+        const slugPath = news.slug ? '/news/' + safeSlug(news.slug) : '/news';
+
+        const article = document.createElement('article');
+        article.className = 'news-card';
+        article.setAttribute('data-category', news.category || 'all');
+        article.style.animation = 'fadeInUp 0.6s ease-out';
+        
+        article.innerHTML = '<div class="news-image-wrapper">' +
+          '<img class="news-thumb" src="' + imageUrl + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
+          '<div class="news-overlay"></div>' +
+          '</div>' +
+          '<div class="news-content">' +
+            '<div class="news-meta">' +
+              '<span class="news-category">' + category + '</span>' +
+              '<span class="news-date">' + formattedDate + '</span>' +
+            '</div>' +
+            '<h2 class="news-heading">' + title + '</h2>' +
+            '<p class="news-excerpt">' + excerpt + '</p>' +
+            '<a href="' + contextPath + slugPath + '" class="news-link">Xem chi tiết</a>' +
+          '</div>';
+        
+        return article;
+      }
+
+      async function loadMoreNews() {
+        if (isLoadingMore) return;
+        isLoadingMore = true;
+
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const originalText = loadMoreBtn.textContent;
+        loadMoreBtn.textContent = 'Đang tải...';
+        loadMoreBtn.disabled = true;
+
+        currentPage += 1;
+        await loadNewsFromDB(currentPage, true);
+
+        isLoadingMore = false;
+        // Nút sẽ được bật lại bên trong loadNewsFromDB nếu còn dữ liệu
       }
       
       function getCategoryName(category) {
