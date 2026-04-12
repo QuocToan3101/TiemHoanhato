@@ -2,8 +2,10 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import dao.CategoryDAO;
 import dao.ProductDAO;
@@ -31,6 +34,7 @@ public class ProductServlet extends HttpServlet {
     private Gson gson;
     
     private static final int PRODUCTS_PER_PAGE = 12;
+    private static final String PRODUCT_PLACEHOLDER_IMAGE = "https://via.placeholder.com/500x450?text=No+Image";
     
     @Override
     public void init() throws ServletException {
@@ -377,15 +381,65 @@ public class ProductServlet extends HttpServlet {
         
         // Lấy danh mục cho breadcrumb
         List<Category> categories = categoryDAO.findAll();
+
+        // Chuẩn hóa danh sách ảnh để render thumbnail trong JSP
+        List<String> productImages = buildProductImageList(product);
         
         // Set attributes
         request.setAttribute("product", product);
         request.setAttribute("category", category);
         request.setAttribute("relatedProducts", relatedProducts);
         request.setAttribute("categories", categories);
+        request.setAttribute("productImages", productImages);
         request.setAttribute("pageTitle", product.getName());
         
         request.getRequestDispatcher("/view/product-detail.jsp").forward(request, response);
+    }
+
+    private List<String> buildProductImageList(Product product) {
+        LinkedHashSet<String> uniqueImages = new LinkedHashSet<>();
+
+        if (product == null) {
+            uniqueImages.add(PRODUCT_PLACEHOLDER_IMAGE);
+            return new ArrayList<>(uniqueImages);
+        }
+
+        addImageIfValid(uniqueImages, product.getImage());
+
+        String imagesJson = product.getImages();
+        if (imagesJson != null && !imagesJson.trim().isEmpty()) {
+            try {
+                Type listType = new TypeToken<List<String>>() {}.getType();
+                List<String> parsedImages = gson.fromJson(imagesJson, listType);
+                if (parsedImages != null) {
+                    for (String imageUrl : parsedImages) {
+                        addImageIfValid(uniqueImages, imageUrl);
+                    }
+                }
+            } catch (RuntimeException ignored) {
+                // Fallback cho dữ liệu cũ lưu dạng chuỗi phân tách bằng dấu phẩy
+                String[] imageParts = imagesJson.split(",");
+                for (String imagePart : imageParts) {
+                    addImageIfValid(uniqueImages, imagePart);
+                }
+            }
+        }
+
+        if (uniqueImages.isEmpty()) {
+            uniqueImages.add(PRODUCT_PLACEHOLDER_IMAGE);
+        }
+
+        return new ArrayList<>(uniqueImages);
+    }
+
+    private void addImageIfValid(LinkedHashSet<String> imageSet, String imageUrl) {
+        if (imageUrl == null) {
+            return;
+        }
+        String trimmed = imageUrl.trim();
+        if (!trimmed.isEmpty()) {
+            imageSet.add(trimmed);
+        }
     }
     
     /**

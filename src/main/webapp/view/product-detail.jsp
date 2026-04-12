@@ -918,6 +918,8 @@
 <body id="wandave-theme" class="index">
     <!-- HEADER -->
     <%@ include file="partials/header.jsp" %>
+    <c:set var="fallbackImage" value="https://via.placeholder.com/500x450?text=No+Image" />
+    <c:set var="primaryImage" value="${not empty productImages ? productImages[0] : (product.image != null ? product.image : fallbackImage)}" />
     
     <main>
         <div class="page-wrapper">
@@ -927,9 +929,9 @@
                 <div class="product-gallery">
                     <div class="main-image-container">
                         <img id="mainImage" class="main-image" 
-                             src="${product.image != null ? product.image : 'https://via.placeholder.com/500x450?text=No+Image'}" 
+                             src="${primaryImage}" 
                              alt="${product.name}"
-                             onerror="this.src='https://via.placeholder.com/500x450?text=No+Image'" />
+                             onerror="this.src='${fallbackImage}'" />
                         
                         <c:if test="${product.featured}">
                             <span class="image-badge">Best Seller</span>
@@ -944,10 +946,16 @@
                     </div>
                     
                     <!-- Thumbnail images -->
-                    <c:if test="${product.images != null && not empty product.images}">
+                    <c:if test="${not empty productImages}">
                         <div class="thumbnail-list">
-                            <img class="thumbnail active" src="${product.image}" alt="Main" onclick="changeImage(this, '${product.image}')" />
-                            <!-- More thumbnails would be loaded from product.images JSON -->
+                            <c:forEach var="imageUrl" items="${productImages}" varStatus="status">
+                                <img class="thumbnail ${status.first ? 'active' : ''}"
+                                     src="${imageUrl}"
+                                     data-image-src="${imageUrl}"
+                                     alt="${product.name} - ảnh ${status.index + 1}"
+                                     onclick="changeImage(this, this.dataset.imageSrc)"
+                                     onerror="this.src='${fallbackImage}'; this.dataset.imageSrc='${fallbackImage}';" />
+                            </c:forEach>
                         </div>
                     </c:if>
                 </div>
