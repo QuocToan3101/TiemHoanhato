@@ -61,6 +61,10 @@ public class EmailService {
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.starttls.required", "true");
             props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+            props.put("mail.smtp.ssl.trust", config.getEmailHost());
+            props.put("mail.smtp.connectiontimeout", "10000");
+            props.put("mail.smtp.timeout", "10000");
+            props.put("mail.smtp.writetimeout", "10000");
             
             // Tạo session với authentication
             Session session = Session.getInstance(props, new Authenticator() {
@@ -123,7 +127,8 @@ public class EmailService {
             return true;
             
         } catch (Exception e) {
-            System.err.println("Lỗi khi gửi email: " + e.getMessage());
+            System.err.println("Lỗi khi gửi email tới " + toEmail + ": " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

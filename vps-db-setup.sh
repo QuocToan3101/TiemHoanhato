@@ -34,8 +34,11 @@ systemctl start mysql || true
 
 mysql -e "CREATE DATABASE IF NOT EXISTS flowerStore CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 mysql -e "CREATE USER IF NOT EXISTS 'FlowerStore'@'localhost' IDENTIFIED BY '12345';"
+mysql -e "CREATE USER IF NOT EXISTS 'FlowerStore'@'127.0.0.1' IDENTIFIED BY '12345';"
 mysql -e "ALTER USER 'FlowerStore'@'localhost' IDENTIFIED BY '12345';"
+mysql -e "ALTER USER 'FlowerStore'@'127.0.0.1' IDENTIFIED BY '12345';"
 mysql -e "GRANT ALL PRIVILEGES ON flowerStore.* TO 'FlowerStore'@'localhost'; FLUSH PRIVILEGES;"
+mysql -e "GRANT ALL PRIVILEGES ON flowerStore.* TO 'FlowerStore'@'127.0.0.1'; FLUSH PRIVILEGES;"
 
 mysql flowerStore < /tmp/database.sql
 

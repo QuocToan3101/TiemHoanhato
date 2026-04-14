@@ -31,13 +31,59 @@ public class GoogleOAuthServlet extends HttpServlet {
 
     private static final String STATE_SESSION_KEY = "oauth_google_state";
 
+    private static final String CALLBACK_PATH = "/oauth/google/callback";
+
     private String getRedirectUri(HttpServletRequest request) {
+        AppConfig config = AppConfig.getInstance();
+
+        String configuredRedirect = normalizeConfigValue(firstNonBlank(
+                System.getenv("GOOGLE_REDIRECT_URI"),
+                System.getProperty("GOOGLE_REDIRECT_URI")
+        ));
+
+        if (configuredRedirect != null) {
+            return configuredRedirect;
+        }
+
+        String forwardedProto = firstForwardedValue(request.getHeader("X-Forwarded-Proto"));
+        String forwardedHost = firstForwardedValue(request.getHeader("X-Forwarded-Host"));
+        String forwardedPort = firstForwardedValue(request.getHeader("X-Forwarded-Port"));
+
+        String scheme = (forwardedProto != null) ? forwardedProto : request.getScheme();
+        String hostHeader = (forwardedHost != null) ? forwardedHost : request.getHeader("Host");
+
+        String host = request.getServerName();
         int port = request.getServerPort();
-        String scheme = request.getScheme();
-        boolean isDefaultPort = ("http".equals(scheme) && port == 80) || ("https".equals(scheme) && port == 443);
-        return scheme + "://" + request.getServerName()
-                + (isDefaultPort ? "" : ":" + port)
-                + request.getContextPath() + "/oauth/google/callback";
+
+        if (hostHeader != null && !hostHeader.trim().isEmpty()) {
+            String normalizedHostHeader = hostHeader.trim();
+            if (normalizedHostHeader.contains(":")) {
+                String[] hostPortParts = normalizedHostHeader.split(":", 2);
+                host = hostPortParts[0].trim();
+                if (hostPortParts.length > 1) {
+                    try {
+                        port = Integer.parseInt(hostPortParts[1].trim());
+                    } catch (NumberFormatException ignored) {
+                        // Keep current port.
+                    }
+                }
+            } else {
+                host = normalizedHostHeader;
+            }
+        }
+
+        if (forwardedPort != null) {
+            try {
+                port = Integer.parseInt(forwardedPort);
+            } catch (NumberFormatException ignored) {
+                // Keep current port.
+            }
+        }
+
+        boolean isDefaultPort = ("http".equalsIgnoreCase(scheme) && port == 80)
+                || ("https".equalsIgnoreCase(scheme) && port == 443);
+        return scheme + "://" + host + (isDefaultPort ? "" : ":" + port)
+                + request.getContextPath() + CALLBACK_PATH;
     }
     
     @Override
@@ -247,6 +293,56 @@ public class GoogleOAuthServlet extends HttpServlet {
             return null;
         }
         return trimmed;
+    }
+
+    private String firstForwardedValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        String[] parts = value.split(",");
+        if (parts.length == 0) {
+            return null;
+        }
+        String first = parts[0].trim();
+        return first.isEmpty() ? null : first;
+    }
+
+    private String stripTrailingSlash(String value) {
+        if (value == null) {
+            return null;
+        }
+        if (value.endsWith("/")) {
+            return value.substring(0, value.length() - 1);
+        }
+        return value;
+    }
+
+    private boolean shouldUseConfiguredBaseUrl(String appUrl, HttpServletRequest request) {
+        try {
+            java.net.URI uri = new java.net.URI(appUrl);
+            String configuredHost = uri.getHost();
+            if (configuredHost == null || configuredHost.trim().isEmpty()) {
+                return false;
+            }
+
+            String requestHost = request.getServerName();
+            if (isLocalAddress(configuredHost) && !isLocalAddress(requestHost)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isLocalAddress(String host) {
+        if (host == null) {
+            return true;
+        }
+        String normalized = host.trim().toLowerCase();
+        return normalized.equals("localhost")
+                || normalized.equals("127.0.0.1")
+                || normalized.equals("::1");
     }
 
     private String generateStateToken(HttpServletRequest request) {

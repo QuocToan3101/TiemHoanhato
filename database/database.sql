@@ -14,6 +14,9 @@ COLLATE utf8mb4_unicode_ci;
 
 USE flowerStore;
 
+-- Tắt kiểm tra khóa ngoại khi reset schema để tránh lỗi drop table theo thứ tự.
+SET FOREIGN_KEY_CHECKS = 0;
+
 -- Bảng Users (với email verification)
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
@@ -255,6 +258,8 @@ CREATE TABLE password_reset_tokens (
 -- =====================================================
 -- PHẦN 2: THÊM DỮ LIỆU MẪU
 -- =====================================================
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. USERS
 -- Admin: admin@gmail.com / admin123

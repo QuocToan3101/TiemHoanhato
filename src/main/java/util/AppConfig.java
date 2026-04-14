@@ -45,6 +45,52 @@ public class AppConfig {
     public String getProperty(String key, String defaultValue) {
         return properties.getProperty(key, defaultValue);
     }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value.trim();
+            }
+        }
+        return null;
+    }
+
+    private boolean isPlaceholder(String value) {
+        if (value == null) {
+            return true;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return true;
+        }
+        return trimmed.startsWith("CHANGE_ME")
+                || trimmed.startsWith("YOUR_")
+                || trimmed.equalsIgnoreCase("your_client_id_here")
+                || trimmed.equalsIgnoreCase("your_client_secret_here");
+    }
+
+    private String getSecretWithEnvFallback(String propertyKey, String... envKeys) {
+        String envValue = null;
+        if (envKeys != null) {
+            for (String envKey : envKeys) {
+                envValue = firstNonBlank(envValue, System.getenv(envKey), System.getProperty(envKey));
+            }
+        }
+
+        if (!isPlaceholder(envValue)) {
+            return envValue;
+        }
+
+        String propertyValue = getProperty(propertyKey);
+        if (!isPlaceholder(propertyValue)) {
+            return propertyValue.trim();
+        }
+
+        return propertyValue;
+    }
     
     public boolean getBooleanProperty(String key, boolean defaultValue) {
         String value = properties.getProperty(key);
@@ -81,31 +127,69 @@ public class AppConfig {
     
     // Email Configuration
     public String getEmailHost() {
-        return getProperty("email.smtp.host");
+        return firstNonBlank(
+                System.getenv("EMAIL_SMTP_HOST"),
+                System.getProperty("EMAIL_SMTP_HOST"),
+                getProperty("email.smtp.host")
+        );
     }
     
     public int getEmailPort() {
+        String envPort = firstNonBlank(
+                System.getenv("EMAIL_SMTP_PORT"),
+                System.getProperty("EMAIL_SMTP_PORT")
+        );
+        if (envPort != null) {
+            try {
+                return Integer.parseInt(envPort);
+            } catch (NumberFormatException ignored) {
+                // Fallback to properties/default below.
+            }
+        }
         return getIntProperty("email.smtp.port", 587);
     }
     
     public String getEmailUsername() {
-        return getProperty("email.username");
+        return firstNonBlank(
+                System.getenv("EMAIL_USERNAME"),
+                System.getProperty("EMAIL_USERNAME"),
+                System.getenv("SMTP_USERNAME"),
+                System.getProperty("SMTP_USERNAME"),
+                getProperty("email.username")
+        );
     }
     
     public String getEmailPassword() {
-        return getProperty("email.password");
+        return getSecretWithEnvFallback(
+                "email.password",
+                "EMAIL_PASSWORD",
+                "SMTP_PASSWORD",
+                "GMAIL_APP_PASSWORD"
+        );
     }
     
     public String getEmailFromName() {
-        return getProperty("email.from.name");
+        return firstNonBlank(
+                System.getenv("EMAIL_FROM_NAME"),
+                System.getProperty("EMAIL_FROM_NAME"),
+                getProperty("email.from.name")
+        );
     }
     
     public String getEmailFromAddress() {
-        return getProperty("email.from.address");
+        return firstNonBlank(
+                System.getenv("EMAIL_FROM_ADDRESS"),
+                System.getProperty("EMAIL_FROM_ADDRESS"),
+                getProperty("email.from.address")
+        );
     }
     
     public String getEmailAdminAddress() {
-        return getProperty("email.admin.address", getEmailFromAddress());
+        return firstNonBlank(
+                System.getenv("EMAIL_ADMIN_ADDRESS"),
+                System.getProperty("EMAIL_ADMIN_ADDRESS"),
+                getProperty("email.admin.address", getEmailFromAddress())
+        );
     }
     
     // VNPay Configuration
@@ -164,7 +248,11 @@ public class AppConfig {
     }
     
     public String getAppUrl() {
-        return getProperty("app.url");
+        return firstNonBlank(
+                System.getenv("APP_URL"),
+                System.getProperty("APP_URL"),
+                getProperty("app.url")
+        );
     }
     
     // Gemini AI Configuration
