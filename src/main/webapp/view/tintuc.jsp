@@ -80,21 +80,7 @@
 
     <!-- Shop CSS Variables -->
 
-    <!-- <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-          "gtm.start": new Date().getTime(),
-          event: "gtm.js",
-        });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != "dataLayer" ? "&l=" + l : "";
-        j.async = true;
-        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
-    </script> -->
+
 
     <style>
       :root {
@@ -242,24 +228,6 @@
       }
 
       .news-hero p {
-      
-        /* content: "";
-
-        position: absolute;
-
-        bottom: -30%;
-
-        left: -5%;
-
-        width: 400px;
-
-        height: 400px;
-
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.08) 0%,
-          transparent 70%
-        ); */
         font-size: 1.25rem;
 
         opacity: 0.95;
@@ -270,7 +238,7 @@
       /* Search & Filter Section */
     
       .search-filter-section {
-        background: #ff0000;
+        background: #ffffff;
 
         padding: 2rem;
 
@@ -296,21 +264,6 @@
       }
 
       .search-input {
-        /* background: #ff0000;
-
-        padding: 2rem;
-
-        margin: -3rem auto 3rem;
-
-        max-width: 1200px;
-
-        border-radius: 20px;
-
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-
-        position: relative;
-
-        z-index: 10; */
         flex: 1;
 
         padding: 1rem 1.5rem;
@@ -343,7 +296,7 @@
 
         background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        color: #04a65d;
+        color: #ffffff;
 
         border: none;
 
@@ -376,7 +329,7 @@
 
         border-radius: 50px;
 
-        background: #54827f;
+        background: #f0e8df;
 
         border: 2px solid transparent;
 
@@ -399,21 +352,6 @@
       }
 
       .filter-label {
-        /* background: #ff0000;
-
-        padding: 2rem;
-
-        margin: -3rem auto 3rem;
-
-        max-width: 1200px;
-
-        border-radius: 20px;
-
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-
-        position: relative;
-
-        z-index: 10; */
         font-weight: 600;
 
         color: var(--brown-soft);
@@ -436,7 +374,7 @@
       .chip.active {
         background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        color: #52d76a;
+        color: #ffffff;
 
         box-shadow: 0 4px 12px rgba(201, 147, 102, 0.3);
       }
@@ -451,15 +389,6 @@
         padding: 0 2rem 4rem;
       }
 
-      /* .search-btn:hover {
-        transform: translateY(-2px);
-
-        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
-      }
-
-      .search-btn:active {
-        transform: translateY(0);
-      } */
       .news-layout {
         display: grid;
 
@@ -470,7 +399,7 @@
 
       /* News Grid */
       .news-card {
-        background: #2cb7d9;
+        background: #ffffff;
 
         border-radius: 20px;
 
@@ -478,7 +407,7 @@
 
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 
-        border: 1px solid rgba(27, 240, 165, 0.2);
+        border: 1px solid rgba(210, 180, 160, 0.2);
 
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -746,7 +675,7 @@
       .recent-post-item {
         padding: 1rem 0;
 
-        border-bottom: 1px solid #764915;
+        border-bottom: 1px solid rgba(210, 180, 160, 0.3);
 
         transition: all 0.3s ease;
 
@@ -760,21 +689,6 @@
       .recent-post-item:hover {
         padding-left: 0.75rem;
       }
-      /* .sidebar-title {
-        font-size: 1.35rem;
-
-        font-weight: 700;
-
-        margin-bottom: 1.25rem;
-
-        color: var(--brown-main);
-
-        display: flex;
-
-        align-items: center;
-
-        gap: 0.5rem;
-      } */
       .recent-post-title {
         color: var(--brown-main);
 
@@ -815,13 +729,70 @@
         border-left: 4px solid var(--accent);
       }
 
-      /* .recent-post-date {
-        font-size: 0.8rem;
+      /* Search empty state */
+      
+      .search-empty-state {
+        display: none;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 4rem 2rem;
+
+        text-align: center;
+
+        grid-column: 1 / -1;
+      }
+
+      .search-empty-state.visible {
+        display: flex;
+      }
+
+      .search-empty-icon {
+        font-size: 3rem;
+
+        margin-bottom: 1rem;
+
+        opacity: 0.4;
+      }
+
+      .search-empty-title {
+        font-size: 1.25rem;
+
+        font-weight: 700;
+
+        color: var(--brown-main);
+
+        margin-bottom: 0.5rem;
+      }
+
+      .search-empty-desc {
+        font-size: 0.95rem;
 
         color: var(--brown-soft);
 
+        line-height: 1.6;
+      }
+
+      .search-empty-keyword {
         font-style: italic;
-      } */
+
+        color: var(--accent-dark);
+      }
+
+      /* Sidebar recent post link */
+
+      .recent-post-item[data-href]:hover .recent-post-title {
+        color: var(--accent-dark);
+
+        text-decoration: underline;
+
+        text-underline-offset: 3px;
+      }
+
       /* Load More Button */
 
       .load-more-section {
@@ -835,7 +806,7 @@
       .load-more-btn {
         padding: 1rem 3rem;
 
-        background: #afc672;
+        background: transparent;
 
         color: var(--accent-dark);
 
@@ -857,7 +828,7 @@
       .load-more-btn:hover {
         background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        color: #51d4a6;
+        color: #ffffff;
 
         transform: translateY(-3px);
 
@@ -1144,6 +1115,17 @@
 
           <div>
             <section class="news-grid" id="newsGrid">
+              <!-- Empty state (hiển thị khi search không có kết quả) -->
+              <div class="search-empty-state" id="searchEmptyState">
+                <div class="search-empty-icon">🌸</div>
+                <div class="search-empty-title">Không tìm thấy bài viết nào</div>
+                <div class="search-empty-desc">
+                  Không có kết quả cho từ khóa
+                  <span class="search-empty-keyword" id="searchEmptyKeyword"></span>.<br/>
+                  Hãy thử từ khóa khác hoặc xem tất cả bài viết.
+                </div>
+              </div>
+
               <!-- Article 1 -->
 
               <article class="news-card" data-category="tips">
@@ -1392,7 +1374,7 @@
               <h3 class="sidebar-title">Tin mới nhất</h3>
 
               <ul class="recent-posts">
-                <li class="recent-post-item">
+                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/hoa-pastel-mua-cuoi-nam">
                   <div class="recent-post-title">
                     Hoa pastel cho mùa cuối năm
                   </div>
@@ -1400,7 +1382,7 @@
                   <div class="recent-post-date">09/11/2025</div>
                 </li>
 
-                <li class="recent-post-item">
+                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/5-mau-bo-hoa-an-toan">
                   <div class="recent-post-title">
                     5 mẫu bó hoa "an toàn" nhưng không nhàm chán
                   </div>
@@ -1408,15 +1390,15 @@
                   <div class="recent-post-date">03/11/2025</div>
                 </li>
 
-                <li class="recent-post-item">
+                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/chon-hoa-theo-cung-hoang-dao">
                   <div class="recent-post-title">
-                    Chọn hoa theo cung hoàng đạo – bạn đã thá»­ chưa?
+                    Chọn hoa theo cung hoàng đạo – bạn đã thử chưa?
                   </div>
 
                   <div class="recent-post-date">27/10/2025</div>
                 </li>
 
-                <li class="recent-post-item">
+                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/bi-mat-bo-hoa-trieu-view">
                   <div class="recent-post-title">
                     Bí mật của những bó hoa "triệu view"
                   </div>
@@ -1585,6 +1567,7 @@
           const searchTerm = searchInput.value.toLowerCase().trim();
 
           if (searchTerm === "") {
+            document.getElementById("searchEmptyState").classList.remove("visible");
             getNewsCards().forEach((card) => {
               card.style.display = "flex";
             });
@@ -1614,12 +1597,15 @@
             }
           });
 
+          const searchEmptyState = document.getElementById("searchEmptyState");
+          const searchEmptyKeyword = document.getElementById("searchEmptyKeyword");
+
           if (foundCount === 0) {
-            alert(
-              'Không tìm thấy bài viết phù hợp với từ khóa: "' +
-                searchTerm +
-                '"'
-            );
+            searchEmptyState.classList.add("visible");
+            searchEmptyKeyword.textContent = '"' + searchTerm + '"';
+          } else {
+            searchEmptyState.classList.remove("visible");
+            searchEmptyKeyword.textContent = "";
           }
         }
 
@@ -1634,29 +1620,21 @@
         // Load more functionality
 
         loadMoreBtn.addEventListener("click", function () {
-          this.textContent = "Đang tải...";
-
-          this.disabled = true;
-
-          setTimeout(() => {
-            alert("Đã hiển thị tất cả bài viết!");
-
-            this.textContent = "Đã tải hết";
-          }, 1000);
+          loadMoreNews();
         });
 
         // Initial binding for existing cards
         attachFilterEvents();
 
         // Recent posts click
-
         const recentPosts = document.querySelectorAll(".recent-post-item");
 
         recentPosts.forEach((post) => {
           post.addEventListener("click", function () {
-            const title = this.querySelector(".recent-post-title").textContent;
-
-            alert("Đang chuyển đến bài viết: " + title);
+            const href = this.getAttribute("data-href");
+            if (href && href !== "#") {
+              window.location.href = href;
+            }
           });
         });
         
@@ -1678,6 +1656,9 @@
       
       // Load news function
       const contextPath = '${pageContext.request.contextPath}';
+      const PAGE_SIZE = 9;
+      let currentPage = 1;
+      let isLoadingMore = false;
 
       function escapeHtml(value) {
         return String(value == null ? '' : value)
@@ -1706,50 +1687,89 @@
         return date && !isNaN(date) ? date.toLocaleDateString('vi-VN') : '';
       }
 
-      async function loadNewsFromDB() {
+      async function loadNewsFromDB(page, append) {
+        page = page || 1;
+        append = append || false;
         try {
-          const response = await fetch(contextPath + '/api/news/list', { headers: { 'Accept': 'application/json' } });
+          const url = contextPath + '/api/news/list?page=' + page + '&pageSize=' + PAGE_SIZE;
+          const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
           const result = await response.json();
           
           if (result.success && Array.isArray(result.data) && result.data.length > 0) {
             const newsGrid = document.getElementById('newsGrid');
-            newsGrid.innerHTML = '';
+            if (!append) {
+              newsGrid.innerHTML = '';
+            }
             
             result.data.forEach(news => {
-              const title = escapeHtml(news.title || 'Bài viết');
-              const excerpt = escapeHtml(news.excerpt || '');
-              const category = escapeHtml(getCategoryName(news.category));
-              const imageUrl = safeImageUrl(news.imageUrl);
-              const formattedDate = formatPublishedDate(news.publishedDate);
-              const slugPath = news.slug ? '/news/' + safeSlug(news.slug) : '/news';
-
-              const article = document.createElement('article');
-              article.className = 'news-card';
-              article.setAttribute('data-category', news.category || 'all');
-              
-              article.innerHTML = '<div class="news-image-wrapper">' +
-                '<img class="news-thumb" src="' + imageUrl + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
-                '<div class="news-overlay"></div>' +
-                '</div>' +
-                '<div class="news-content">' +
-                  '<div class="news-meta">' +
-                    '<span class="news-category">' + category + '</span>' +
-                    '<span class="news-date">' + formattedDate + '</span>' +
-                  '</div>' +
-                  '<h2 class="news-heading">' + title + '</h2>' +
-                  '<p class="news-excerpt">' + excerpt + '</p>' +
-                  '<a href="' + contextPath + slugPath + '" class="news-link">Xem chi tiết</a>' +
-                '</div>';
-              
-              newsGrid.appendChild(article);
+              newsGrid.appendChild(buildNewsCard(news));
             });
             
+            // Ẩn nút if hết dữ liệu (ít hơn PAGE_SIZE hoặc ở server có báo hasMore=false)
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const hasMore = result.hasMore !== undefined ? result.hasMore : (result.data.length === PAGE_SIZE);
+            if (!hasMore) {
+              loadMoreBtn.textContent = 'Đã hiển thị tất cả';
+              loadMoreBtn.disabled = true;
+            } else {
+              loadMoreBtn.textContent = 'Xem thêm bài viết';
+              loadMoreBtn.disabled = false;
+            }
+
             // Re-attach filter events with fresh nodes
             attachFilterEvents();
+          } else if (!append) {
+            // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
           }
         } catch (error) {
           console.error('Error loading news:', error);
         }
+      }
+
+      function buildNewsCard(news) {
+        const title = escapeHtml(news.title || 'Bài viết');
+        const excerpt = escapeHtml(news.excerpt || '');
+        const category = escapeHtml(getCategoryName(news.category));
+        const imageUrl = safeImageUrl(news.imageUrl);
+        const formattedDate = formatPublishedDate(news.publishedDate);
+        const slugPath = news.slug ? '/news/' + safeSlug(news.slug) : '/news';
+
+        const article = document.createElement('article');
+        article.className = 'news-card';
+        article.setAttribute('data-category', news.category || 'all');
+        article.style.animation = 'fadeInUp 0.6s ease-out';
+        
+        article.innerHTML = '<div class="news-image-wrapper">' +
+          '<img class="news-thumb" src="' + imageUrl + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
+          '<div class="news-overlay"></div>' +
+          '</div>' +
+          '<div class="news-content">' +
+            '<div class="news-meta">' +
+              '<span class="news-category">' + category + '</span>' +
+              '<span class="news-date">' + formattedDate + '</span>' +
+            '</div>' +
+            '<h2 class="news-heading">' + title + '</h2>' +
+            '<p class="news-excerpt">' + excerpt + '</p>' +
+            '<a href="' + contextPath + slugPath + '" class="news-link">Xem chi tiết</a>' +
+          '</div>';
+        
+        return article;
+      }
+
+      async function loadMoreNews() {
+        if (isLoadingMore) return;
+        isLoadingMore = true;
+
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const originalText = loadMoreBtn.textContent;
+        loadMoreBtn.textContent = 'Đang tải...';
+        loadMoreBtn.disabled = true;
+
+        currentPage += 1;
+        await loadNewsFromDB(currentPage, true);
+
+        isLoadingMore = false;
+        // Nút sẽ được bật lại bên trong loadNewsFromDB nếu còn dữ liệu
       }
       
       function getCategoryName(category) {
