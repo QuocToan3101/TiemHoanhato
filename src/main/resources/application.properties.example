@@ -54,3 +54,8 @@ session.timeout=3600
 
 # Security
 password.reset.token.expiry=3600000
+
+# Google OAuth Configuration
+# Có thể dùng env vars GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET thay cho 2 dòng dưới.
+google.oauth.client.id=YOUR_GOOGLE_CLIENT_ID_HERE
+google.oauth.client.secret=YOUR_GOOGLE_CLIENT_SECRET_HERE

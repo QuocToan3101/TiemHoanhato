@@ -24,12 +24,11 @@ import com.google.gson.JsonObject;
 
 import dao.UserDAO;
 import model.User;
+import util.AppConfig;
 
 @WebServlet(urlPatterns = {"/oauth/google", "/oauth/google/callback"})
 public class GoogleOAuthServlet extends HttpServlet {
-    
-    private static final String CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID");
-    private static final String CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET");
+
     private static final String STATE_SESSION_KEY = "oauth_google_state";
 
     private String getRedirectUri(HttpServletRequest request) {
@@ -58,9 +57,11 @@ public class GoogleOAuthServlet extends HttpServlet {
     
     private void initiateGoogleLogin(HttpServletRequest request, HttpServletResponse response) 
             throws IOException, ServletException {
+        String clientId = getClientId();
+        String clientSecret = getClientSecret();
         
         // Kiểm tra nếu chưa cấu hình OAuth
-        if (!isConfigured()) {
+        if (!isConfigured(clientId, clientSecret)) {
             request.setAttribute("error", "🔑 Đăng nhập bằng Google chưa được cấu hình. Vui lòng xem file OAUTH_SETUP.md để cấu hình.");
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
             return;
@@ -70,7 +71,7 @@ public class GoogleOAuthServlet extends HttpServlet {
         String redirectUri = getRedirectUri(request);
         String state = generateStateToken(request);
         String googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-                + "?client_id=" + CLIENT_ID
+            + "?client_id=" + clientId
                 + "&redirect_uri=" + java.net.URLEncoder.encode(redirectUri, "UTF-8")
                 + "&response_type=code"
                 + "&scope=openid%20email%20profile"
@@ -83,11 +84,19 @@ public class GoogleOAuthServlet extends HttpServlet {
     
     private void handleGoogleCallback(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        String clientId = getClientId();
+        String clientSecret = getClientSecret();
         
         String code = request.getParameter("code");
         String error = request.getParameter("error");
         String state = request.getParameter("state");
         HttpSession session = request.getSession(false);
+
+        if (!isConfigured(clientId, clientSecret)) {
+            request.setAttribute("error", "Đăng nhập Google chưa được cấu hình đầy đủ.");
+            request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
+            return;
+        }
         
         if (error != null) {
             // User từ chối hoặc có lỗi
@@ -114,8 +123,8 @@ public class GoogleOAuthServlet extends HttpServlet {
                     new NetHttpTransport(),
                     GsonFactory.getDefaultInstance(),
                     "https://oauth2.googleapis.com/token",
-                    CLIENT_ID,
-                    CLIENT_SECRET,
+                    clientId,
+                    clientSecret,
                     code,
                     getRedirectUri(request)
             ).execute();
@@ -186,8 +195,58 @@ public class GoogleOAuthServlet extends HttpServlet {
         }
     }
 
-    private boolean isConfigured() {
-        return CLIENT_ID != null && !CLIENT_ID.isEmpty() && CLIENT_SECRET != null && !CLIENT_SECRET.isEmpty();
+    private String getClientId() {
+        AppConfig config = AppConfig.getInstance();
+        String value = firstNonBlank(
+                System.getenv("GOOGLE_CLIENT_ID"),
+                System.getProperty("GOOGLE_CLIENT_ID"),
+                config.getProperty("google.oauth.client.id"),
+                config.getProperty("google.client.id")
+        );
+        return normalizeConfigValue(value);
+    }
+
+    private String getClientSecret() {
+        AppConfig config = AppConfig.getInstance();
+        String value = firstNonBlank(
+                System.getenv("GOOGLE_CLIENT_SECRET"),
+                System.getProperty("GOOGLE_CLIENT_SECRET"),
+                config.getProperty("google.oauth.client.secret"),
+                config.getProperty("google.client.secret")
+        );
+        return normalizeConfigValue(value);
+    }
+
+    private boolean isConfigured(String clientId, String clientSecret) {
+        return clientId != null && !clientId.isEmpty() && clientSecret != null && !clientSecret.isEmpty();
+    }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value.trim();
+            }
+        }
+        return null;
+    }
+
+    private String normalizeConfigValue(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        // Ignore placeholders so we don't treat template values as valid secrets.
+        if (trimmed.startsWith("CHANGE_ME") || trimmed.startsWith("YOUR_") || trimmed.equalsIgnoreCase("your_client_id_here")
+                || trimmed.equalsIgnoreCase("your_client_secret_here")) {
+            return null;
+        }
+        return trimmed;
     }
 
     private String generateStateToken(HttpServletRequest request) {
