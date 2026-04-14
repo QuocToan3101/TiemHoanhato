@@ -2808,11 +2808,20 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         // Create and add new image with fade in
         setTimeout(() => {
           const newImg = document.createElement('img');
-          newImg.src = image.url;
+          // Use optimized image endpoint with carousel size
+          const optimizedUrl = new URL(image.url, window.location.origin);
+          if (!optimizedUrl.pathname.includes('/api/image/')) {
+            // Convert regular image path to optimized endpoint
+            newImg.src = '${pageContext.request.contextPath}/api/image/' + 
+                        image.url.replace(/^\/|^\.\.\//g, '') + '?size=carousel';
+          } else {
+            newImg.src = image.url + '?size=carousel';
+          }
           newImg.alt = image.title || 'Carousel Image';
           newImg.className = 'carousel-image';
           newImg.style.opacity = '0';
           newImg.style.transition = 'opacity 0.8s ease-in-out';
+          newImg.loading = 'eager'; // Important for active image
           
           wrapper.appendChild(newImg);
           
