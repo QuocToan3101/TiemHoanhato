@@ -3,9 +3,30 @@ set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 
+retry_apt() {
+  local attempts=20
+  local wait_seconds=15
+  local count=1
+
+  while true; do
+    if "$@"; then
+      return 0
+    fi
+
+    if [ "$count" -ge "$attempts" ]; then
+      echo "APT command failed after ${attempts} attempts: $*"
+      return 1
+    fi
+
+    echo "APT is busy or failed (attempt ${count}/${attempts}). Retrying in ${wait_seconds}s..."
+    sleep "$wait_seconds"
+    count=$((count + 1))
+  done
+}
+
 if ! command -v mysql >/dev/null 2>&1; then
-  apt-get update
-  apt-get install -y mysql-server
+  retry_apt apt-get update
+  retry_apt apt-get install -y mysql-server
 fi
 
 systemctl enable mysql || true

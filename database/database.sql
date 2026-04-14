@@ -8,11 +8,11 @@
 -- PHẦN 1: TẠO DATABASE VÀ CÁC BẢNG
 -- =====================================================
 
-CREATE DATABASE IF NOT EXISTS flowerstore 
+CREATE DATABASE IF NOT EXISTS flowerStore 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
-USE flowerstore;
+USE flowerStore;
 
 -- Bảng Users (với email verification)
 DROP TABLE IF EXISTS users;
@@ -766,7 +766,7 @@ SELECT 'Đăng nhập User: user@gmail.com / 123456' as user_account;
 -- SCRIPT KIỂM TRA THỐNG KÊ
 -- =====================================================
 
-USE flowerstore;
+USE flowerStore;
 
 -- =====================================================
 -- 1. KIỂM TRA TỔNG QUAN

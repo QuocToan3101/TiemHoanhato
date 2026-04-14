@@ -2,7 +2,10 @@ param(
     [string]$ServerIp = "103.137.185.6",
     [string]$ServerUser = "root",
     [string]$WarPath = ".\build\libs\flowerstore.war",
-    [string]$RemoteWarName = "ROOT.war"
+    [string]$RemoteWarName = "ROOT.war",
+    [string]$DatabaseSqlPath = ".\database\database.sql",
+    [string]$DbSetupScriptPath = ".\vps-db-setup.sh",
+    [string]$IdentityFile = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,10 +15,49 @@ if (-not (Test-Path $WarPath)) {
     exit 1
 }
 
+if (-not (Test-Path $DatabaseSqlPath)) {
+    Write-Error "Database SQL file not found: $DatabaseSqlPath"
+    exit 1
+}
+
+if (-not (Test-Path $DbSetupScriptPath)) {
+    Write-Error "DB setup script not found: $DbSetupScriptPath"
+    exit 1
+}
+
+$sshScpCommonArgs = @(
+    "-o", "ServerAliveInterval=30",
+    "-o", "ServerAliveCountMax=8",
+    "-o", "ConnectTimeout=20"
+)
+if (-not [string]::IsNullOrWhiteSpace($IdentityFile)) {
+    if (-not (Test-Path $IdentityFile)) {
+        Write-Error "SSH identity file not found: $IdentityFile"
+        exit 1
+    }
+
+    $resolvedIdentityFile = (Resolve-Path $IdentityFile).Path
+    $sshScpCommonArgs += @("-i", $resolvedIdentityFile)
+    Write-Host "==> Using SSH key: $resolvedIdentityFile"
+}
+
 Write-Host "==> Upload WAR to VPS"
-scp $WarPath "$ServerUser@$ServerIp`:/tmp/$RemoteWarName"
+& scp @sshScpCommonArgs $WarPath "$ServerUser@$ServerIp`:/tmp/$RemoteWarName"
 if ($LASTEXITCODE -ne 0) {
     Write-Error "SCP failed"
+    exit 1
+}
+
+Write-Host "==> Upload database setup files"
+& scp @sshScpCommonArgs $DatabaseSqlPath "$ServerUser@$ServerIp`:/tmp/database.sql"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Failed to upload database.sql"
+    exit 1
+}
+
+& scp @sshScpCommonArgs $DbSetupScriptPath "$ServerUser@$ServerIp`:/tmp/vps-db-setup.sh"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Failed to upload vps-db-setup.sh"
     exit 1
 }
 
@@ -27,7 +69,28 @@ if ! command -v apt-get >/dev/null 2>&1; then
     exit 1
 fi
 
-apt-get update -y
+retry_apt() {
+    local attempts=20
+    local wait_seconds=15
+    local count=1
+
+    while true; do
+        if "$@"; then
+            return 0
+        fi
+
+        if [ "$count" -ge "$attempts" ]; then
+            echo "APT command failed after ${attempts} attempts: $*"
+            return 1
+        fi
+
+        echo "APT is busy or failed (attempt ${count}/${attempts}). Retrying in ${wait_seconds}s..."
+        sleep "$wait_seconds"
+        count=$((count + 1))
+    done
+}
+
+retry_apt apt-get update -y
 
 if apt-cache show tomcat10 >/dev/null 2>&1; then
     TOMCAT_PKG="tomcat10"
@@ -48,7 +111,7 @@ else
     JAVA_PKG="default-jre-headless"
 fi
 
-apt-get install -y nginx "$TOMCAT_PKG" "$JAVA_PKG"
+retry_apt apt-get install -y nginx "$TOMCAT_PKG" "$JAVA_PKG"
 systemctl enable "$TOMCAT_PKG" nginx
 systemctl stop "$TOMCAT_PKG" || true
 rm -rf "$WEBAPPS_DIR/ROOT" "$WEBAPPS_DIR/ROOT.war"
@@ -81,6 +144,10 @@ ufw allow OpenSSH || true
 ufw allow 80/tcp || true
 ufw allow 443/tcp || true
 echo "Deployment completed"
+
+chmod +x /tmp/vps-db-setup.sh
+bash /tmp/vps-db-setup.sh
+echo "Database setup completed"
 '@
 
 $remoteScriptUnix = $remoteScript -replace "`r", ""
@@ -88,7 +155,7 @@ $tempScript = Join-Path $env:TEMP "flowerstore-deploy.sh"
 [System.IO.File]::WriteAllText($tempScript, $remoteScriptUnix, (New-Object System.Text.UTF8Encoding($false)))
 
 Write-Host "==> Upload remote deploy script"
-scp $tempScript "$ServerUser@$ServerIp`:/tmp/flowerstore-deploy.sh"
+& scp @sshScpCommonArgs $tempScript "$ServerUser@$ServerIp`:/tmp/flowerstore-deploy.sh"
 if ($LASTEXITCODE -ne 0) {
     Remove-Item -Path $tempScript -Force -ErrorAction SilentlyContinue
     Write-Error "Failed to upload remote deploy script"
@@ -96,7 +163,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "==> Run remote deploy steps"
-ssh "$ServerUser@$ServerIp" "bash /tmp/flowerstore-deploy.sh"
+& ssh @sshScpCommonArgs "$ServerUser@$ServerIp" "bash /tmp/flowerstore-deploy.sh"
 Remove-Item -Path $tempScript -Force -ErrorAction SilentlyContinue
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Remote deploy failed"
