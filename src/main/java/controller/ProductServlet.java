@@ -31,14 +31,12 @@ public class ProductServlet extends HttpServlet {
     private Gson gson;
     
     private static final int PRODUCTS_PER_PAGE = 12;
-    
     @Override
     public void init() throws ServletException {
         productDAO = new ProductDAO();
         categoryDAO = new CategoryDAO();
         gson = new Gson();
     }
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
