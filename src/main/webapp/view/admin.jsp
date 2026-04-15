@@ -1,14 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%
-    // Check admin access
-    model.User user = (model.User) session.getAttribute("user");
-    if (user == null || !"admin".equals(user.getRole())) {
-        response.sendRedirect(request.getContextPath() + "/view/login_1.jsp");
-        return;
-    }
-%>
+<c:if test="${empty sessionScope.user or sessionScope.user.role ne 'admin'}">
+  <c:redirect url="/view/login_1.jsp" />
+</c:if>
 <!DOCTYPE html>
 <html lang="vi">
   <head>

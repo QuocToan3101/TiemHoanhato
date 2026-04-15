@@ -58,7 +58,11 @@ public class LoginServlet extends HttpServlet {
         
         if (user != null) {
             // Đăng nhập thành công
-            HttpSession session = request.getSession();
+            HttpSession existing = request.getSession(false);
+            if (existing != null) {
+                existing.invalidate();
+            }
+            HttpSession session = request.getSession(true);
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
@@ -68,11 +72,13 @@ public class LoginServlet extends HttpServlet {
             // Set session timeout (30 phút)
             session.setMaxInactiveInterval(30 * 60);
             
-            // Nếu chọn "Remember me", tạo cookie
+            // Nếu chọn "Remember me", tạo cookie với bảo vệ tốt hơn
             if ("on".equals(remember)) {
                 Cookie emailCookie = new Cookie("rememberEmail", email);
                 emailCookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
                 emailCookie.setPath("/");
+                emailCookie.setHttpOnly(true);
+                emailCookie.setSecure(request.isSecure());
                 response.addCookie(emailCookie);
             }
             

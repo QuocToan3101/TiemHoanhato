@@ -13,7 +13,7 @@
                 <div class="logo col-md-2 col-xs-2 col-sm-4 pd-right-0 pd-left-0">
                     <a href="${pageContext.request.contextPath}/home">
                         <img class="dt-width-auto" height="30" width="185"
-                            src="${pageContext.request.contextPath}/view/Logo%20Ti%E1%BB%87m%20Hoa.png"
+                            src="${pageContext.request.contextPath}/view/logo.png"
                             alt="Tiệm Hoa Nhà Tớ">
                     </a>
                 </div>

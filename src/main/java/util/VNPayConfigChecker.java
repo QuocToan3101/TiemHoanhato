@@ -124,7 +124,7 @@ public class VNPayConfigChecker {
                 System.out.println("✅ TRẠNG THÁI: SẴN SÀNG TEST");
                 System.out.println();
                 System.out.println("Bước tiếp theo:");
-                System.out.println("1. Chạy ứng dụng: mvn tomcat7:run");
+                System.out.println("1. Chạy ứng dụng: gradle deployToTomcat");
                 System.out.println("2. Truy cập: http://localhost:8080/flowerstore");
                 System.out.println("3. Thêm sản phẩm vào giỏ hàng");
                 System.out.println("4. Checkout → Chọn VNPay");

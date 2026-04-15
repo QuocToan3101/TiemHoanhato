@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import dao.UserDAO;
 import model.User;
 import service.EmailService;
+import util.AppConfig;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -78,14 +79,19 @@ public class RegisterServlet extends HttpServlet {
         // 4. Xử lý kết quả và gửi Email
         if (success) {
             try {
-                String verificationLink = request.getScheme() + "://" +
-                        request.getServerName() + ":" +
-                        request.getServerPort() +
-                        request.getContextPath() +
-                        "/verify-email?token=" + verificationToken;
+                String verificationLink = buildVerificationLink(request, verificationToken);
+                boolean mailSent = EmailService.getInstance().sendVerificationEmail(
+                        email.trim(),
+                        fullname.trim(),
+                        verificationLink
+                );
 
-                EmailService.getInstance().sendVerificationEmail(email.trim(), fullname.trim(), verificationLink);
-                request.setAttribute("success", "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
+                if (mailSent) {
+                    request.setAttribute("success", "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
+                } else {
+                    userDAO.activateAfterEmailFailure(newUser.getId());
+                    request.setAttribute("success", "Đăng ký thành công. Hệ thống chưa gửi được email xác thực nên tài khoản đã được kích hoạt để bạn đăng nhập ngay.");
+                }
             } catch (Exception e) {
                 request.setAttribute("success", "Đăng ký thành công nhưng hệ thống đang lỗi gửi email xác thực. Vui lòng liên hệ Admin.");
             }
@@ -113,5 +119,55 @@ public class RegisterServlet extends HttpServlet {
         request.setAttribute("fullname", fullname);
         request.setAttribute("email", email);
         request.getRequestDispatcher("/view/registration.jsp").forward(request, response);
+    }
+
+    private String buildVerificationLink(HttpServletRequest request, String verificationToken) {
+        AppConfig config = AppConfig.getInstance();
+        String configuredAppUrl = config.getAppUrl();
+
+        if (configuredAppUrl != null && !configuredAppUrl.trim().isEmpty() && shouldUseConfiguredBaseUrl(configuredAppUrl, request)) {
+            String baseUrl = configuredAppUrl.trim();
+            if (baseUrl.endsWith("/")) {
+                baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+            }
+            return baseUrl + "/verify-email?token=" + verificationToken;
+        }
+
+        String scheme = request.getScheme();
+        String host = request.getServerName();
+        int port = request.getServerPort();
+        boolean isDefaultPort = ("http".equalsIgnoreCase(scheme) && port == 80)
+                || ("https".equalsIgnoreCase(scheme) && port == 443);
+
+        return scheme + "://" + host + (isDefaultPort ? "" : ":" + port)
+                + request.getContextPath() + "/verify-email?token=" + verificationToken;
+    }
+
+    private boolean shouldUseConfiguredBaseUrl(String appUrl, HttpServletRequest request) {
+        try {
+            java.net.URI uri = new java.net.URI(appUrl.trim());
+            String configuredHost = uri.getHost();
+            if (configuredHost == null || configuredHost.trim().isEmpty()) {
+                return false;
+            }
+
+            String requestHost = request.getServerName();
+            if (isLocalAddress(configuredHost) && !isLocalAddress(requestHost)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isLocalAddress(String host) {
+        if (host == null) {
+            return true;
+        }
+        String normalized = host.trim().toLowerCase();
+        return normalized.equals("localhost")
+                || normalized.equals("127.0.0.1")
+                || normalized.equals("::1");
     }
 }

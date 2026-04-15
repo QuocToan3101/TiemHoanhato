@@ -8,7 +8,7 @@ import java.io.IOException;
 public abstract class BaseServlet extends HttpServlet {
     protected String getAction(HttpServletRequest res) {
         String path = res.getPathInfo();
-        if (path != null || path.equals("/")) return "index";
+        if (path == null || path.equals("/")) return "index";
         return path;
     }
     protected void json(HttpServletResponse resp, String json) throws IOException {

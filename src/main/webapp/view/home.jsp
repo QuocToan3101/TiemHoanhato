@@ -30,26 +30,6 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
     <!-- End Google Tag Manager -->
 
-    <!-- Google Tag Manager -->
-
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-          "gtm.start": new Date().getTime(),
-          event: "gtm.js",
-        });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != "dataLayer" ? "&l=" + l : "";
-        j.async = true;
-        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
-    </script>
-
-    <!-- End Google Tag Manager -->
-
     <meta charset="utf-8" />
 
     <link
@@ -1523,23 +1503,12 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
             <div class="hero-image animate">
               <div class="hero-card">
                 <span class="hero-badge">New</span>
-                <model-viewer
-                  src="/flowerstore/view/bouquet.glb"
-                  alt="Bó hoa 3D"
-                  camera-controls
-                  auto-rotate
-                  style="
-                    width: 349px;
-                    height: 384px;
-                    background: #fff;
-                    border-radius: 20px;
-                    margin-left: 100px;
-                  "
-                  ar
-                  shadow-intensity="1"
-                  exposure="1"
-                >
-                </model-viewer>
+                <div id="image-carousel" class="carousel-container">
+                  <div class="carousel-wrapper">
+                    <img id="carousel-image" src="" alt="Bó hoa" class="carousel-image" />
+                  </div>
+                  <div class="carousel-dots" id="carousel-dots"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -1638,7 +1607,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
                 <div class="product-image">
                   <img
                     src="${product.image != null ? product.image : 'https://via.placeholder.com/300x300?text=No+Image'}"
-                    alt="${product.name}"
+                    alt="<c:out value='${product.name}'/>"
                     onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'"
                   />
                   <c:if
@@ -1670,7 +1639,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
                 </div>
 
                 <div class="product-info">
-                  <h3 class="product-name">${product.name}</h3>
+                  <h3 class="product-name"><c:out value="${product.name}" /></h3>
                   <div class="product-price">
                     <c:choose>
                       <c:when
@@ -2642,10 +2611,287 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       }
     </script>
 
-    <script
-      type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
-    ></script>
+    <!-- Carousel CSS Styles -->
+    <style>
+      /* Image Carousel Styles */
+      .carousel-container {
+        width: 349px;
+        height: 384px;
+        background: #fff;
+        border-radius: 24px;
+        margin-left: 100px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 
+                    0 0 0 1px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .carousel-container:hover {
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+                    0 0 0 1px rgba(0, 0, 0, 0.08);
+        transform: translateY(-5px);
+      }
+
+      .carousel-wrapper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .carousel-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        animation: fadeInOut 0.8s ease-in-out;
+      }
+
+      .carousel-image.fade-in {
+        animation: fadeInOut 0.8s ease-in-out forwards;
+      }
+
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+          transform: scale(0.98);
+        }
+        15% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        85% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.98);
+        }
+      }
+
+      /* Carousel Dots */
+      .carousel-dots {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 8px 16px;
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+      }
+
+      .carousel-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border: 1px solid transparent;
+      }
+
+      .carousel-dot.active {
+        background: #fff;
+        transform: scale(1.3);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 1);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .carousel-dot:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.15);
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+      }
+
+      /* Hero Badge Styling */
+      .hero-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        z-index: 15;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        animation: badgePulse 2s ease-in-out infinite;
+      }
+
+      @keyframes badgePulse {
+        0%, 100% {
+          transform: translateY(0) scale(1);
+        }
+        50% {
+          transform: translateY(-3px) scale(1.05);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .carousel-container {
+          width: 280px;
+          height: 320px;
+          margin-left: 50px;
+        }
+
+        .hero-badge {
+          top: 15px;
+          left: 15px;
+          padding: 6px 14px;
+          font-size: 12px;
+        }
+      }
+    </style>
+
+    <!-- Carousel JavaScript -->
+    <script>
+      let carouselImages = [];
+      let currentImageIndex = 0;
+      let carouselInterval = null;
+
+      // Load carousel images on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        loadCarouselImages();
+      });
+
+      function loadCarouselImages() {
+        fetch('${pageContext.request.contextPath}/api/carousel-images')
+          .then(response => response.json())
+          .then(data => {
+            carouselImages = data;
+            if (carouselImages.length > 0) {
+              displayImage(currentImageIndex);
+              renderDots();
+              startCarouselRotation();
+            }
+          })
+          .catch(error => {
+            console.error('Error loading carousel images:', error);
+            // Fallback: display a placeholder
+            const img = document.getElementById('carousel-image');
+            if (img) {
+              img.src = 'https://via.placeholder.com/349x384?text=Flower+Image';
+              img.alt = 'Placeholder';
+            }
+          });
+      }
+
+      function displayImage(index) {
+        if (carouselImages.length === 0) return;
+        
+        const image = carouselImages[index];
+        const wrapper = document.querySelector('.carousel-wrapper');
+        if (!wrapper) return;
+        
+        // Fade out old image
+        const oldImg = wrapper.querySelector('.carousel-image');
+        if (oldImg) {
+          oldImg.style.animation = 'none';
+          oldImg.style.opacity = '0';
+          setTimeout(() => {
+            if (oldImg && oldImg.parentNode) {
+              oldImg.remove();
+            }
+          }, 300);
+        }
+        
+        // Create and add new image with fade in
+        setTimeout(() => {
+          const newImg = document.createElement('img');
+          // Use optimized image endpoint with carousel size
+          const optimizedUrl = new URL(image.url, window.location.origin);
+          if (!optimizedUrl.pathname.includes('/api/image/')) {
+            // Convert regular image path to optimized endpoint
+            newImg.src = '${pageContext.request.contextPath}/api/image/' + 
+                        image.url.replace(/^\/|^\.\.\//g, '') + '?size=carousel';
+          } else {
+            newImg.src = image.url + '?size=carousel';
+          }
+          newImg.alt = image.title || 'Carousel Image';
+          newImg.className = 'carousel-image';
+          newImg.style.opacity = '0';
+          newImg.style.transition = 'opacity 0.8s ease-in-out';
+          newImg.loading = 'eager'; // Important for active image
+          
+          wrapper.appendChild(newImg);
+          
+          // Trigger fade in
+          setTimeout(() => {
+            newImg.style.opacity = '1';
+          }, 10);
+        }, 150);
+        
+        // Update active dot
+        updateActiveDot(index);
+      }
+
+      function renderDots() {
+        const dotsContainer = document.getElementById('carousel-dots');
+        if (!dotsContainer) return;
+        
+        dotsContainer.innerHTML = '';
+        carouselImages.forEach((_, index) => {
+          const dot = document.createElement('div');
+          dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+          dot.onclick = () => goToSlide(index);
+          dotsContainer.appendChild(dot);
+        });
+      }
+
+      function updateActiveDot(index) {
+        const dots = document.querySelectorAll('.carousel-dot');
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }
+
+      function startCarouselRotation() {
+        // Clear existing interval
+        if (carouselInterval) {
+          clearInterval(carouselInterval);
+        }
+        
+        // Rotate every 5 seconds
+        carouselInterval = setInterval(() => {
+          currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+          displayImage(currentImageIndex);
+        }, 5000);
+      }
+
+      function goToSlide(index) {
+        currentImageIndex = index;
+        displayImage(currentImageIndex);
+        // Reset interval when user clicks
+        startCarouselRotation();
+      }
+
+      // Pause carousel on hover
+      const carousel = document.getElementById('image-carousel');
+      if (carousel) {
+        carousel.addEventListener('mouseenter', () => {
+          if (carouselInterval) {
+            clearInterval(carouselInterval);
+            carouselInterval = null;
+          }
+        });
+        
+        carousel.addEventListener('mouseleave', () => {
+          if (carouselImages.length > 0) {
+            startCarouselRotation();
+          }
+        });
+      }
+    </script>
 
     <script
       type="text/javascript"

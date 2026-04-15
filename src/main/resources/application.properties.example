@@ -1,13 +1,13 @@
-# ==============================================
+﻿# ==============================================
 # APPLICATION CONFIGURATION TEMPLATE
 # ==============================================
 # Copy file này thành application.properties
 # và điền thông tin thực tế của bạn
 
 # Database Configuration
-db.url=jdbc:mysql://localhost:3306/flowerstore?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
-db.username=root
-db.password=
+db.url=jdbc:mysql://localhost:3306/flowerStore?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+db.username=FlowerStore
+db.password=12345
 db.driver=com.mysql.cj.jdbc.Driver
 
 # Email Configuration (Gmail SMTP)
@@ -54,3 +54,9 @@ session.timeout=3600
 
 # Security
 password.reset.token.expiry=3600000
+
+# Google OAuth Configuration
+# Có thể dùng env vars GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET thay cho 2 dòng dưới.
+google.oauth.client.id=YOUR_GOOGLE_CLIENT_ID_HERE
+google.oauth.client.secret=YOUR_GOOGLE_CLIENT_SECRET_HERE
+

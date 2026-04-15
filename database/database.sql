@@ -8,11 +8,14 @@
 -- PHẦN 1: TẠO DATABASE VÀ CÁC BẢNG
 -- =====================================================
 
-CREATE DATABASE IF NOT EXISTS flowerstore 
+CREATE DATABASE IF NOT EXISTS flowerStore 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
-USE flowerstore;
+USE flowerStore;
+
+-- Tắt kiểm tra khóa ngoại khi reset schema để tránh lỗi drop table theo thứ tự.
+SET FOREIGN_KEY_CHECKS = 0;
 
 -- Bảng Users (với email verification)
 DROP TABLE IF EXISTS users;
@@ -256,6 +259,8 @@ CREATE TABLE password_reset_tokens (
 -- PHẦN 2: THÊM DỮ LIỆU MẪU
 -- =====================================================
 
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- 1. USERS
 -- Admin: admin@gmail.com / admin123
 -- User: user@gmail.com / 123456
@@ -330,6 +335,346 @@ INSERT INTO products (category_id, name, slug, description, short_description, p
 -- Hoa Lụa (category_id = 13)
 (13, 'Bình hoa lụa trang trí phòng khách', 'binh-hoa-lua-trang-tri-phong-khach', 'Bình hoa lụa cao cấp trang trí nội thất', 'Bình hoa lụa phòng khách', 350000, 299000, 40, 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=400', FALSE, TRUE, 30),
 (13, 'Bó hoa lụa hồng vintage', 'bo-hoa-lua-hong-vintage', 'Bó hoa lụa phong cách vintage lãng mạn', 'Bó hoa lụa vintage', 280000, NULL, 35, 'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=400', TRUE, TRUE, 30);
+
+-- Bổ sung bộ ảnh chi tiết sản phẩm theo từng slug (gallery chuẩn cho thumbnail/lightbox)
+-- Block này chạy được cho cả DB mới và DB đã có dữ liệu.
+
+-- 3.1) Gán bộ ảnh riêng cho từng sản phẩm chính
+UPDATE products
+SET images = CASE slug
+    WHEN 'bo-hoa-hong-do-tinh-yeu' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-huong-duong-rang-ro' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-mix-pastel' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-cam-tu-cau-xanh' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1520219306100-ec2f5c359546?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-cuc-hoa-mi-trang' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-ly-trang-sang-trong' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1518882605630-8809df6a2b9a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hoa-tulip-hong-ngot-ngao' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1520763185298-1b434c919102?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1520219306100-ec2f5c359546?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hoa-tulip-do-ruc-ro' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1518701005037-d53b1f67bb1c?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hoa-tulip-vang-ruc-ro' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1520763185298-1b434c919102?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hoa-tulip-tim-quy-phai' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1520219306100-ec2f5c359546?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518701005037-d53b1f67bb1c?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'binh-hoa-hong-do-ecuador' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518882605630-8809df6a2b9a?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'binh-hoa-mix-sac-mau' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'gio-hoa-sinh-nhat-am-ap' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'gio-hoa-chuc-mung-khai-truong' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1522057384400-681b421cfebc?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'gio-hoa-hong-mix-baby' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1522057384400-681b421cfebc?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'gio-hoa-cuc-dai-doa' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hop-hoa-hong-cao-cap' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hop-hoa-mix-hong-baby' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hop-hoa-huong-duong' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hop-hoa-cam-chuong' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hoa-cam-tay-co-dau-trang' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'hoa-cuoi-cascade-sang-trong' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1522057384400-681b421cfebc?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'chau-lan-ho-diep-trang-5-canh' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1566873535350-a3f5d4a804b7?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1612363148951-15f16817648f?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'chau-lan-ho-diep-tim-3-canh' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1612363148951-15f16817648f?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1566873535350-a3f5d4a804b7?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1520219306100-ec2f5c359546?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'chau-lan-ho-diep-vang-7-canh' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1566873535350-a3f5d4a804b7?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1612363148951-15f16817648f?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-mau-don-hong' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-mau-don-trang' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518882605630-8809df6a2b9a?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'binh-hoa-lua-trang-tri-phong-khach' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop'
+    )
+    WHEN 'bo-hoa-lua-hong-vintage' THEN JSON_ARRAY(
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop'
+    )
+    ELSE images
+END;
+
+-- 3.2) Fallback an toàn: nếu thiếu/không hợp lệ thì sinh JSON từ ảnh chính
+UPDATE products
+SET images = JSON_ARRAY(
+    image,
+    CONCAT(SUBSTRING_INDEX(image, '?', 1), '?w=900&auto=format&fit=crop'),
+    CONCAT(SUBSTRING_INDEX(image, '?', 1), '?w=1200&auto=format&fit=crop')
+)
+WHERE image IS NOT NULL
+  AND TRIM(image) <> ''
+  AND (
+      images IS NULL
+      OR TRIM(images) = ''
+      OR JSON_VALID(images) = 0
+  );
+
+-- 3.3) Chuẩn hóa dữ liệu sản phẩm cho nhất quán
+-- Giá sale phải nhỏ hơn giá gốc, nếu không thì bỏ sale
+UPDATE products
+SET sale_price = NULL
+WHERE sale_price IS NOT NULL
+  AND (sale_price <= 0 OR sale_price >= price);
+
+-- Bổ sung mô tả ngắn còn thiếu
+UPDATE products
+SET short_description = LEFT(name, 120)
+WHERE short_description IS NULL OR TRIM(short_description) = '';
+
+-- Không cho quantity âm
+UPDATE products
+SET quantity = 0
+WHERE quantity < 0;
+
+-- Đồng bộ ảnh chính nếu đang rỗng nhưng images hợp lệ
+UPDATE products
+SET image = JSON_UNQUOTE(JSON_EXTRACT(images, '$[0]'))
+WHERE (image IS NULL OR TRIM(image) = '')
+  AND JSON_VALID(images) = 1
+  AND JSON_LENGTH(images) > 0;
+
+-- 3.4) Đảm bảo mỗi sản phẩm có 5 ảnh (1 ảnh chính + 4 ảnh phụ)
+-- Giữ ảnh đầu tiên là image để không làm thay đổi thumbnail mặc định đang dùng trên site.
+UPDATE products
+SET images = CASE
+    WHEN category_id = 3 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 4 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1520763185298-1b434c919102?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518701005037-d53b1f67bb1c?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1520219306100-ec2f5c359546?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 5 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518882605630-8809df6a2b9a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 6 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1522057384400-681b421cfebc?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 7 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 8 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1522057384400-681b421cfebc?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 9 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1566873535350-a3f5d4a804b7?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1612363148951-15f16817648f?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1520219306100-ec2f5c359546?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 10 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1518882605630-8809df6a2b9a?w=1200&auto=format&fit=crop'
+    )
+    WHEN category_id = 13 THEN JSON_ARRAY(
+        image,
+        'https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1200&auto=format&fit=crop'
+    )
+    ELSE JSON_ARRAY(
+        image,
+        CONCAT(SUBSTRING_INDEX(image, '?', 1), '?w=900&auto=format&fit=crop'),
+        CONCAT(SUBSTRING_INDEX(image, '?', 1), '?w=1200&auto=format&fit=crop'),
+        CONCAT(SUBSTRING_INDEX(image, '?', 1), '?w=1400&auto=format&fit=crop')
+    )
+END
+WHERE image IS NOT NULL AND TRIM(image) <> '';
+
+-- 3.5) Làm giàu thêm link ảnh mới (nguồn bổ sung) cho từng nhóm hoa
+-- Block này ghi đè lại images để tăng độ đa dạng link, vẫn đảm bảo 5 ảnh/sản phẩm.
+UPDATE products
+SET images = CASE
+    WHEN category_id = 3 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?rose,bouquet&sig=301',
+        'https://source.unsplash.com/1200x900/?sunflower,bouquet&sig=302',
+        'https://source.unsplash.com/1200x900/?hydrangea,flowers&sig=303',
+        'https://source.unsplash.com/1200x900/?daisy,bouquet&sig=304'
+    )
+    WHEN category_id = 4 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?tulip,pink&sig=401',
+        'https://source.unsplash.com/1200x900/?tulip,red&sig=402',
+        'https://source.unsplash.com/1200x900/?tulip,yellow&sig=403',
+        'https://source.unsplash.com/1200x900/?tulip,purple&sig=404'
+    )
+    WHEN category_id = 5 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?flower,vase&sig=501',
+        'https://source.unsplash.com/1200x900/?rose,vase&sig=502',
+        'https://source.unsplash.com/1200x900/?floral,arrangement&sig=503',
+        'https://source.unsplash.com/1200x900/?home,flowers&sig=504'
+    )
+    WHEN category_id = 6 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?flower,basket&sig=601',
+        'https://source.unsplash.com/1200x900/?gift,flowers&sig=602',
+        'https://source.unsplash.com/1200x900/?birthday,flowers&sig=603',
+        'https://source.unsplash.com/1200x900/?celebration,flowers&sig=604'
+    )
+    WHEN category_id = 7 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?flower,box&sig=701',
+        'https://source.unsplash.com/1200x900/?rose,box&sig=702',
+        'https://source.unsplash.com/1200x900/?luxury,flowers&sig=703',
+        'https://source.unsplash.com/1200x900/?gift,box,flowers&sig=704'
+    )
+    WHEN category_id = 8 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?wedding,bouquet&sig=801',
+        'https://source.unsplash.com/1200x900/?bridal,flowers&sig=802',
+        'https://source.unsplash.com/1200x900/?wedding,floral&sig=803',
+        'https://source.unsplash.com/1200x900/?bride,bouquet&sig=804'
+    )
+    WHEN category_id = 9 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?orchid,white&sig=901',
+        'https://source.unsplash.com/1200x900/?orchid,purple&sig=902',
+        'https://source.unsplash.com/1200x900/?orchid,yellow&sig=903',
+        'https://source.unsplash.com/1200x900/?phalaenopsis,orchid&sig=904'
+    )
+    WHEN category_id = 10 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?peony,pink&sig=1001',
+        'https://source.unsplash.com/1200x900/?peony,white&sig=1002',
+        'https://source.unsplash.com/1200x900/?peony,bouquet&sig=1003',
+        'https://source.unsplash.com/1200x900/?peonies,flowers&sig=1004'
+    )
+    WHEN category_id = 13 THEN JSON_ARRAY(
+        image,
+        'https://source.unsplash.com/1200x900/?artificial,flowers&sig=1301',
+        'https://source.unsplash.com/1200x900/?silk,flowers&sig=1302',
+        'https://source.unsplash.com/1200x900/?decorative,flowers&sig=1303',
+        'https://source.unsplash.com/1200x900/?home,decor,flowers&sig=1304'
+    )
+    ELSE images
+END
+WHERE image IS NOT NULL AND TRIM(image) <> '';
 
 -- 4. COUPONS
 INSERT INTO coupons (code, description, discount_type, discount_value, min_order_value, max_discount, usage_limit, start_date, end_date, is_active) VALUES
@@ -426,7 +771,7 @@ SELECT 'Đăng nhập User: user@gmail.com / 123456' as user_account;
 -- SCRIPT KIỂM TRA THỐNG KÊ
 -- =====================================================
 
-USE flowerstore;
+USE flowerStore;
 
 -- =====================================================
 -- 1. KIỂM TRA TỔNG QUAN

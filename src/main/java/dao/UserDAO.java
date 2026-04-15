@@ -79,6 +79,23 @@ public class UserDAO {
         }
         return false;
     }
+
+    /**
+     * Kích hoạt tài khoản khi gửi email xác thực thất bại
+     */
+    public boolean activateAfterEmailFailure(int userId) {
+        String sql = "UPDATE users SET status = 'active', verification_token = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logSQLError("kích hoạt tài khoản sau khi gửi email thất bại", e);
+        }
+        return false;
+    }
     
     /**
      * Đăng ký user mới
