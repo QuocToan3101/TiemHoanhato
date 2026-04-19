@@ -2937,25 +2937,7 @@
       </div>
     </div>
 
-<!-- <div>
-              <div class="info-group">
-                <label>Tiêu đề:</label>
-                <p id="contactSubject"></p>
-              </div>
-              <div class="info-group">
-                <label>Ngày gửi:</label>
-                <p id="contactDate"></p>
-              </div>
-              <div class="info-group">
-                <label>Trạng thái:</label>
-                <select id="contactStatus" class="form-input" onchange="updateContactStatus()">
-                  <option value="new">Mới</option>
-                  <option value="read">Đã đọc</option>
-                  <option value="replied">Đã trả lời</option>
-                </select>
-              </div>
-            </div>
-          </div> -->
+
     
     <!-- Contact Detail Modal -->
     <div class="modal-overlay" id="contactModal">
@@ -3106,38 +3088,9 @@
               <input type="text" id="newsSlug" class="form-input" placeholder="tu-dong-tao-hoac-nhap-slug" required />
               <small style="color: #666;">Slug sẽ tự động tạo từ tiêu đề, hoặc bạn có thể tự nhập</small>
             </div>
-            <!-- <div class="modal-body">
-          <input type="hidden" id="galleryId" />
-          <form id="galleryForm">
-            <div class="form-group">
-              <label for="galleryImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
-              <input type="url" id="galleryImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
-              <small style="color: #666;">Nhập URL hình ảnh hoặc upload lên server</small>
-            </div>
             
-            <div class="form-group">
-              <label for="galleryCaption">Tiêu Đề <span style="color: red;">*</span></label>
-              <input type="text" id="galleryCaption" class="form-input" placeholder="Bó hoa đẹp" required />
-            </div>
             
-            <div class="form-group">
-              <label for="galleryDescription">Mô Tả</label>
-              <textarea id="galleryDescription" class="form-input" rows="3" placeholder="Mô tả chi tiết về hình ảnh"></textarea>
-            </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-              <div class="form-group">
-                <label for="galleryOrder">Thứ Tự Hiển Thị</label>
-                <input type="number" id="galleryOrder" class="form-input" value="0" min="0" />
-              </div>
-              
-              <div class="form-group">
-                <label>
-                  <input type="checkbox" id="galleryActive" checked />
-                  <span>Hiển thị</span>
-                </label>
-              </div>
-            </div>
             
             <!-- Preview image -->
             <div class="form-group" id="galleryPreviewContainer" style="display: none;">
@@ -3258,17 +3211,7 @@
           customers: "Quản Lý Khách Hàng",
           coupons: "Quản Lý Mã Giảm Giá",
           contacts: "Quản Lý Liên Hệ",
-          // dashboard: "Dashboard",
-          // orders: "Quản Lý Đơn Hàng",
-          // products: "Quản Lý Sản Phẩm",
-          // categories: "Quản Lý Danh Mục",
-          // customers: "Quản Lý Khách Hàng",
-          // coupons: "Quản Lý Mã Giảm Giá",
-          // contacts: "Quản Lý Liên Hệ",
-          // gallery: "Quản Lý Gallery",
-          // news: "Quản Lý Tin Tức",
-          // analytics: "Thống Kê & Báo Cáo",
-          // settings: "Cài Đặt Hệ Thống",
+        
           gallery: "Quản Lý Gallery",
           news: "Quản Lý Tin Tức",
           analytics: "Thống Kê & Báo Cáo",
@@ -3292,22 +3235,7 @@
         }
       }
 
-      // // Basic menu navigation
-      // document.addEventListener("DOMContentLoaded", function () {
-      //   // Menu items click handler
-      //   document.querySelectorAll(".menu-item[data-target]").forEach((item) => {
-      //     item.addEventListener("click", function () {
-      //       const target = this.getAttribute("data-target");
-      //       showSection(target);
-
-      //       // Update active menu
-      //       document
-      //         .querySelectorAll(".menu-item")
-      //         .forEach((m) => m.classList.remove("active"));
-      //       this.classList.add("active");
-      //     });
-      //   });
-      // });
+      
 
       // Show notification function
       function showNotification(title, message, type = "success") {
@@ -3751,12 +3679,6 @@
             '<tr><td colspan="4" class="text-center text-danger">Không thể tải dữ liệu</td></tr>';
         }
       }
-
-      // if (!orders || orders.length === 0) {
-      //       tbody.innerHTML =
-      //         '<tr><td colspan="4" class="text-center">Chưa có đơn hàng</td></tr>';
-      //       return;
-      //     }
 
 
       // Load top products
