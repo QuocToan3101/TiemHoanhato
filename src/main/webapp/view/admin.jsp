@@ -5029,20 +5029,7 @@
         }).join('');
       }
 
-      // async function loadCategoriesTable() {
-      //   try {
-      //     const response = await fetch(contextPath + "/admin/api/categories");
-      //     const result = await response.json();
-
-      //     if (result.success) {
-      //       allCategoriesData = result.data;
-      //       displayCategories();
-      //       populateCategoryParentSelect();
-      //     }
-      //   } catch (error) {
-      //     console.error("Error loading categories:", error);
-      //   }
-      // }
+      
 
       function populateCategoryParentSelect() {
         const select = document.getElementById("categoryParent");
@@ -5079,27 +5066,7 @@
         }
       }
 
-      // async function deleteCategory(categoryId, categoryName) {
-      //   if (!confirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?')) return;
-
-      //   try {
-      //     const response = await fetch(
-      //       contextPath + "/admin/api/category/" + categoryId,
-      //       { method: "DELETE" }
-      //     );
-
-      //     const result = await response.json();
-
-      //     if (!result.success) {
-      //       throw new Error(result.message || "Failed to delete category");
-      //     }
-
-      //     showNotification("Thành công", "Đã xóa danh mục", "success");
-      //     loadCategoriesTable();
-      //   } catch (error) {
-      //     showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
-      //   }
-      // }
+     
 
       async function saveCategory() {
         const categoryId = document.getElementById("categoryId").value;
@@ -5472,15 +5439,6 @@
           const response = await fetch(
             contextPath + "/admin/api/contact/" + contactId,
             { method: "DELETE" }
-          //   document.getElementById("contactId").value = contact.id;
-          // document.getElementById("contactName").textContent = contact.name;
-          // document.getElementById("contactEmail").textContent = contact.email;
-          // document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
-          // document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
-          // document.getElementById("contactDate").textContent = contact.createdAt ? 
-          //   new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
-          // document.getElementById("contactMessage").textContent = contact.message;
-          // document.getElementById("contactStatus").value = contact.status || 'new';
           );
 
           const result = await response.json();
@@ -6297,15 +6255,7 @@
       
       // Open news modal for adding
       function openNewsModal() {
-        // document.getElementById("contactId").value = contact.id;
-        //   document.getElementById("contactName").textContent = contact.name;
-        //   document.getElementById("contactEmail").textContent = contact.email;
-        //   document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
-        //   document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
-        //   document.getElementById("contactDate").textContent = contact.createdAt ? 
-        //     new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
-        //   document.getElementById("contactMessage").textContent = contact.message;
-        //   document.getElementById("contactStatus").value = contact.status || 'new';
+       
         document.getElementById('newsModalTitle').textContent = 'Thêm Tin Tức';
         document.getElementById('newsId').value = '';
         document.getElementById('newsForm').reset();
