@@ -314,13 +314,9 @@
       }
 
       .user-info:hover {
-        background: rgb(160, 199, 240);
+        background: var(--primary-light);
         border-color: var(--primary);
         box-shadow: var(--shadow-sm);
-      }
-
-      .user-info:hover {
-        background: var(--primary-light);
       }
 
       .user-avatar {
@@ -3290,7 +3286,6 @@
         } else if (sectionId === 'news') {
           loadNews();
         } else if (sectionId === 'analytics') {
-          console.log("🔄 Switching to analytics section");
           setTimeout(() => loadAnalytics(), 100);
         } else if (sectionId === 'settings') {
           setTimeout(() => loadSettings(), 100);
@@ -3409,10 +3404,7 @@
           if (!response.ok) throw new Error("Failed to load statistics");
 
           const result = await response.json();
-          console.log("📊 Statistics API Response:", result);
           const data = result.data || result;
-          console.log("📊 Statistics Data:", data);
-          console.log("💰 Total Revenue:", data.totalRevenue, typeof data.totalRevenue);
 
           // Update stat cards
           document.getElementById("statTotalOrders").textContent = formatNumber(
@@ -3774,7 +3766,6 @@
           if (!response.ok) throw new Error("Failed to load top products");
 
           const result = await response.json();
-          console.log("📦 Top Products Response:", result);
           
           const products = result.data || [];
           const tbody = document.querySelector("#topProductsTable tbody");
@@ -3859,10 +3850,7 @@
 
         // Load analytics when analytics section is active
         const analyticsSection = document.getElementById("analytics");
-        console.log("Analytics section:", analyticsSection);
-        console.log("Is active?", analyticsSection?.classList.contains("active"));
         if (analyticsSection && analyticsSection.classList.contains("active")) {
-          console.log("🚀 Auto-loading analytics on page load...");
           setTimeout(() => loadAnalytics(), 200);
         }
 
@@ -4722,8 +4710,6 @@
           if (image) params.append("image", image);
           if (description) params.append("description", description);
 
-          console.log("Saving product to:", url, "with CSRF token:", csrfToken);
-
           const response = await fetch(url, {
             method: "POST",
             headers: {
@@ -4733,8 +4719,6 @@
             body: params.toString()
           });
 
-          console.log("Response status:", response.status);
-          
           if (!response.ok) {
             const errorText = await response.text();
             console.error("Response error:", errorText);
@@ -4742,7 +4726,6 @@
           }
 
           const result = await response.json();
-          console.log("Save result:", result);
 
           if (!result.success) {
             throw new Error(result.message || "Failed to save product");
@@ -4780,8 +4763,6 @@
           // Get CSRF token
           const csrfToken = window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
           
-          console.log("Deleting product:", productId, "with CSRF token:", csrfToken);
-          
           const response = await fetch(
             contextPath + "/admin/api/product/" + productId,
             {
@@ -4793,8 +4774,6 @@
             }
           );
 
-          console.log("Response status:", response.status);
-          
           if (!response.ok) {
             const errorText = await response.text();
             console.error("Response error:", errorText);
@@ -4802,7 +4781,6 @@
           }
 
           const result = await response.json();
-          console.log("Delete result:", result);
 
           if (!result.success) {
             throw new Error(result.message || "Failed to delete product");
@@ -5577,8 +5555,6 @@
       let orderStatusChartInstance = null;
 
       async function loadAnalytics() {
-        console.log("🔄 Loading analytics...");
-        
         const dateRange = document.getElementById("analyticsDateRange");
         const days = dateRange ? dateRange.value : "7";
         
@@ -5587,14 +5563,12 @@
           if (!response.ok) throw new Error("Failed to load analytics");
           
           const result = await response.json();
-          console.log("📊 Analytics API Response:", result);
           
           if (!result.success) {
             throw new Error(result.message || "Failed to load analytics data");
           }
           
           const data = result.data;
-          console.log("📊 Analytics Data:", data);
           
           // Update stats
           document.getElementById("analyticsRevenue").textContent = formatCurrency(data.totalRevenue || 0);
@@ -5636,7 +5610,6 @@
           ];
           loadAnalyticsTopCategories(sampleCategories);
           
-          console.log("✅ Analytics loaded successfully!");
         } catch (error) {
           console.error("❌ Error loading analytics:", error);
           showNotification("Lỗi", "Không thể tải thống kê: " + error.message, "error");
@@ -5825,8 +5798,6 @@
       }
 
       function loadSampleAnalytics() {
-        console.log("📊 Loading sample analytics data...");
-        
         // Sample data for demonstration
         try {
           document.getElementById("analyticsRevenue").textContent = formatCurrency(45000000);
@@ -5839,8 +5810,6 @@
           updateChangeIndicator("analyticsAvgChange", 5.2);
           updateChangeIndicator("analyticsRateChange", 3.1);
 
-          console.log("✅ Stats updated");
-
           // Sample revenue chart
           const sampleRevenue = [
             {date: "01/01", revenue: 1200000},
@@ -5852,7 +5821,6 @@
             {date: "07/01", revenue: 2300000}
           ];
           loadRevenueByDayChart(sampleRevenue);
-          console.log("✅ Revenue chart loaded");
 
           // Sample status chart
           const sampleStatus = {
@@ -5862,7 +5830,6 @@
             cancelled: 6
           };
           loadOrderStatusChartData(sampleStatus);
-          console.log("✅ Status chart loaded");
 
           // Sample top products
           const sampleProducts = [
@@ -5873,7 +5840,6 @@
             {name: "Hoa Hướng Dương", soldCount: 25, revenue: 2500000}
           ];
           loadAnalyticsTopProducts(sampleProducts);
-          console.log("✅ Top products loaded");
 
           // Sample top categories
           const sampleCategories = [
@@ -5884,9 +5850,6 @@
             {name: "Hoa Chia Buồn", productCount: 12, revenue: 4500000}
           ];
           loadAnalyticsTopCategories(sampleCategories);
-          console.log("✅ Top categories loaded");
-          
-          console.log("🎉 All sample data loaded successfully!");
         } catch (error) {
           console.error("❌ Error loading sample analytics:", error);
         }
