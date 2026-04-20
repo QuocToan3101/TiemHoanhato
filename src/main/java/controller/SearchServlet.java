@@ -29,10 +29,8 @@ import dao.CategoryDAO;
 import dao.ProductDAO;
 import model.Category;
 import model.Product;
-
 @WebServlet(urlPatterns = {"/search", "/api/search"})
 public class SearchServlet extends HttpServlet {
-
     private ProductDAO productDAO;
     private CategoryDAO categoryDAO;
     private Gson gson;
