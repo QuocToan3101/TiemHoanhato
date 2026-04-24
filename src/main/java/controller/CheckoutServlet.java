@@ -34,7 +34,6 @@ import util.AppConfig;
 public class CheckoutServlet extends HttpServlet {
 
     private static final BigDecimal DEFAULT_SHIPPING_FEE = new BigDecimal("30000");
-    
     private CartDAO cartDAO;
     private CouponDAO couponDAO;
     private OrderDAO orderDAO;
