@@ -676,6 +676,149 @@ SET images = CASE
 END
 WHERE image IS NOT NULL AND TRIM(image) <> '';
 
+-- 3.6) Bổ sung ảnh cho các sản phẩm bó hoa (đã kiểm tra HTTP 200)
+-- Mỗi bó hoa có 5 ảnh trong JSON: 1 ảnh chính hiện tại + 4 ảnh bổ sung.
+UPDATE products
+SET images = CASE slug
+    WHEN 'bo-hoa-hong-do-tinh-yeu' THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/34691226/pexels-photo-34691226.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/33690861/pexels-photo-33690861.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36691684/pexels-photo-36691684.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/32356065/pexels-photo-32356065.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN 'bo-hoa-huong-duong-rang-ro' THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/13599824/pexels-photo-13599824.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/31586744/pexels-photo-31586744.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/22674130/pexels-photo-22674130.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/12113671/pexels-photo-12113671.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN 'bo-hoa-mix-pastel' THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/29112838/pexels-photo-29112838.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/34789794/pexels-photo-34789794.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/19659092/pexels-photo-19659092.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36490658/pexels-photo-36490658.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN 'bo-hoa-cam-tu-cau-xanh' THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/32166706/pexels-photo-32166706.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/33678332/pexels-photo-33678332.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/13524630/pexels-photo-13524630.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/33418562/pexels-photo-33418562.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN 'bo-hoa-cuc-hoa-mi-trang' THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/33985765/pexels-photo-33985765.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/30062436/pexels-photo-30062436.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/33409882/pexels-photo-33409882.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/30756981/pexels-photo-30756981.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN 'bo-hoa-ly-trang-sang-trong' THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/31780763/pexels-photo-31780763.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36179363/pexels-photo-36179363.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/31368780/pexels-photo-31368780.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/8066157/pexels-photo-8066157.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    ELSE images
+END
+WHERE slug IN (
+    'bo-hoa-hong-do-tinh-yeu',
+    'bo-hoa-huong-duong-rang-ro',
+    'bo-hoa-mix-pastel',
+    'bo-hoa-cam-tu-cau-xanh',
+    'bo-hoa-cuc-hoa-mi-trang',
+    'bo-hoa-ly-trang-sang-trong'
+);
+
+-- 3.7) Bổ sung ảnh diện rộng cho toàn bộ bộ sưu tập (quy mô ~50 sản phẩm)
+-- Áp dụng cho toàn bộ sản phẩm còn lại: 1 ảnh chính hiện tại + 4 ảnh bổ sung.
+UPDATE products
+SET images = CASE
+    WHEN category_id = 3 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/30319661/pexels-photo-30319661.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/34691226/pexels-photo-34691226.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36691684/pexels-photo-36691684.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/33985765/pexels-photo-33985765.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 4 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/29112838/pexels-photo-29112838.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/34474071/pexels-photo-34474071.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36490658/pexels-photo-36490658.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/34789794/pexels-photo-34789794.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 5 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/33418562/pexels-photo-33418562.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/32166706/pexels-photo-32166706.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/30062436/pexels-photo-30062436.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/31780763/pexels-photo-31780763.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 6 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/12113671/pexels-photo-12113671.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/13599824/pexels-photo-13599824.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/31586744/pexels-photo-31586744.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/32300948/pexels-photo-32300948.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 7 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/32356065/pexels-photo-32356065.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/33690861/pexels-photo-33690861.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36490658/pexels-photo-36490658.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/19659092/pexels-photo-19659092.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 8 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/34789794/pexels-photo-34789794.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/29112838/pexels-photo-29112838.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36179363/pexels-photo-36179363.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/31368780/pexels-photo-31368780.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 9 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/33678332/pexels-photo-33678332.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/33418562/pexels-photo-33418562.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/34480835/pexels-photo-34480835.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/13524630/pexels-photo-13524630.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 10 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/34474071/pexels-photo-34474071.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/36490658/pexels-photo-36490658.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/29112838/pexels-photo-29112838.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/19659092/pexels-photo-19659092.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    WHEN category_id = 13 THEN JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/33409882/pexels-photo-33409882.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/30062436/pexels-photo-30062436.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/31780763/pexels-photo-31780763.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/6188601/pexels-photo-6188601.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+    ELSE JSON_ARRAY(
+        image,
+        'https://images.pexels.com/photos/30319661/pexels-photo-30319661.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/34789794/pexels-photo-34789794.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/30062436/pexels-photo-30062436.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/31780763/pexels-photo-31780763.jpeg?auto=compress&cs=tinysrgb&w=1200'
+    )
+END
+WHERE image IS NOT NULL
+  AND TRIM(image) <> ''
+  AND slug NOT IN (
+    'bo-hoa-hong-do-tinh-yeu',
+    'bo-hoa-huong-duong-rang-ro',
+    'bo-hoa-mix-pastel',
+    'bo-hoa-cam-tu-cau-xanh',
+    'bo-hoa-cuc-hoa-mi-trang',
+    'bo-hoa-ly-trang-sang-trong'
+  );
+
 -- 4. COUPONS
 INSERT INTO coupons (code, description, discount_type, discount_value, min_order_value, max_discount, usage_limit, start_date, end_date, is_active) VALUES
 ('WELCOME10', 'Giảm 10% cho khách hàng mới', 'percent', 10, 200000, 100000, 100, '2025-01-01 00:00:00', '2025-12-31 23:59:59', TRUE),
