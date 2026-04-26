@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/api/carousel-images")
@@ -23,24 +22,26 @@ public class ImageCarouselServlet extends HttpServlet {
         
         try {
             ProductDAO productDAO = new ProductDAO();
-            // Lấy tất cả sản phẩm có hình ảnh
-            List<Product> allProducts = productDAO.findAll();
+            // Ưu tiên sản phẩm nổi bật cho hero-card, fallback sang sản phẩm mới.
+            List<Product> sourceProducts = productDAO.findFeatured(8);
+            if (sourceProducts == null || sourceProducts.isEmpty()) {
+                sourceProducts = productDAO.findLatest(8);
+            }
             
             List<CarouselImage> carouselImages = new ArrayList<>();
             
             // Lọc các sản phẩm có hình ảnh
-            for (Product product : allProducts) {
+            for (Product product : sourceProducts) {
                 if (product.getImage() != null && !product.getImage().isEmpty()) {
                     CarouselImage img = new CarouselImage();
                     img.setUrl(product.getImage());
                     img.setTitle(product.getName());
                     img.setProductId(product.getId());
+                    img.setSlug(product.getSlug());
+                    img.setDisplayPrice(product.getFormattedDisplayPrice());
                     carouselImages.add(img);
                 }
             }
-            
-            // Xáo trộn danh sách
-            Collections.shuffle(carouselImages);
             
             // Lấy 5-8 hình ảnh ngẫu nhiên
             int limit = Math.min(8, carouselImages.size());
@@ -68,6 +69,8 @@ public class ImageCarouselServlet extends HttpServlet {
         private String url;
         private String title;
         private int productId;
+        private String slug;
+        private String displayPrice;
         
         public String getUrl() {
             return url;
@@ -91,6 +94,22 @@ public class ImageCarouselServlet extends HttpServlet {
         
         public void setProductId(int productId) {
             this.productId = productId;
+        }
+
+        public String getSlug() {
+            return slug;
+        }
+
+        public void setSlug(String slug) {
+            this.slug = slug;
+        }
+
+        public String getDisplayPrice() {
+            return displayPrice;
+        }
+
+        public void setDisplayPrice(String displayPrice) {
+            this.displayPrice = displayPrice;
         }
     }
 }

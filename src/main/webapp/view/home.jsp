@@ -171,7 +171,9 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       .hero {
         position: relative;
 
-        min-height: 100vh;
+        min-height: auto;
+
+        padding: 2.5rem 0 4rem;
 
         display: flex;
 
@@ -179,11 +181,9 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         background: linear-gradient(
             135deg,
-            rgba(250, 245, 239, 0.95) 0%,
-            rgba(255, 243, 235, 0.9) 100%
-          ),
-          url("https://images.unsplash.com/photo-1487070183336-b863922373d4?w=1600")
-            center/cover;
+            rgba(252, 247, 243, 0.96) 0%,
+            rgba(250, 241, 233, 0.92) 100%
+          );
 
         overflow: hidden;
       }
@@ -228,9 +228,9 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         margin: 0 auto;
 
-        padding: 0 2rem;
+        padding: 0;
 
-        width: 100%;
+        width: min(1400px, 90vw);
 
         position: relative;
 
@@ -238,23 +238,42 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       }
 
       .hero-content {
+        position: relative;
+
+        min-height: 600px;
+
+        height: clamp(520px, 62vh, 650px);
+
         display: grid;
 
-        grid-template-columns: 1.2fr 1fr;
+        grid-template-columns: 45% 55%;
 
-        gap: 4rem;
+        gap: 2.4rem;
+
+        padding: 40px 60px;
+
+        border-radius: 30px;
+
+        background: linear-gradient(140deg, #fffdfb 0%, #fff8f2 100%);
+
+        box-shadow: 0 22px 60px rgba(112, 76, 49, 0.14),
+          0 2px 0 rgba(255, 255, 255, 0.8) inset;
 
         align-items: center;
       }
 
+      .hero-text {
+        max-width: 520px;
+      }
+
       .hero-text h1 {
-        font-size: 5rem;
+        font-size: 42px;
 
         font-weight: 800;
 
-        line-height: 1.1;
+        line-height: 1.15;
 
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
 
         background: linear-gradient(
           135deg,
@@ -270,31 +289,31 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       }
 
       .hero-text p {
-        font-size: 1.5rem;
+        font-size: 1.1rem;
 
         color: var(--brown-soft);
 
-        margin-bottom: 2.5rem;
+        margin-bottom: 1.75rem;
 
-        font-style: italic;
+        font-style: normal;
       }
 
       .hero-search {
-        background: white;
+        background: rgba(255, 255, 255, 0.96);
 
         border-radius: 60px;
 
-        padding: 0.5rem;
+        padding: 0.4rem;
 
         display: flex;
 
         align-items: center;
 
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 10px 26px rgba(96, 64, 40, 0.11);
 
-        margin-bottom: 2rem;
+        margin-bottom: 1.4rem;
 
-        max-width: 600px;
+        max-width: 520px;
       }
 
       .hero-search input {
@@ -322,7 +341,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         border: none;
 
-        padding: 1rem 2.5rem;
+        padding: 0.95rem 2.15rem;
 
         border-radius: 50px;
 
@@ -344,19 +363,19 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       .hero-buttons {
         display: flex;
 
-        gap: 1.5rem;
+        gap: 1rem;
 
         flex-wrap: wrap;
       }
 
       .btn {
-        padding: 1rem 2.5rem;
+        padding: 0.95rem 2rem;
 
         border-radius: 50px;
 
         font-weight: 600;
 
-        font-size: 1.1rem;
+        font-size: 1rem;
 
         cursor: pointer;
 
@@ -382,7 +401,13 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         color: white;
 
-        box-shadow: 0 8px 20px rgba(201, 147, 102, 0.3);
+        font-size: 1.08rem;
+
+        font-weight: 700;
+
+        padding: 1rem 2.5rem;
+
+        box-shadow: 0 10px 24px rgba(201, 147, 102, 0.32);
       }
 
       .btn-primary:hover {
@@ -410,21 +435,38 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       .hero-image {
         position: relative;
 
+        height: 100%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
         perspective: 1000px;
       }
 
       .hero-card {
         position: relative;
 
-        background: white;
+        width: 100%;
+
+        height: 100%;
+
+        background: linear-gradient(165deg, #fffdfa 0%, #fdf7f1 100%);
 
         border-radius: 30px;
 
         overflow: hidden;
 
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 16px 42px rgba(77, 54, 35, 0.13);
 
-        transition: transform 0.6s ease;
+        transition: transform 0.35s ease, box-shadow 0.35s ease;
+      }
+
+      .hero-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 48px rgba(77, 54, 35, 0.16);
       }
 
       .hero-badge {
@@ -982,30 +1024,64 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       /* Responsive */
 
       @media (max-width: 1024px) {
-        .hero-content {
-          grid-template-columns: 1fr;
+        .hero-container {
+          width: min(1400px, 94vw);
+        }
 
-          gap: 3rem;
+        .hero-content {
+          min-height: 540px;
+
+          height: auto;
+
+          grid-template-columns: 1fr 1fr;
+
+          gap: 1.5rem;
+
+          padding: 32px 36px;
         }
 
         .hero-text h1 {
-          font-size: 3.5rem;
+          font-size: 36px;
         }
 
         .hero-card {
-          max-width: 500px;
-
-          margin: 0 auto;
+          border-radius: 26px;
         }
       }
 
       @media (max-width: 768px) {
+        .hero {
+          padding: 1.25rem 0 2.6rem;
+        }
+
+        .hero-container {
+          width: min(1400px, 94vw);
+        }
+
+        .hero-content {
+          grid-template-columns: 1fr;
+
+          min-height: auto;
+
+          padding: 24px 20px;
+
+          gap: 1.2rem;
+        }
+
+        .hero-image {
+          min-height: 320px;
+        }
+
         .hero-text h1 {
-          font-size: 2.5rem;
+          font-size: 2rem;
         }
 
         .hero-text p {
-          font-size: 1.2rem;
+          font-size: 1rem;
+        }
+
+        .hero-search {
+          margin-bottom: 1rem;
         }
 
         .hero-buttons {
@@ -1489,7 +1565,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
               <div class="hero-buttons">
                 <a href="#products" class="btn btn-primary">
-                  Mua ngay
+                  Xem sản phẩm
 
                   <span>→</span>
                 </a>
@@ -1505,7 +1581,12 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
                 <span class="hero-badge">New</span>
                 <div id="image-carousel" class="carousel-container">
                   <div class="carousel-wrapper">
-                    <img id="carousel-image" src="" alt="Bó hoa" class="carousel-image" />
+                    <img id="carousel-image" src="https://via.placeholder.com/349x384?text=Flower+Image" alt="Bó hoa" class="carousel-image" />
+                  </div>
+                  <div class="carousel-caption">
+                    <h3 id="carousel-title">Bộ sưu tập hoa nổi bật</h3>
+                    <p id="carousel-price"></p>
+                    <a id="carousel-link" class="carousel-link" href="${pageContext.request.contextPath}/products">Xem sản phẩm</a>
                   </div>
                   <div class="carousel-dots" id="carousel-dots"></div>
                 </div>
@@ -2615,22 +2696,18 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
     <style>
       /* Image Carousel Styles */
       .carousel-container {
-        width: 349px;
-        height: 384px;
-        background: #fff;
-        border-radius: 24px;
-        margin-left: 100px;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border-radius: 26px;
+        margin-left: 0;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 
-                    0 0 0 1px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
+        transition: transform 0.35s ease;
       }
 
       .carousel-container:hover {
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
-                    0 0 0 1px rgba(0, 0, 0, 0.08);
-        transform: translateY(-5px);
+        transform: translateY(-2px);
       }
 
       .carousel-wrapper {
@@ -2639,37 +2716,43 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         position: relative;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-end;
+        padding: 30px 24px 90px;
+      }
+
+      .carousel-wrapper::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0) 35%,
+          rgba(255, 246, 236, 0.88) 100%
+        );
       }
 
       .carousel-image {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
+        object-position: center right;
         position: absolute;
-        animation: fadeInOut 0.8s ease-in-out;
+        animation: fadeInSoft 0.8s ease-in-out;
       }
 
       .carousel-image.fade-in {
-        animation: fadeInOut 0.8s ease-in-out forwards;
+        animation: fadeInSoft 0.8s ease-in-out forwards;
       }
 
-      @keyframes fadeInOut {
+      @keyframes fadeInSoft {
         0% {
           opacity: 0;
-          transform: scale(0.98);
-        }
-        15% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        85% {
-          opacity: 1;
-          transform: scale(1);
+          transform: translateY(8px) scale(0.98);
         }
         100% {
-          opacity: 0;
-          transform: scale(0.98);
+          opacity: 1;
+          transform: scale(1);
         }
       }
 
@@ -2680,51 +2763,89 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         left: 50%;
         transform: translateX(-50%);
         display: flex;
-        gap: 10px;
+        gap: 8px;
         z-index: 10;
-        background: rgba(0, 0, 0, 0.25);
-        padding: 8px 16px;
-        border-radius: 30px;
-        backdrop-filter: blur(10px);
+        background: transparent;
+        padding: 0;
       }
 
       .carousel-dot {
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(73, 54, 41, 0.28);
         cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: all 0.25s ease;
         border: 1px solid transparent;
       }
 
       .carousel-dot.active {
-        background: #fff;
-        transform: scale(1.3);
-        box-shadow: 0 0 12px rgba(255, 255, 255, 1);
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        background: #9f6f49;
+        transform: scale(1.15);
+        border: 1px solid rgba(159, 111, 73, 0.45);
       }
 
       .carousel-dot:hover {
-        background: rgba(255, 255, 255, 0.9);
-        transform: scale(1.15);
-        box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        background: rgba(159, 111, 73, 0.65);
+      }
+
+      .carousel-caption {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        bottom: 52px;
+        z-index: 11;
+        padding: 0;
+        color: #6f4d32;
+      }
+
+      .carousel-caption h3 {
+        margin: 0;
+        font-size: 1.05rem;
+        line-height: 1.3;
+        font-weight: 700;
+        color: #5a3e2b;
+      }
+
+      .carousel-caption p {
+        margin: 0.2rem 0 0.65rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #9a6f4c;
+      }
+
+      .carousel-link {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.82);
+        color: #6a3e23;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.82rem;
+        padding: 0.34rem 0.75rem;
+        border-radius: 999px;
+        transition: all 0.2s ease;
+      }
+
+      .carousel-link:hover {
+        transform: translateY(-1px) scale(1.01);
+        background: #ffffff;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
       }
 
       /* Hero Badge Styling */
       .hero-badge {
         position: absolute;
-        top: 20px;
-        left: 20px;
-        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        top: 16px;
+        left: 16px;
+        background: linear-gradient(135deg, #f56f77, #ef5c68);
         color: white;
-        padding: 8px 18px;
+        padding: 6px 12px;
         border-radius: 50px;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 700;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.2px;
         z-index: 15;
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        box-shadow: 0 6px 16px rgba(239, 92, 104, 0.35);
         animation: badgePulse 2s ease-in-out infinite;
       }
 
@@ -2739,16 +2860,35 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
       @media (max-width: 768px) {
         .carousel-container {
-          width: 280px;
-          height: 320px;
-          margin-left: 50px;
+          width: 100%;
+          height: 100%;
+          margin-left: 0;
+        }
+
+        .carousel-wrapper {
+          padding: 22px 16px 84px;
+        }
+
+        .carousel-caption {
+          left: 16px;
+          right: 16px;
+          bottom: 46px;
+          padding: 0;
+        }
+
+        .carousel-caption h3 {
+          font-size: 0.95rem;
+        }
+
+        .carousel-caption p {
+          font-size: 0.8rem;
         }
 
         .hero-badge {
-          top: 15px;
-          left: 15px;
-          padding: 6px 14px;
-          font-size: 12px;
+          top: 12px;
+          left: 12px;
+          padding: 5px 10px;
+          font-size: 10px;
         }
       }
     </style>
@@ -2766,24 +2906,80 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
       function loadCarouselImages() {
         fetch('${pageContext.request.contextPath}/api/carousel-images')
-          .then(response => response.json())
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Cannot load carousel data: ' + response.status);
+            }
+            return response.json();
+          })
           .then(data => {
-            carouselImages = data;
+            carouselImages = Array.isArray(data) ? data.filter(item => item && item.url) : [];
             if (carouselImages.length > 0) {
               displayImage(currentImageIndex);
               renderDots();
               startCarouselRotation();
+            } else {
+              renderFallbackCarousel();
             }
           })
           .catch(error => {
             console.error('Error loading carousel images:', error);
-            // Fallback: display a placeholder
-            const img = document.getElementById('carousel-image');
-            if (img) {
-              img.src = 'https://via.placeholder.com/349x384?text=Flower+Image';
-              img.alt = 'Placeholder';
-            }
+            renderFallbackCarousel();
           });
+      }
+
+      function resolveCarouselImageUrl(rawUrl) {
+        const value = (rawUrl || '').trim();
+        if (!value) return '';
+
+        if (/^https?:\/\//i.test(value) || value.startsWith('data:')) {
+          return value;
+        }
+
+        if (value.startsWith('/api/image/')) {
+          return '${pageContext.request.contextPath}' + value + '?size=carousel';
+        }
+
+        const normalized = value.replace(/^\/+|^\.\.\//g, '');
+        return '${pageContext.request.contextPath}/api/image/' + encodeURIComponent(normalized) + '?size=carousel';
+      }
+
+      function renderFallbackCarousel() {
+        const img = document.getElementById('carousel-image');
+        if (img) {
+          img.src = 'https://via.placeholder.com/349x384?text=Flower+Image';
+          img.alt = 'Flower image';
+        }
+        updateCarouselMeta({
+          title: 'Bộ sưu tập hoa nổi bật',
+          displayPrice: '',
+          slug: ''
+        });
+      }
+
+      function updateCarouselMeta(image) {
+        const titleEl = document.getElementById('carousel-title');
+        const priceEl = document.getElementById('carousel-price');
+        const linkEl = document.getElementById('carousel-link');
+        const contextPath = '${pageContext.request.contextPath}';
+
+        if (titleEl) {
+          titleEl.textContent = image && image.title ? image.title : 'Bộ sưu tập hoa nổi bật';
+        }
+
+        if (priceEl) {
+          priceEl.textContent = image && image.displayPrice ? image.displayPrice : '';
+        }
+
+        if (linkEl) {
+          if (image && image.slug) {
+            linkEl.href = contextPath + '/products/' + image.slug;
+            linkEl.textContent = 'Xem chi tiết';
+          } else {
+            linkEl.href = contextPath + '/products';
+            linkEl.textContent = 'Xem sản phẩm';
+          }
+        }
       }
 
       function displayImage(index) {
@@ -2808,20 +3004,16 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         // Create and add new image with fade in
         setTimeout(() => {
           const newImg = document.createElement('img');
-          // Use optimized image endpoint with carousel size
-          const optimizedUrl = new URL(image.url, window.location.origin);
-          if (!optimizedUrl.pathname.includes('/api/image/')) {
-            // Convert regular image path to optimized endpoint
-            newImg.src = '${pageContext.request.contextPath}/api/image/' + 
-                        image.url.replace(/^\/|^\.\.\//g, '') + '?size=carousel';
-          } else {
-            newImg.src = image.url + '?size=carousel';
-          }
+          newImg.src = resolveCarouselImageUrl(image.url) || 'https://via.placeholder.com/349x384?text=Flower+Image';
           newImg.alt = image.title || 'Carousel Image';
           newImg.className = 'carousel-image';
           newImg.style.opacity = '0';
           newImg.style.transition = 'opacity 0.8s ease-in-out';
           newImg.loading = 'eager'; // Important for active image
+          newImg.onerror = () => {
+            newImg.onerror = null;
+            newImg.src = 'https://via.placeholder.com/349x384?text=Flower+Image';
+          };
           
           wrapper.appendChild(newImg);
           
@@ -2830,6 +3022,8 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
             newImg.style.opacity = '1';
           }, 10);
         }, 150);
+
+        updateCarouselMeta(image);
         
         // Update active dot
         updateActiveDot(index);
