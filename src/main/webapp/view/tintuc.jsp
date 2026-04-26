@@ -6,7 +6,15 @@
 <html lang="vi">
   <head>
     <title>Tin Tức - La Vie Est Belle - Flower & Gift</title>
-    
+
+    <!-- Google Fonts: load sớm nhất để tránh FOUT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="${fn:escapeXml(csrfToken)}">
     <script>window.csrfToken = '<c:out value="${csrfToken}" />';</script>
@@ -995,11 +1003,6 @@
     </style>
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
-      rel="stylesheet"
-    />
-
-    <link
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"
       rel="preload stylesheet"
       as="style"
@@ -1699,8 +1702,8 @@
           loadMoreNews();
         });
 
-        // Initial binding for existing cards
-        attachFilterEvents();
+        // Khởi tạo event delegation một lần duy nhất
+        initFilterAndCardEvents();
 
         // Recent posts click
         const recentPosts = document.querySelectorAll(".recent-post-item");
@@ -1830,8 +1833,7 @@
               loadMoreBtn.disabled = false;
             }
 
-            // Re-attach filter events with fresh nodes
-            attachFilterEvents();
+            // Re-attach filter events with fresh nodes — không cần với event delegation
           } else if (!append) {
             // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
           }
@@ -1899,40 +1901,41 @@
         return categories[category] || category;
       }
       
-function attachFilterEvents() {
-        const filterButtons = document.querySelectorAll(".chip");
-        const newsCards = document.querySelectorAll(".news-card");
+function initFilterAndCardEvents() {
+        const filterChips = document.querySelector(".filter-chips");
+        const newsGrid   = document.getElementById("newsGrid");
 
-        filterButtons.forEach((btn) => {
-          btn.onclick = function () {
-            filterButtons.forEach((b) => b.classList.remove("active"));
-            this.classList.add("active");
+        // --- Chip filter: delegation trên container .filter-chips ---
+        if (filterChips && !filterChips._delegated) {
+          filterChips._delegated = true;
+          filterChips.addEventListener("click", function (e) {
+            const btn = e.target.closest(".chip");
+            if (!btn) return;
 
-            const filter = this.getAttribute("data-filter");
-
-            newsCards.forEach((card) => {
-              const category = card.getAttribute("data-category");
-
-              if (filter === "all" || category === filter) {
-                card.style.display = "flex";
-              } else {
-                card.style.display = "none";
-              }
+            document.querySelectorAll(".chip").forEach(function (b) {
+              b.classList.remove("active");
             });
-          };
-        });
+            btn.classList.add("active");
 
-        newsCards.forEach((card) => {
-          card.onclick = function (e) {
-            if (!e.target.classList.contains("news-link")) {
-              const link = this.querySelector(".news-link");
+            const filter = btn.getAttribute("data-filter");
+            document.querySelectorAll(".news-card").forEach(function (card) {
+              const category = card.getAttribute("data-category");
+              card.style.display = (filter === "all" || category === filter) ? "flex" : "none";
+            });
+          });
+        }
 
-              if (link) {
-                window.location.href = link.getAttribute("href");
-              }
-            }
-          };
-        });
+        // --- Card click: delegation trên #newsGrid ---
+        if (newsGrid && !newsGrid._delegated) {
+          newsGrid._delegated = true;
+          newsGrid.addEventListener("click", function (e) {
+            if (e.target.classList.contains("news-link")) return;
+            const card = e.target.closest(".news-card");
+            if (!card) return;
+            const link = card.querySelector(".news-link");
+            if (link) window.location.href = link.getAttribute("href");
+          });
+        }
       }
       // Async loading
 
