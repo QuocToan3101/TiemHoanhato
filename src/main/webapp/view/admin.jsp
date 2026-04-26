@@ -513,15 +513,6 @@
         box-shadow: 0 4px 12px var(--shadow);
       }
 
-      /* th {
-        background-color: var(--bg-light);
-        font-weight: 700;
-        color: var(--text-dark);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      } */
-
       .stat-icon.success {
         background: linear-gradient(135deg, #10b981, #059669);
       }
@@ -702,31 +693,7 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
       }
-/* 
-      .badge-success {
-        background-color: rgba(16, 185, 129, 0.15);
-        color: #059669;
-      }
-      .badge-warning {
-        background-color: rgba(245, 158, 11, 0.15);
-        color: #d97706;
-      }
-      .badge-danger {
-        background-color: rgba(239, 68, 68, 0.15);
-        color: #dc2626;
-      }
-      .badge-info {
-        background-color: rgba(59, 130, 246, 0.15);
-        color: #2563eb;
-      }
-      .badge-primary {
-        background-color: rgba(201, 147, 102, 0.15);
-        color: var(--primary-dark);
-      }
-      .badge-secondary {
-        background-color: rgba(108, 88, 69, 0.15);
-        color: var(--secondary-soft);
-      } */
+
 
       .btn-light {
         background-color: var(--bg-light);
@@ -978,20 +945,6 @@
         }
       }
 
-      /* .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-        backdrop-filter: blur(5px);
-        animation: fadeIn 0.2s ease;
-      } */
 
       .modal-header {
         padding: 20px 25px;
@@ -2865,14 +2818,6 @@
       </div>
     </div>
 
-    <!-- <div class="modal-footer">
-          <button class="btn btn-secondary" onclick="closeModal('couponModal')">Hủy</button>
-          <button class="btn btn-primary" onclick="saveCoupon()">
-            <i class="fas fa-save"></i> Lưu
-          </button>
-        </div>
-      </div>
-    </div> -->
     <!-- Coupon Modal -->
     <div class="modal-overlay" id="couponModal">
       <div class="modal">
@@ -5150,20 +5095,6 @@
         document.getElementById("couponId").value = "";
         openModal("couponModal");
       }
-
-      // async function loadCoupons() {
-      //   try {
-      //     const response = await fetch(contextPath + "/admin/api/coupons");
-      //     const result = await response.json();
-
-      //     if (result.success) {
-      //       allCoupons = result.data;
-      //       displayCoupons();
-      //     }
-      //   } catch (error) {
-      //     console.error("Error loading coupons:", error);
-      //   }
-      // }
 
       async function saveCoupon() {
         const couponId = document.getElementById("couponId").value;
