@@ -53,6 +53,12 @@ public class EmailService {
     public boolean sendEmailWithAttachment(String toEmail, String subject, String htmlBody, 
                                           boolean isHtml, byte[] attachmentBytes) {
         try {
+            if (!hasUsableEmailConfig()) {
+                System.err.println("Lỗi cấu hình SMTP: thiếu hoặc đang dùng giá trị placeholder cho email.username/email.password. "
+                        + "Vui lòng cập nhật application.properties hoặc biến môi trường EMAIL_USERNAME/EMAIL_PASSWORD.");
+                return false;
+            }
+
             // Cấu hình properties
             Properties props = new Properties();
             props.put("mail.smtp.host", config.getEmailHost());
@@ -131,6 +137,28 @@ public class EmailService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private boolean hasUsableEmailConfig() {
+        String host = config.getEmailHost();
+        String username = config.getEmailUsername();
+        String password = config.getEmailPassword();
+
+        return isUsable(host) && isUsable(username) && isUsableSecret(password);
+    }
+
+    private boolean isUsable(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private boolean isUsableSecret(String value) {
+        if (!isUsable(value)) {
+            return false;
+        }
+        String trimmed = value.trim();
+        return !trimmed.startsWith("CHANGE_ME")
+                && !trimmed.startsWith("YOUR_")
+                && !trimmed.equalsIgnoreCase("your_client_secret_here");
     }
     
     /**

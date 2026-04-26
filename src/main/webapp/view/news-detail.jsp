@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${fn:escapeXml(news.title)} - Tiệm Hoa nhà tớ</title>
+    <title>${empty news ? 'Tin tức' : fn:escapeXml(news.title)} - Tiệm Hoa nhà tớ</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
@@ -258,6 +258,10 @@
     </style>
 </head>
 <body>
+    <c:if test="${empty news}">
+        <c:redirect url="/news" />
+    </c:if>
+
     <!-- Header -->
     <header class="header">
         <div class="container">

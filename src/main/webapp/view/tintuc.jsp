@@ -1154,7 +1154,7 @@
                     Bó hoa pastel cho Giỗ Tổ nên ưu tiên Sen hồng, Cúc mẫu đơn hoặc Hồng kem. Phối màu nã nhặn (trắng - hồng phấn - xanh lơ) tạo vẻ đẹp thanh tao, thành kính. Kiểu bó tròn đầy đặn, gói giấy trung tính giúp tôn vinh sự sang trọng, thể hiện trọn vẹn đạo lý "Uống nước nhớ nguồn" và lòng tri ân sâu sắc.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1188,7 +1188,7 @@
                     tượng hơn rất nhiều.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1222,7 +1222,7 @@
                     lại nhé…".
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1254,7 +1254,7 @@
                     Bạn không cần chi quá nhiều để có một bó hoa xinh – Ưu tiên hoa Cát Tường hoặc Cúc mẫu đơn nội địa tông hồng kem, trắng để tiết kiệm chi phí. Phối cùng nhiều lá bạc, hoa baby giúp bó hoa đầy đặn, sang trọng. Sử dụng giấy gói Kraft hoặc nơ tối giản giúp tổng thể trông chỉn chu, thành kính mà vẫn vừa vặn ngân sách.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1288,7 +1288,7 @@
                     ấy.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1321,7 +1321,7 @@
                     mẹo đơn giản này, hoa có thể tươi hơn bạn nghĩ rất nhiều.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1353,7 +1353,7 @@
                     Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ..
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
             </section>

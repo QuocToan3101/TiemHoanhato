@@ -89,11 +89,10 @@ public class RegisterServlet extends HttpServlet {
                 if (mailSent) {
                     request.setAttribute("success", "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
                 } else {
-                    userDAO.activateAfterEmailFailure(newUser.getId());
-                    request.setAttribute("success", "Đăng ký thành công. Hệ thống chưa gửi được email xác thực nên tài khoản đã được kích hoạt để bạn đăng nhập ngay.");
+                    request.setAttribute("error", "Đăng ký thành công nhưng chưa gửi được email xác thực. Tài khoản của bạn đang chờ xác thực, vui lòng kiểm tra lại cấu hình SMTP (email.username/email.password hoặc biến môi trường EMAIL_PASSWORD).");
                 }
             } catch (Exception e) {
-                request.setAttribute("success", "Đăng ký thành công nhưng hệ thống đang lỗi gửi email xác thực. Vui lòng liên hệ Admin.");
+                request.setAttribute("error", "Đăng ký thành công nhưng hệ thống lỗi gửi email xác thực. Vui lòng liên hệ Admin để kiểm tra SMTP.");
             }
             request.getRequestDispatcher("/view/login_1.jsp").forward(request, response);
         } else {
