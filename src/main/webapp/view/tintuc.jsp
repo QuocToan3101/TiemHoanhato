@@ -916,6 +916,82 @@
       .news-card:nth-child(6) {
         animation-delay: 0.35s;
       }
+
+      /* Skeleton Loading */
+
+      @keyframes shimmer {
+        0% { background-position: -600px 0; }
+        100% { background-position: 600px 0; }
+      }
+
+      .skeleton-card {
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(210, 180, 160, 0.2);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .skeleton-shimmer {
+        background: linear-gradient(
+          90deg,
+          #f0e8df 0px,
+          #faf5ef 40%,
+          #f0e8df 80%
+        );
+        background-size: 600px 100%;
+        animation: shimmer 1.6s infinite linear;
+      }
+
+      .skeleton-image {
+        width: 100%;
+        height: 240px;
+      }
+
+      .skeleton-body {
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .skeleton-meta {
+        height: 20px;
+        width: 45%;
+        border-radius: 50px;
+      }
+
+      .skeleton-title {
+        height: 22px;
+        width: 90%;
+        border-radius: 6px;
+      }
+
+      .skeleton-title-short {
+        height: 22px;
+        width: 65%;
+        border-radius: 6px;
+      }
+
+      .skeleton-line {
+        height: 15px;
+        border-radius: 4px;
+      }
+
+      .skeleton-line-short {
+        height: 15px;
+        width: 75%;
+        border-radius: 4px;
+      }
+
+      .skeleton-link {
+        height: 16px;
+        width: 30%;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+      }
     </style>
 
     <link
@@ -1687,20 +1763,58 @@
         return date && !isNaN(date) ? date.toLocaleDateString('vi-VN') : '';
       }
 
+      function buildSkeletonCard() {
+        const card = document.createElement('div');
+        card.className = 'skeleton-card';
+        card.setAttribute('data-skeleton', 'true');
+        card.innerHTML =
+          '<div class="skeleton-image skeleton-shimmer"></div>' +
+          '<div class="skeleton-body">' +
+            '<div class="skeleton-meta skeleton-shimmer"></div>' +
+            '<div class="skeleton-title skeleton-shimmer"></div>' +
+            '<div class="skeleton-title-short skeleton-shimmer"></div>' +
+            '<div class="skeleton-line skeleton-shimmer"></div>' +
+            '<div class="skeleton-line skeleton-shimmer"></div>' +
+            '<div class="skeleton-line-short skeleton-shimmer"></div>' +
+            '<div class="skeleton-link skeleton-shimmer"></div>' +
+          '</div>';
+        return card;
+      }
+
+      function showSkeletons(count) {
+        const newsGrid = document.getElementById('newsGrid');
+        for (let i = 0; i < count; i++) {
+          newsGrid.appendChild(buildSkeletonCard());
+        }
+      }
+
+      function removeSkeletons() {
+        const newsGrid = document.getElementById('newsGrid');
+        newsGrid.querySelectorAll('[data-skeleton]').forEach(function(el) {
+          el.remove();
+        });
+      }
+
       async function loadNewsFromDB(page, append) {
         page = page || 1;
         append = append || false;
         try {
+          const newsGrid = document.getElementById('newsGrid');
+
+          // Hiển thị skeleton trước khi fetch
+          if (!append) {
+            newsGrid.innerHTML = '';
+          }
+          showSkeletons(PAGE_SIZE);
+
           const url = contextPath + '/api/news/list?page=' + page + '&pageSize=' + PAGE_SIZE;
           const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
           const result = await response.json();
+
+          // Xóa skeleton sau khi có dữ liệu
+          removeSkeletons();
           
           if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-            const newsGrid = document.getElementById('newsGrid');
-            if (!append) {
-              newsGrid.innerHTML = '';
-            }
-            
             result.data.forEach(news => {
               newsGrid.appendChild(buildNewsCard(news));
             });
@@ -1722,6 +1836,7 @@
             // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
           }
         } catch (error) {
+          removeSkeletons();
           console.error('Error loading news:', error);
         }
       }
