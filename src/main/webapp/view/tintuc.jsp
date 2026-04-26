@@ -416,6 +416,8 @@
         display: flex;
 
         flex-direction: column;
+
+        animation: fadeInUp 0.6s ease-out;
       }
 
       .news-grid {
@@ -891,10 +893,6 @@
         }
       }
 
-      .news-card {
-        animation: fadeInUp 0.6s ease-out;
-      }
-
       .news-card:nth-child(1) {
         animation-delay: 0.1s;
       }
@@ -1102,6 +1100,8 @@
           <div class="chip" data-filter="opening">Khai trương</div>
 
           <div class="chip" data-filter="proposal">Cầu hôn</div>
+
+          <div class="chip" data-filter="wedding">Đám cưới</div>
 
           <div class="chip" data-filter="story">Story từ Tiệm</div>
         </div>
