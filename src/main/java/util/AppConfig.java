@@ -114,15 +114,27 @@ public class AppConfig {
     
     // Database Configuration
     public String getDbUrl() {
-        return getProperty("db.url");
+        return firstNonBlank(
+                getProperty("db.url"),
+                System.getenv("DB_URL"),
+                System.getProperty("DB_URL")
+        );
     }
     
     public String getDbUsername() {
-        return getProperty("db.username");
+        return firstNonBlank(
+                getProperty("db.username"),
+                System.getenv("DB_USERNAME"),
+                System.getProperty("DB_USERNAME")
+        );
     }
     
     public String getDbPassword() {
-        return getProperty("db.password", "");
+        String propertyValue = getProperty("db.password");
+        if (propertyValue != null) {
+            return propertyValue;
+        }
+        return firstNonBlank(System.getenv("DB_PASSWORD"), System.getProperty("DB_PASSWORD"));
     }
     
     // Email Configuration
@@ -252,6 +264,18 @@ public class AppConfig {
                 System.getenv("APP_URL"),
                 System.getProperty("APP_URL"),
                 getProperty("app.url")
+        );
+    }
+
+    /**
+     * Upload directory for user-uploaded files.
+     * Priority: ENV UPLOAD_DIR -> system property UPLOAD_DIR -> application.properties app.upload.directory -> default 'uploads'
+     */
+    public String getUploadDirectory() {
+        return firstNonBlank(
+                System.getenv("UPLOAD_DIR"),
+                System.getProperty("UPLOAD_DIR"),
+                getProperty("app.upload.directory", "uploads")
         );
     }
     

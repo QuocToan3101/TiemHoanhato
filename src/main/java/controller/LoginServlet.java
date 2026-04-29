@@ -59,7 +59,9 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             // Đăng nhập thành công
             HttpSession existing = request.getSession(false);
+            String redirectUrl = null;
             if (existing != null) {
+                redirectUrl = (String) existing.getAttribute("redirectUrl");
                 existing.invalidate();
             }
             HttpSession session = request.getSession(true);
@@ -81,14 +83,19 @@ public class LoginServlet extends HttpServlet {
                 emailCookie.setSecure(request.isSecure());
                 response.addCookie(emailCookie);
             }
-            
-            // Chuyển hướng theo role
+
+            // Nếu có redirectUrl (được AuthFilter lưu), ưu tiên redirect về đó
+            if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
+                response.sendRedirect(redirectUrl);
+                return;
+            }
+
+            // Chuyển hướng theo role mặc định
             if (user.isAdmin()) {
                 response.sendRedirect(request.getContextPath() + "/admin");
             } else {
                 response.sendRedirect(request.getContextPath() + "/home");
             }
-            
         } else {
             // Đăng nhập thất bại
             request.setAttribute("error", "Email hoặc mật khẩu không đúng!");

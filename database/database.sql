@@ -265,7 +265,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Admin: admin@gmail.com / admin123
 -- User: user@gmail.com / 123456
 INSERT INTO users (email, password, fullname, phone, role, status) VALUES
-('admin@gmail.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.1wL5oKsJLBwQbGj1G2', 'Administrator', '0921450620', 'admin', 'active'),
+('admin@gmail.com', '$2a$10$0VPqYic5/N3E7AYsiXZDGeIGRfkClAjuJrPXnOsbgct1kix1wlLAq', 'Administrator', '0921450620', 'admin', 'active'),
 ('user@gmail.com', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', 'Nguyen Van A', '0987654321', 'customer', 'active');
 
 -- 2. CATEGORIES

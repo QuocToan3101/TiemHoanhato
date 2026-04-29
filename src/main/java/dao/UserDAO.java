@@ -18,7 +18,7 @@ import util.DBConnection;
  */
 public class UserDAO {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
     

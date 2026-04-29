@@ -2779,12 +2779,13 @@
         </div>
         <div class="modal-footer">
           <button
+            type="button"
             class="btn btn-secondary"
             onclick="closeModal('productModal')"
           >
             Hủy
           </button>
-          <button class="btn btn-primary" onclick="saveProduct()">
+          <button type="button" class="btn btn-primary" onclick="saveProduct()">
             <i class="fas fa-save"></i> Lưu
           </button>
         </div>
@@ -4510,6 +4511,11 @@
         formData.append("file", file);
         formData.append("type", "product");
 
+        const csrfToken = window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (csrfToken) {
+          formData.append("csrfToken", csrfToken);
+        }
+
         try {
           showNotification(
             "Đang tải...",
@@ -4519,6 +4525,9 @@
 
           const response = await fetch(contextPath + "/api/upload-image", {
             method: "POST",
+            headers: csrfToken ? {
+              'X-CSRF-Token': csrfToken
+            } : {},
             body: formData,
           });
 
@@ -4631,6 +4640,7 @@
           params.append("quantity", quantity);
           if (image) params.append("image", image);
           if (description) params.append("description", description);
+          if (csrfToken) params.append("csrfToken", csrfToken);
 
           const response = await fetch(url, {
             method: "POST",
