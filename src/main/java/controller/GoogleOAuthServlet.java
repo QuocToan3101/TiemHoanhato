@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 
 import dao.UserDAO;
 import model.User;
+import service.CartService;
 import util.AppConfig;
 
 @WebServlet(urlPatterns = {"/oauth/google", "/oauth/google/callback"})
@@ -32,6 +33,8 @@ public class GoogleOAuthServlet extends HttpServlet {
     private static final String STATE_SESSION_KEY = "oauth_google_state";
 
     private static final String CALLBACK_PATH = "/oauth/google/callback";
+
+    private final CartService cartService = new CartService();
 
     private String getRedirectUri(HttpServletRequest request) {
         AppConfig config = AppConfig.getInstance();
@@ -223,14 +226,26 @@ public class GoogleOAuthServlet extends HttpServlet {
                 user = userDAO.findByEmail(email);
             }
             
-            // Bước 4: Đăng nhập thành công - Tạo session
-            session.removeAttribute(STATE_SESSION_KEY);
-            session = request.getSession();
+            // Bước 4: Đăng nhập thành công - Tạo session mới và merge giỏ hàng guest nếu có
+            HttpSession existingSession = request.getSession(false);
+            Object guestCart = existingSession != null ? existingSession.getAttribute(CartService.SESSION_CART_KEY) : null;
+
+            if (existingSession != null) {
+                existingSession.invalidate();
+            }
+
+            session = request.getSession(true);
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
             session.setAttribute("userName", user.getFullname());
             session.setAttribute("userRole", user.getRole());
+            session.setMaxInactiveInterval(30 * 60);
+
+            if (guestCart != null) {
+                session.setAttribute(CartService.SESSION_CART_KEY, guestCart);
+                cartService.mergeSessionCartToDb(session, user.getId());
+            }
             
             // Redirect về trang chủ
             response.sendRedirect(request.getContextPath() + "/home");

@@ -2525,10 +2525,11 @@
         }
         
         function updateCartCount(count) {
-            const badge = document.querySelector('.cart-badge, .cart-count');
-            if (badge) {
+            const badges = document.querySelectorAll('.cart-badge, .cart-count, .js-number-cart, .number-cart');
+            badges.forEach((badge) => {
                 badge.textContent = count;
-            }
+                badge.style.display = count > 0 ? 'inline-block' : 'none';
+            });
         }
 
         // ==================== Address Book ====================
@@ -3404,10 +3405,7 @@
                 
                 if (result.success) {
                     showToast('Đã thêm vào giỏ hàng', 'success');
-                    // Cập nhật cart count nếu có
-                    if (result.cartItemCount) {
-                        updateCartCount(result.cartItemCount);
-                    }
+                    updateCartCount(result.cartItemCount || result.cartCount || result.itemCount || 0);
                 } else {
                     showToast(result.message || 'Không thể thêm vào giỏ hàng', 'error');
                 }

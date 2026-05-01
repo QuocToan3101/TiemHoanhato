@@ -1173,17 +1173,11 @@
             .then(data => {
                 if (data.success) {
                     showToast('Đã thêm vào giỏ hàng!');
-                    // Update cart count in header if exists
-                    const cartCount = document.querySelector('.cart-count');
-                    if (cartCount && data.cartCount) {
-                        cartCount.textContent = data.cartCount;
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount(data.cartCount || data.itemCount || 0);
                     }
                 } else {
-                    if (data.message.includes('đăng nhập')) {
-                        window.location.href = contextPath + '/login';
-                    } else {
-                        showToast(data.message, 'error');
-                    }
+                    showToast(data.message || 'Có lỗi xảy ra!', 'error');
                 }
             })
             .catch(error => {

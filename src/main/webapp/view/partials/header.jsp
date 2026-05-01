@@ -476,7 +476,7 @@
     
     // Function to update cart count display
     function updateCartCount(count) {
-        const cartCountElements = document.querySelectorAll('.js-number-cart, .number-cart');
+        const cartCountElements = document.querySelectorAll('.js-number-cart, .number-cart, .cart-count');
         cartCountElements.forEach(function(element) {
             if (count > 0) {
                 element.textContent = count;

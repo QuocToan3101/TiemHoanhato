@@ -2621,18 +2621,11 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
           .then((data) => {
             if (data.success) {
               alert("Đã thêm vào giỏ hàng!");
-              // Update cart count if exists
-              const cartCount = document.querySelector(".number-cart");
-              if (cartCount && data.cartCount) {
-                cartCount.textContent = data.cartCount;
+              if (typeof updateCartCount === "function") {
+                updateCartCount(data.cartCount || data.itemCount || 0);
               }
             } else {
-              if (data.message && data.message.includes("đăng nhập")) {
-                window.location.href =
-                  "${pageContext.request.contextPath}/login";
-              } else {
-                alert(data.message || "Có lỗi xảy ra");
-              }
+              alert(data.message || "Có lỗi xảy ra");
             }
           })
           .catch((error) => {
