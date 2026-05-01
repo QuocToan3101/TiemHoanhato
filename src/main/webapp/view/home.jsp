@@ -2614,7 +2614,9 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       function addToCartHome(productId) {
         fetch("${pageContext.request.contextPath}/api/cart/add", {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          headers: withCsrfHeaders({
+            "Content-Type": "application/x-www-form-urlencoded",
+          }),
           body: "productId=" + productId + "&quantity=1",
         })
           .then((response) => response.json())

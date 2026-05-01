@@ -1735,6 +1735,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-Token': getCsrfToken(),
                 },
                 body: 'productId=' + productId + '&quantity=' + quantity
             })
@@ -1763,6 +1764,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-Token': getCsrfToken(),
                 },
                 body: 'productId=' + productId + '&quantity=' + quantity
             })

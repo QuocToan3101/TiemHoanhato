@@ -2071,7 +2071,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       function removeItem(id) {
         // Call API to remove item
         fetch(contextPath + '/api/cart?productId=' + id, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': getCsrfToken()
+          }
         })
         .then(response => response.json())
         .then(data => {
@@ -2100,6 +2103,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRF-Token': getCsrfToken(),
             },
             body: JSON.stringify({ productId: id, quantity: newQuantity })
           })
@@ -2133,6 +2137,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRF-Token': getCsrfToken(),
             },
             body: JSON.stringify({ productId: id, quantity: newQuantity })
           })

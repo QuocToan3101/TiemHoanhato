@@ -473,6 +473,21 @@
                 console.error('Error loading cart count:', error);
             });
     }
+
+    function getCsrfToken() {
+        return window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+
+    function withCsrfHeaders(headers) {
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            return headers || {};
+        }
+        return {
+            ...(headers || {}),
+            'X-CSRF-Token': csrfToken
+        };
+    }
     
     // Function to update cart count display
     function updateCartCount(count) {

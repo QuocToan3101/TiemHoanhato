@@ -3393,7 +3393,8 @@
                 const response = await fetch(contextPath + '/api/cart/add', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCsrfToken()
                     },
                     body: JSON.stringify({
                         productId: productId,
