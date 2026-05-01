@@ -25,12 +25,10 @@ public class AuthFilter implements Filter {
     
     // Các URL cần đăng nhập mới truy cập được
     private static final List<String> PROTECTED_URLS = Arrays.asList(
-        "/view/cart.jsp",
         "/view/settingProfile.jsp",
         "/view/checkout.jsp",
         "/view/orderSuccess.jsp",
         "/view/purchaseHistory.jsp",
-        "/api/cart",
         "/api/order",
         "/profile",
         "/checkout"

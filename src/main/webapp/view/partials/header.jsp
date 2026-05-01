@@ -178,7 +178,7 @@
                                 </c:choose>
                             </li>
                             <li class="list-inline-item mr-0">
-                                <a href="${pageContext.request.contextPath}/view/cart.jsp" class="cart js-call-minicart" data-original-title="Giỏ hàng"
+                                <a href="${pageContext.request.contextPath}/cart" class="cart js-call-minicart" data-original-title="Giỏ hàng"
                                     data-tooltip="tooltip">
                                     <svg aria-hidden="true" focusable="false" role="presentation"
                                         class="icon icon-bag-minimal" viewBox="0 0 64 64">
@@ -465,8 +465,8 @@
         fetch(contextPath + '/api/cart')
             .then(response => response.json())
             .then(result => {
-                if (result.success && result.itemCount > 0) {
-                    updateCartCount(result.itemCount);
+                if (result.success) {
+                    updateCartCount(result.itemCount || 0);
                 }
             })
             .catch(error => {

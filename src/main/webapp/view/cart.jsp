@@ -1936,14 +1936,16 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             if (data.success && data.items) {
               cartItems = data.items.map(item => ({
                 id: item.productId,
-                name: item.product ? item.product.name : 'Sản phẩm',
+                name: item.name || (item.product ? item.product.name : 'Sản phẩm'),
                 meta: item.product && item.product.category ? item.product.category.name : 'Hoa tươi',
-                price: item.product ? parseFloat(item.product.salePrice || item.product.price) : 0,
+                price: item.price ? parseFloat(item.price) : (item.product ? parseFloat(item.product.salePrice || item.product.price) : 0),
                 quantity: item.quantity,
-                image: item.product && item.product.image ? item.product.image : 'https://via.placeholder.com/100x100?text=No+Image'
+                image: item.image || (item.product && item.product.image ? item.product.image : 'https://via.placeholder.com/100x100?text=No+Image')
               }));
+              updateCartBadge(data.itemCount || data.cartCount || 0);
             } else {
               cartItems = [];
+              updateCartBadge(0);
             }
             renderCart();
           })
@@ -2076,11 +2078,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           if (data.success) {
             cartItems = cartItems.filter((item) => item.id !== id);
             renderCart();
-            // Update cart count in header
-            const cartCount = document.querySelector('.cart-count');
-            if (cartCount && data.cartCount !== undefined) {
-              cartCount.textContent = data.cartCount;
-            }
+            updateCartBadge(data.cartCount || data.itemCount || 0);
           } else {
             alert('Lỗi: ' + data.message);
           }
@@ -2096,40 +2094,82 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       function increaseQuantity(id) {
         const item = cartItems.find((item) => item.id === id);
         if (item) {
-          item.quantity++;
-          renderCart();
-          
-          // Call API to update quantity
+          const newQuantity = item.quantity + 1;
+
           fetch(contextPath + '/api/cart', {
-            method: 'POST',
+            method: 'PUT',
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json',
             },
-            body: 'productId=' + id + '&quantity=1'
-          }).catch(error => console.error('Error updating quantity:', error));
+            body: JSON.stringify({ productId: id, quantity: newQuantity })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (!data.success) {
+              alert(data.message || 'Không thể cập nhật số lượng');
+              return;
+            }
+            item.quantity = newQuantity;
+            renderCart();
+            updateCartBadge(data.cartCount || data.itemCount || 0);
+          })
+          .catch(error => {
+            console.error('Error updating quantity:', error);
+            alert('Có lỗi xảy ra khi cập nhật số lượng');
+          });
         }
       }
       
       function decreaseQuantity(id) {
         const item = cartItems.find((item) => item.id === id);
-        if (item && item.quantity > 1) {
-          item.quantity--;
-          renderCart();
-          
-          // Call API to update quantity
-          fetch(contextPath + '/api/cart', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'productId=' + id + '&quantity=-1'
-          }).catch(error => console.error('Error updating quantity:', error));
-        } else if (item && item.quantity === 1) {
-          // Nếu số lượng = 1, hỏi người dùng có muốn xóa không
-          if (confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-            removeItem(id);
+        if (item && item.quantity > 0) {
+          const newQuantity = item.quantity - 1;
+
+          if (newQuantity < 0) {
+            return;
           }
+
+          fetch(contextPath + '/api/cart', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId: id, quantity: newQuantity })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (!data.success) {
+              alert(data.message || 'Không thể cập nhật số lượng');
+              return;
+            }
+
+            if (newQuantity === 0) {
+              cartItems = cartItems.filter((cartItem) => cartItem.id !== id);
+            } else {
+              item.quantity = newQuantity;
+            }
+
+            renderCart();
+            updateCartBadge(data.cartCount || data.itemCount || 0);
+          })
+          .catch(error => {
+            console.error('Error updating quantity:', error);
+            alert('Có lỗi xảy ra khi cập nhật số lượng');
+          });
         }
+      }
+
+      function updateCartBadge(count) {
+        const badgeElements = document.querySelectorAll('.js-number-cart, .number-cart, .cart-count');
+        badgeElements.forEach((el) => {
+          if (count > 0) {
+            el.textContent = count;
+            el.style.display = 'inline-block';
+          } else {
+            el.textContent = '';
+            el.style.display = 'none';
+          }
+        });
       }
 
       // Apply discount coupon using API
