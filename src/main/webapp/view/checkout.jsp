@@ -1138,20 +1138,6 @@
                                             </div>
                                         </label>
                                         
-                                        <!-- MoMo -->
-                                        <label class="payment-option">
-                                            <input type="radio" name="paymentMethod" value="momo">
-                                            <div class="payment-icon">
-                                                <i class="fas fa-mobile-alt"></i>
-                                            </div>
-                                            <div class="payment-info">
-                                                <div class="payment-name">Ví MoMo</div>
-                                                <div class="payment-desc">Thanh toán qua ví điện tử MoMo</div>
-                                                <div class="payment-detail">
-                                                    <p>Bạn sẽ được chuyển đến trang MoMo để hoàn tất thanh toán sau khi đặt hàng.</p>
-                                                </div>
-                                            </div>
-                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -1474,7 +1460,7 @@
                 if (response.data.success) {
                     // Check if need to redirect to payment gateway
                     if (response.data.redirectUrl) {
-                        // VNPay or MoMo payment - redirect to payment page
+                        // VNPay payment - redirect to payment page
                         showToast(response.data.message || 'Đang chuyển đến trang thanh toán...', 'success');
                         setTimeout(() => {
                             window.location.href = response.data.redirectUrl;

@@ -14,6 +14,19 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
+    <script>
+      function getCsrfToken() {
+        return window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      }
+
+      function withCsrfHeaders(headers) {
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+          return headers || {};
+        }
+        return Object.assign({}, headers || {}, { 'X-CSRF-Token': csrfToken });
+      }
+    </script>
 
     <!-- Font Awesome -->
     <link
@@ -2349,12 +2362,6 @@
                   </div>
                   <div class="form-group">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                      <input type="checkbox" id="paymentMomo">
-                      <span><i class="fas fa-mobile-alt"></i> Ví MoMo</span>
-                    </label>
-                  </div>
-                  <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                       <input type="checkbox" id="paymentVNPay">
                       <span><i class="fas fa-credit-card"></i> VNPay</span>
                     </label>
@@ -3415,7 +3422,7 @@
           const data = await response.json();
 
           // Prepare chart data
-          const labels = data.map((item) => item.label);
+          const labels = data.map((item) => item.label || item.date);
           const revenues = data.map((item) => item.revenue);
 
           // Destroy existing chart if exists
@@ -4022,7 +4029,6 @@
         const methodMap = {
           cod: "Thanh toán khi nhận hàng (COD)",
           bank: "Chuyển khoản ngân hàng",
-          momo: "Ví MoMo",
           vnpay: "VNPay",
           zalopay: "ZaloPay",
         };
@@ -4072,9 +4078,9 @@
             contextPath + "/admin/api/order/update-status",
             {
               method: "POST",
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
+              headers: withCsrfHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }),
               body: params.toString()
             }
           );
@@ -4557,7 +4563,9 @@
         const description = document
           .getElementById("productDescription")
           .value.trim();
-
+        const currentProduct = productId
+          ? currentProducts.find((product) => String(product.id) === String(productId))
+          : null;
         // Validation
         if (!name || !price || quantity === "") {
           showNotification(
@@ -4585,6 +4593,18 @@
           params.append("quantity", quantity);
           if (image) params.append("image", image);
           if (description) params.append("description", description);
+          if (productId && currentProduct) {
+            if (currentProduct.slug) params.append("slug", currentProduct.slug);
+            if (currentProduct.salePrice !== null && currentProduct.salePrice !== undefined) {
+              params.append("salePrice", currentProduct.salePrice);
+            }
+            if (currentProduct.shortDescription) {
+              params.append("shortDescription", currentProduct.shortDescription);
+            }
+            if (currentProduct.isFeatured !== null && currentProduct.isFeatured !== undefined) {
+              params.append("isFeatured", currentProduct.isFeatured ? "true" : "false");
+            }
+          }
           if (csrfToken) params.append("csrfToken", csrfToken);
 
           const response = await fetch(url, {
@@ -4793,7 +4813,7 @@
           const params = new URLSearchParams({ id: userId, status: 'active' });
           const response = await fetch(
             contextPath + "/admin/api/user/update-status?" + params.toString(),
-            { method: "POST" }
+            { method: "POST", headers: withCsrfHeaders() }
           );
           const result = await response.json();
           
@@ -4815,7 +4835,7 @@
           const params = new URLSearchParams({ id: userId, status: 'banned' });
           const response = await fetch(
             contextPath + "/admin/api/user/update-status?" + params.toString(),
-            { method: "POST" }
+            { method: "POST", headers: withCsrfHeaders() }
           );
           const result = await response.json();
           
@@ -4836,7 +4856,7 @@
         try {
           const response = await fetch(
             contextPath + "/admin/api/user/" + userId,
-            { method: "DELETE" }
+            { method: "DELETE", headers: withCsrfHeaders() }
           );
           const result = await response.json();
           
@@ -4971,6 +4991,7 @@
             method: "POST",
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRF-Token': getCsrfToken(),
             },
             body: params.toString()
           });
@@ -4998,7 +5019,7 @@
         try {
           const response = await fetch(
             contextPath + "/admin/api/category/" + categoryId,
-            { method: "DELETE" }
+            { method: "DELETE", headers: withCsrfHeaders() }
           );
 
           const result = await response.json();
@@ -5142,9 +5163,9 @@
 
           const response = await fetch(url, {
             method: "POST",
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: withCsrfHeaders({
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }),
             body: params.toString()
           });
 
@@ -5171,7 +5192,7 @@
         try {
           const response = await fetch(
             contextPath + "/admin/api/coupon/" + couponId,
-            { method: "DELETE" }
+            { method: "DELETE", headers: withCsrfHeaders() }
           );
 
           const result = await response.json();
@@ -5279,7 +5300,7 @@
           const params = new URLSearchParams({ id: contactId, status: status });
           const response = await fetch(
             contextPath + "/admin/api/contact/update-status?" + params.toString(),
-            { method: "POST" }
+            { method: "POST", headers: withCsrfHeaders() }
           );
 
           const result = await response.json();
@@ -5301,7 +5322,7 @@
         try {
           const response = await fetch(
             contextPath + "/admin/api/contact/" + contactId,
-            { method: "DELETE" }
+            { method: "DELETE", headers: withCsrfHeaders() }
           );
 
           const result = await response.json();
@@ -5697,7 +5718,6 @@
           
           document.getElementById("paymentCOD").checked = settings.paymentCOD !== false;
           document.getElementById("paymentBank").checked = settings.paymentBank !== false;
-          document.getElementById("paymentMomo").checked = settings.paymentMomo === true;
           document.getElementById("paymentVNPay").checked = settings.paymentVNPay === true;
           
           document.getElementById("emailOrderConfirm").checked = settings.emailOrderConfirm !== false;
@@ -5750,7 +5770,6 @@
         const settings = {
           paymentCOD: document.getElementById("paymentCOD").checked,
           paymentBank: document.getElementById("paymentBank").checked,
-          paymentMomo: document.getElementById("paymentMomo").checked,
           paymentVNPay: document.getElementById("paymentVNPay").checked
         };
 

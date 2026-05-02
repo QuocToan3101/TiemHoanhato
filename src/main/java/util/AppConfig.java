@@ -225,35 +225,6 @@ public class AppConfig {
         return getProperty("vnpay.hash.secret");
     }
     
-    // MoMo Configuration
-    public boolean isMoMoEnabled() {
-        return getBooleanProperty("momo.enabled", false);
-    }
-    
-    public String getMoMoPartnerCode() {
-        return getProperty("momo.partner.code");
-    }
-    
-    public String getMoMoAccessKey() {
-        return getProperty("momo.access.key");
-    }
-    
-    public String getMoMoSecretKey() {
-        return getProperty("momo.secret.key");
-    }
-    
-    public String getMoMoEndpoint() {
-        return getProperty("momo.endpoint");
-    }
-    
-    public String getMoMoReturnUrl() {
-        return getProperty("momo.return.url");
-    }
-    
-    public String getMoMoNotifyUrl() {
-        return getProperty("momo.notify.url");
-    }
-    
     // Application Settings
     public String getAppName() {
         return getProperty("app.name", "Flower Store");

@@ -379,30 +379,28 @@ public class AdminServlet extends HttpServlet {
                 // API cho biểu đồ doanh thu
                 String period = request.getParameter("period");
                 if (period == null) period = "week";
-                
+
+                int days;
+                if ("7".equals(period) || "week".equalsIgnoreCase(period)) {
+                    days = 7;
+                } else if ("30".equals(period) || "month".equalsIgnoreCase(period)) {
+                    days = 30;
+                } else if ("90".equals(period)) {
+                    days = 90;
+                } else {
+                    days = 7;
+                }
+
                 List<Map<String, Object>> revenueData = new ArrayList<>();
                 java.time.LocalDate today = java.time.LocalDate.now();
-                
-                if ("week".equals(period)) {
-                    // 7 ngày gần đây
-                    for (int i = 6; i >= 0; i--) {
-                        java.time.LocalDate date = today.minusDays(i);
-                        BigDecimal revenue = orderDAO.getRevenueByDate(java.sql.Date.valueOf(date));
-                        Map<String, Object> dayData = new HashMap<>();
-                        dayData.put("date", date.toString());
-                        dayData.put("revenue", revenue != null ? revenue : BigDecimal.ZERO);
-                        revenueData.add(dayData);
-                    }
-                } else if ("month".equals(period)) {
-                    // 30 ngày gần đây
-                    for (int i = 29; i >= 0; i--) {
-                        java.time.LocalDate date = today.minusDays(i);
-                        BigDecimal revenue = orderDAO.getRevenueByDate(java.sql.Date.valueOf(date));
-                        Map<String, Object> dayData = new HashMap<>();
-                        dayData.put("date", date.toString());
-                        dayData.put("revenue", revenue != null ? revenue : BigDecimal.ZERO);
-                        revenueData.add(dayData);
-                    }
+                for (int i = days - 1; i >= 0; i--) {
+                    java.time.LocalDate date = today.minusDays(i);
+                    BigDecimal revenue = orderDAO.getRevenueByDate(java.sql.Date.valueOf(date));
+                    Map<String, Object> dayData = new HashMap<>();
+                    dayData.put("date", date.toString());
+                    dayData.put("label", date.getDayOfMonth() + "/" + date.getMonthValue());
+                    dayData.put("revenue", revenue != null ? revenue : BigDecimal.ZERO);
+                    revenueData.add(dayData);
                 }
                 
                 result.put("success", true);
@@ -650,13 +648,16 @@ public class AdminServlet extends HttpServlet {
             boolean isFeatured = "true".equalsIgnoreCase(isFeaturedStr) || "on".equalsIgnoreCase(isFeaturedStr);
             
             product.setName(name);
+            if (slug == null || slug.trim().isEmpty()) {
+                slug = generateSlug(name);
+            }
             product.setSlug(slug);
             product.setPrice(price);
-            product.setSalePrice(salePrice);
+            product.setSalePrice(salePrice != null ? salePrice : product.getSalePrice());
             product.setQuantity(quantity);
             product.setCategoryId(categoryId);
-            product.setDescription(description);
-            product.setShortDescription(shortDescription);
+            product.setDescription(description != null && !description.isEmpty() ? description : product.getDescription());
+            product.setShortDescription(shortDescription != null && !shortDescription.isEmpty() ? shortDescription : product.getShortDescription());
             if (image != null && !image.isEmpty()) {
                 product.setImage(image);
             }

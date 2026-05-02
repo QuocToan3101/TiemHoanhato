@@ -23,12 +23,11 @@ import model.Order;
 import model.OrderItem;
 import model.Product;
 import model.User;
-import payment.MoMoConfig;
 import payment.VNPayConfig;
 import service.EmailService;
 import util.AppConfig;
 /**
- * Servlet xử lý thanh toán với VNPay/MoMo integration
+ * Servlet xử lý thanh toán với VNPay integration
  */
 @WebServlet("/checkout")
 public class CheckoutServlet extends HttpServlet {
@@ -39,7 +38,6 @@ public class CheckoutServlet extends HttpServlet {
     private OrderDAO orderDAO;
     private Gson gson;
     private VNPayConfig vnpayConfig;
-    private MoMoConfig momoConfig;
     private EmailService emailService;
     private AppConfig appConfig;
     
@@ -50,7 +48,6 @@ public class CheckoutServlet extends HttpServlet {
         orderDAO = new OrderDAO();
         gson = new Gson();
         vnpayConfig = new VNPayConfig();
-        momoConfig = new MoMoConfig();
         emailService = EmailService.getInstance();
         appConfig = AppConfig.getInstance();
     }
@@ -152,6 +149,16 @@ public class CheckoutServlet extends HttpServlet {
             String paymentMethod = request.getParameter("paymentMethod");
             String attachGreetingCard = request.getParameter("attachGreetingCard");
             String printGreetingCard = request.getParameter("printGreetingCard");
+            String normalizedPaymentMethod = paymentMethod != null ? paymentMethod.trim().toLowerCase() : "cod";
+
+            if (!"cod".equals(normalizedPaymentMethod)
+                    && !"bank_transfer".equals(normalizedPaymentMethod)
+                    && !"vnpay".equals(normalizedPaymentMethod)) {
+                jsonResponse.addProperty("success", false);
+                jsonResponse.addProperty("message", "Phương thức thanh toán không được hỗ trợ");
+                out.print(gson.toJson(jsonResponse));
+                return;
+            }
             
             // Chống gian lận: luôn tính tiền ở server dựa trên dữ liệu DB, không tin giá từ client
             BigDecimal subtotal = BigDecimal.ZERO;
@@ -249,7 +256,7 @@ public class CheckoutServlet extends HttpServlet {
             order.setShippingFee(shippingFee);
             order.setDiscount(discount);
             order.setTotal(total);
-            order.setPaymentMethod(paymentMethod != null ? paymentMethod : "cod");
+            order.setPaymentMethod(normalizedPaymentMethod);
             order.setPaymentStatus("pending");
             order.setOrderStatus("pending");
             
@@ -305,7 +312,7 @@ public class CheckoutServlet extends HttpServlet {
                 }
                 
                 // Xử lý payment gateway
-                if ("vnpay".equals(paymentMethod)) {
+                if ("vnpay".equals(normalizedPaymentMethod)) {
                     // VNPay payment
                     if (appConfig.isVNPayEnabled()) {
                         try {
@@ -332,46 +339,11 @@ public class CheckoutServlet extends HttpServlet {
                         jsonResponse.addProperty("success", false);
                         jsonResponse.addProperty("message", "VNPay hiện không khả dụng");
                     }
-                    
-                } else if ("momo".equals(paymentMethod)) {
-                    // MoMo payment
-                    if (appConfig.isMoMoEnabled()) {
-                        try {
-                            String paymentUrl = momoConfig.createPaymentUrl(
-                                order.getOrderCode(),
-                                order.getTotal().longValue(),
-                                "Thanh toan don hang " + order.getOrderCode()
-                            );
-                            
-                            if (paymentUrl != null) {
-                                jsonResponse.addProperty("success", true);
-                                jsonResponse.addProperty("orderCode", order.getOrderCode());
-                                jsonResponse.addProperty("paymentMethod", "momo");
-                                jsonResponse.addProperty("redirectUrl", paymentUrl);
-                                jsonResponse.addProperty("message", "Đang chuyển đến trang thanh toán MoMo...");
-                            } else {
-                                jsonResponse.addProperty("success", true);
-                                jsonResponse.addProperty("orderCode", order.getOrderCode());
-                                jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/order-success?orderCode=" + order.getOrderCode());
-                                jsonResponse.addProperty("message", "Đặt hàng thành công! (Lỗi MoMo, vui lòng chọn phương thức khác)");
-                            }
-                        } catch (Exception e) {
-                            System.err.println("Lỗi tạo MoMo URL: " + e.getMessage());
-                            jsonResponse.addProperty("success", true);
-                            jsonResponse.addProperty("orderCode", order.getOrderCode());
-                            jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/order-success?orderCode=" + order.getOrderCode());
-                            jsonResponse.addProperty("message", "Đặt hàng thành công! (Lỗi MoMo, vui lòng chọn phương thức khác)");
-                        }
-                    } else {
-                        jsonResponse.addProperty("success", false);
-                        jsonResponse.addProperty("message", "MoMo hiện không khả dụng");
-                    }
-                    
                 } else {
                     // COD hoặc Bank Transfer
                     jsonResponse.addProperty("success", true);
                     jsonResponse.addProperty("orderCode", order.getOrderCode());
-                    jsonResponse.addProperty("paymentMethod", paymentMethod);
+                    jsonResponse.addProperty("paymentMethod", normalizedPaymentMethod);
                     jsonResponse.addProperty("redirectUrl", request.getContextPath() + "/order-success?orderCode=" + order.getOrderCode());
                     jsonResponse.addProperty("message", "Đặt hàng thành công!");
                 }
