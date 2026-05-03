@@ -5,6 +5,9 @@
 <!DOCTYPE html>
 <html lang="vi">
   <head>
+    <!-- [FIX #1] charset phải là thẻ đầu tiên để browser decode HTML đúng trước khi parse bất kỳ nội dung nào -->
+    <meta charset="utf-8" />
+
     <title>Tin Tức - La Vie Est Belle - Flower & Gift</title>
 
     <!-- Google Fonts: load sớm nhất để tránh FOUT -->
@@ -19,7 +22,9 @@
     <meta name="csrf-token" content="${fn:escapeXml(csrfToken)}">
     <script>window.csrfToken = '<c:out value="${csrfToken}" />';</script>
 
-    <!-- Google Tag Manager -->
+    <!-- [FIX #2] Giữ lại cả hai GTM container vì chúng dùng ID khác nhau (GTM-W8R4GL2 và GTM-NSBT6HTK).
+         Nếu chỉ cần một, hãy xóa bỏ block không dùng. -->
+    <!-- Google Tag Manager: GTM-W8R4GL2 -->
     <script>
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
@@ -35,8 +40,9 @@
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-W8R4GL2");
     </script>
-    <!-- End Google Tag Manager -->
-    <!-- Google Tag Manager -->
+    <!-- End Google Tag Manager: GTM-W8R4GL2 -->
+
+    <!-- Google Tag Manager: GTM-NSBT6HTK -->
     <script>
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
@@ -52,10 +58,7 @@
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
     </script>
-
-    <!-- End Google Tag Manager -->
-
-    <meta charset="utf-8" />
+    <!-- End Google Tag Manager: GTM-NSBT6HTK -->
 
     <link
       rel="shortcut icon"
@@ -1096,11 +1099,13 @@
         Haravan = {};
       }
 
+      // [FIX #3] Chỉ giữ một giá trị Haravan.shop. Đã xóa dòng gán đè "lavieestbelle.myharavan.com".
+      // Nếu cần dùng domain Haravan nội bộ, hãy lưu vào một biến riêng, ví dụ: Haravan.internalDomain
       Haravan.shop = "lavieestbelle.vn";
 
       Haravan.culture = "vi-VN";
 
-      Haravan.shop = "lavieestbelle.myharavan.com";
+      // Haravan.internalDomain = "lavieestbelle.myharavan.com"; // bỏ comment nếu cần dùng
 
       Haravan.theme = {
         name: "Customize Lavieestbelle",
@@ -1923,6 +1928,8 @@ function initFilterAndCardEvents() {
 
       let loadasyncdefer = () => {};
 
+      // [FIX #4] Thêm resolve() sau khi dispatch xong các setTimeout,
+      // tránh Promise bị treo mãi mãi không bao giờ settle.
       function resolveAfter5Seconds() {
         return new Promise((resolve) => {
           if (tbag_varible.template == "index") {
@@ -1933,12 +1940,13 @@ function initFilterAndCardEvents() {
 
           setTimeout(() => {
             loadasyncdefer();
+            resolve(); // Promise settle sau khi loadasyncdefer được lên lịch
           }, 200);
         });
       }
 
-      function asyncCall() {
-        resolveAfter5Seconds();
+      async function asyncCall() {
+        await resolveAfter5Seconds();
       }
     </script>
 
