@@ -1183,6 +1183,8 @@
           <div class="chip" data-filter="wedding">Đám cưới</div>
 
           <div class="chip" data-filter="story">Story từ Tiệm</div>
+
+          <div class="chip" data-filter="budget">Ngân sách</div>
         </div>
       </div>
 
@@ -1233,7 +1235,7 @@
                     Bó hoa pastel cho Giỗ Tổ nên ưu tiên Sen hồng, Cúc mẫu đơn hoặc Hồng kem. Phối màu nã nhặn (trắng - hồng phấn - xanh lơ) tạo vẻ đẹp thanh tao, thành kính. Kiểu bó tròn đầy đặn, gói giấy trung tính giúp tôn vinh sự sang trọng, thể hiện trọn vẹn đạo lý "Uống nước nhớ nguồn" và lòng tri ân sâu sắc.
                   </p>
 
-                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/hoa-pastel-gio-to-hung-vuong" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1267,7 +1269,7 @@
                     tượng hơn rất nhiều.
                   </p>
 
-                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/chon-ke-hoa-khai-truong" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1301,13 +1303,13 @@
                     lại nhé…".
                   </p>
 
-                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/mot-ngay-chuan-bi-20-don-to-tinh" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
               <!-- Article 4 -->
 
-              <article class="news-card" data-category="tips">
+              <article class="news-card" data-category="budget">
                 <div class="news-image-wrapper">
                   <img
                     class="news-thumb"
@@ -1333,7 +1335,7 @@
                     Bạn không cần chi quá nhiều để có một bó hoa xinh – Ưu tiên hoa Cát Tường hoặc Cúc mẫu đơn nội địa tông hồng kem, trắng để tiết kiệm chi phí. Phối cùng nhiều lá bạc, hoa baby giúp bó hoa đầy đặn, sang trọng. Sử dụng giấy gói Kraft hoặc nơ tối giản giúp tổng thể trông chỉn chu, thành kính mà vẫn vừa vặn ngân sách.
                   </p>
 
-                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/tang-hoa-ngan-sach-vua-phai" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1367,7 +1369,7 @@
                     ấy.
                   </p>
 
-                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/bo-hoa-cau-hon-hoan-hao" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1400,7 +1402,7 @@
                     mẹo đơn giản này, hoa có thể tươi hơn bạn nghĩ rất nhiều.
                   </p>
 
-                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/5-bi-quyet-giu-hoa-tuoi-lau" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1410,8 +1412,8 @@
                 <div class="news-image-wrapper">
                   <img
                     class="news-thumb"
-                    src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=400"
-                    alt="Chăm sóc hoa"
+                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
+                    alt="Chọn hoa theo màu sắc"
                   />
 
                   <div class="news-overlay"></div>
@@ -1425,14 +1427,14 @@
                   </div>
 
                   <h2 class="news-heading">
-                    5 bí quyết giữ hoa tươi lâu mà ít ai biết
+                    Ý nghĩa màu sắc hoa – Chọn đúng tông để nói đúng điều muốn nói
                   </h2>
 
                   <p class="news-excerpt">
-                    Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ..
+                    Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ.
                   </p>
 
-                  <a href="${pageContext.request.contextPath}/news" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/y-nghia-mau-sac-hoa" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
             </section>
@@ -1607,47 +1609,24 @@
       // Filter functionality
 
       document.addEventListener("DOMContentLoaded", function () {
-        const chips = document.querySelectorAll(".chip");
-        const getNewsCards = () => document.querySelectorAll(".news-card");
-
         const searchInput = document.getElementById("searchInput");
 
         const searchBtn = document.getElementById("searchBtn");
 
         const loadMoreBtn = document.getElementById("loadMoreBtn");
 
-        // Filter chips
-        chips.forEach((chip) => {
-          chip.addEventListener("click", function () {
-            chips.forEach((c) => c.classList.remove("active"));
-
-            this.classList.add("active");
-
-            const filter = this.getAttribute("data-filter");
-
-            getNewsCards().forEach((card) => {
-              if (
-                filter === "all" ||
-                card.getAttribute("data-category") === filter
-              ) {
-                card.style.display = "flex";
-
-                card.style.animation = "fadeInUp 0.6s ease-out";
-              } else {
-                card.style.display = "none";
-              }
-            });
-          });
-        });
+        // Filter chips và card click được xử lý bởi initFilterAndCardEvents() (event delegation)
+        // — không gán event trực tiếp ở đây để tránh double-trigger
 
         // Search functionality
 
         function performSearch() {
           const searchTerm = searchInput.value.toLowerCase().trim();
+          const newsCards = document.querySelectorAll(".news-card");
 
           if (searchTerm === "") {
             document.getElementById("searchEmptyState").classList.remove("visible");
-            getNewsCards().forEach((card) => {
+            newsCards.forEach((card) => {
               card.style.display = "flex";
             });
 
@@ -1656,7 +1635,7 @@
 
           let foundCount = 0;
 
-          getNewsCards().forEach((card) => {
+          newsCards.forEach((card) => {
             const title = card
               .querySelector(".news-heading")
               .textContent.toLowerCase();
@@ -1896,7 +1875,8 @@
           'story': 'Câu chuyện',
           'proposal': 'Cầu hôn',
           'wedding': 'Đám cưới',
-          'birthday': 'Sinh nhật'
+          'birthday': 'Sinh nhật',
+          'budget': 'Ngân sách'
         };
         return categories[category] || category;
       }
