@@ -46,6 +46,13 @@ dependencies {
     implementation 'org.apache.commons:commons-dbcp2:2.9.0'
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'net.coobird:thumbnailator:0.4.20'
+    
+    // Caching (REFACTOR - Phase 3)
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    
+    // Logging (REFACTOR - Phase 1)
+    implementation 'org.slf4j:slf4j-api:2.0.11'
+    implementation 'ch.qos.logback:logback-classic:1.5.0'
 }
 
 tasks.named('processResources') {
