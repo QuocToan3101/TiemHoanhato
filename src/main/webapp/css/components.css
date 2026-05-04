@@ -1,0 +1,432 @@
+/**
+ * ============================================================================
+ * LoadingSpinner.css & Toast.css - UI Components Styling
+ * ============================================================================
+ */
+
+/* ========================================================================== */
+/* LOADING SPINNER STYLES */
+/* ========================================================================== */
+
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.loading-spinner.hidden {
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Semi-transparent dark overlay */
+.loading-spinner .spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+/* Spinner container with white background */
+.loading-spinner .spinner-container {
+    background-color: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+/* Spinner animation (3 dots) */
+.spinner-animation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.spinner-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ff69b4; /* Flower pink */
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.spinner-dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.spinner-dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.spinner-dot:nth-child(3) {
+    animation-delay: 0s;
+}
+
+/* Loading message text */
+.spinner-message {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Animations */
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ========================================================================== */
+/* TOAST NOTIFICATION STYLES */
+/* ========================================================================== */
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none; /* Allow clicks to pass through container */
+}
+
+/* Individual toast notification */
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.3s ease;
+    pointer-events: auto; /* Re-enable for toast itself */
+    background-color: #f5f5f5;
+    border-left: 4px solid #999;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 100%;
+    word-wrap: break-word;
+    transition: all 0.3s ease;
+}
+
+/* Toast is hidden by default, show when .show class added */
+.toast {
+    opacity: 0;
+    transform: translateX(400px);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Toast icon styling */
+.toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toast-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Toast message text */
+.toast-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* Toast close button */
+.toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #999;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.toast-close:hover {
+    color: #333;
+}
+
+.toast-close:focus {
+    outline: 2px solid #ff69b4;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ========================================================================== */
+/* TOAST TYPE STYLES */
+/* ========================================================================== */
+
+/* Success toast (green) */
+.toast-success {
+    background-color: #f0f9f6;
+    border-left-color: #10b981;
+}
+
+.toast-success .toast-icon {
+    color: #10b981;
+}
+
+.toast-success .toast-message {
+    color: #065f46;
+}
+
+/* Error toast (red) */
+.toast-error {
+    background-color: #fef2f2;
+    border-left-color: #ef4444;
+}
+
+.toast-error .toast-icon {
+    color: #ef4444;
+}
+
+.toast-error .toast-message {
+    color: #7f1d1d;
+}
+
+/* Warning toast (orange) */
+.toast-warning {
+    background-color: #fffbeb;
+    border-left-color: #f59e0b;
+}
+
+.toast-warning .toast-icon {
+    color: #f59e0b;
+}
+
+.toast-warning .toast-message {
+    color: #78350f;
+}
+
+/* Info toast (blue) */
+.toast-info {
+    background-color: #eff6ff;
+    border-left-color: #3b82f6;
+}
+
+.toast-info .toast-icon {
+    color: #3b82f6;
+}
+
+.toast-info .toast-message {
+    color: #1e3a8a;
+}
+
+/* ========================================================================== */
+/* RESPONSIVE STYLES */
+/* ========================================================================== */
+
+@media (max-width: 768px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    .toast {
+        font-size: 13px;
+        padding: 12px 14px;
+    }
+
+    .loading-spinner .spinner-container {
+        max-width: 90%;
+        padding: 30px 20px;
+    }
+
+    .spinner-message {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .toast-container {
+        top: 5px;
+        right: 5px;
+        left: 5px;
+    }
+
+    .toast {
+        gap: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .toast-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .toast-close {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+    }
+}
+
+/* ========================================================================== */
+/* ACCESSIBILITY IMPROVEMENTS */
+/* ========================================================================== */
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+    .toast {
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .loading-spinner .spinner-container {
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .toast,
+    .loading-spinner,
+    .loading-spinner .spinner-container {
+        animation: none;
+        transition: none;
+    }
+
+    .spinner-dot {
+        animation: none;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .loading-spinner .spinner-container {
+        background-color: #2d2d2d;
+    }
+
+    .spinner-message {
+        color: #f0f0f0;
+    }
+
+    .toast {
+        background-color: #3d3d3d;
+    }
+
+    .toast-success {
+        background-color: #064e3b;
+    }
+
+    .toast-success .toast-message {
+        color: #d1fae5;
+    }
+
+    .toast-error {
+        background-color: #7f1d1d;
+    }
+
+    .toast-error .toast-message {
+        color: #fee2e2;
+    }
+
+    .toast-warning {
+        background-color: #78350f;
+    }
+
+    .toast-warning .toast-message {
+        color: #fef3c7;
+    }
+
+    .toast-info {
+        background-color: #1e3a8a;
+    }
+
+    .toast-info .toast-message {
+        color: #dbeafe;
+    }
+
+    .toast-close {
+        color: #999;
+    }
+
+    .toast-close:hover {
+        color: #ccc;
+    }
+}
+
+/* ========================================================================== */
+/* ANIMATION KEYFRAMES */
+/* ========================================================================== */
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}

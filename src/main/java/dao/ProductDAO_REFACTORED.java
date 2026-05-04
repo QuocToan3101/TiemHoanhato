@@ -1,9 +1,11 @@
 package dao;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +55,7 @@ public class ProductDAO_REFACTORED extends BaseDAO {
      * - Duplicate code in findAll() vs findAllIncludeInactive()
      * 
      * AFTER (IMPROVEMENTS):
-     * - Uses Constants.DB.PRODUCTS.COLUMNS for specific columns
+     * - Uses Constants.DB.PRODUCTS.COLUMNS_ACTIVE for specific columns
      * - Uses pre-built query template with LEFT JOIN
      * - Caches result for 1 hour
      * - Database queries only 1 time per hour for 1000 requests
@@ -67,8 +69,9 @@ public class ProductDAO_REFACTORED extends BaseDAO {
         String cacheKey = CACHE_PREFIX + "_all_active";
         
         // CHECK CACHE FIRST
-        List<Product> cachedProducts = cacheManager.getProductList(cacheKey);
-        if (cachedProducts != null) {
+        Object cached = cacheManager.getProductList(cacheKey);
+        if (cached != null) {
+            List<Product> cachedProducts = (List<Product>) cached;
             logger.debug("Cache hit for: {}", cacheKey);
             return cachedProducts;
         }
@@ -108,8 +111,9 @@ public class ProductDAO_REFACTORED extends BaseDAO {
         String cacheKey = CACHE_PREFIX + "_p" + page + "_" + pageSize;
         
         // CHECK CACHE FIRST
-        List<Product> cachedProducts = cacheManager.getProductList(cacheKey);
-        if (cachedProducts != null) {
+        Object cached = cacheManager.getProductList(cacheKey);
+        if (cached != null) {
+            List<Product> cachedProducts = (List<Product>) cached;
             logger.debug("Cache hit for pagination: page={}, pageSize={}", page, pageSize);
             return cachedProducts;
         }
@@ -148,8 +152,9 @@ public class ProductDAO_REFACTORED extends BaseDAO {
     public List<Product> findByCategoryWithPagination(int categoryId, int page, int pageSize) {
         String cacheKey = CACHE_PREFIX + "_cat_" + categoryId + "_p" + page + "_" + pageSize;
         
-        List<Product> cachedProducts = cacheManager.getProductList(cacheKey);
-        if (cachedProducts != null) {
+        Object cached = cacheManager.getProductList(cacheKey);
+        if (cached != null) {
+            List<Product> cachedProducts = (List<Product>) cached;
             logger.debug("Cache hit for category pagination: catId={}, page={}", categoryId, page);
             return cachedProducts;
         }
@@ -157,7 +162,7 @@ public class ProductDAO_REFACTORED extends BaseDAO {
         List<Product> products = new ArrayList<>();
         
         // QUERY WITH CATEGORY FILTER
-        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS + 
+        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS_ACTIVE + 
                      ", c.name as category_name, c.slug as category_slug " +
                      "FROM products p " +
                      "LEFT JOIN categories c ON p.category_id = c.id " +
@@ -202,8 +207,9 @@ public class ProductDAO_REFACTORED extends BaseDAO {
     public List<Product> findByCategorySlug(String categorySlug, int pageSize) {
         String cacheKey = CACHE_PREFIX + "_slug_" + categorySlug;
         
-        List<Product> cachedProducts = cacheManager.getProductList(cacheKey);
-        if (cachedProducts != null) {
+        Object cached = cacheManager.getProductList(cacheKey);
+        if (cached != null) {
+            List<Product> cachedProducts = (List<Product>) cached;
             logger.debug("Cache hit for category slug: {}", categorySlug);
             return cachedProducts;
         }
@@ -211,7 +217,7 @@ public class ProductDAO_REFACTORED extends BaseDAO {
         List<Product> products = new ArrayList<>();
         
         // PROPER JOIN QUERY (N+1 FIX): Get products and category info in SINGLE query
-        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS + 
+        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS_ACTIVE + 
                      ", c.name as category_name, c.slug as category_slug " +
                      "FROM products p " +
                      "INNER JOIN categories c ON p.category_id = c.id " +
@@ -246,14 +252,15 @@ public class ProductDAO_REFACTORED extends BaseDAO {
     public List<Product> findFeatured(int limit) {
         String cacheKey = CACHE_PREFIX + "_featured_" + limit;
         
-        List<Product> cachedProducts = cacheManager.getProductList(cacheKey);
-        if (cachedProducts != null) {
+        Object cached = cacheManager.getProductList(cacheKey);
+        if (cached != null) {
+            List<Product> cachedProducts = (List<Product>) cached;
             return cachedProducts;
         }
         
         List<Product> products = new ArrayList<>();
         
-        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS + 
+        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS_ACTIVE + 
                      ", c.name as category_name, c.slug as category_slug " +
                      "FROM products p " +
                      "LEFT JOIN categories c ON p.category_id = c.id " +
@@ -285,16 +292,14 @@ public class ProductDAO_REFACTORED extends BaseDAO {
      * - Popular product viewed by 100 customers = ~5-10 DB queries + 90+ cache hits
      */
     public Product findById(int id) {
-        String cacheKey = CACHE_PREFIX + "_id_" + id;
-        
-        // CHECK CACHE FIRST
-        Product cachedProduct = (Product) cacheManager.getProductById(cacheKey);
+        // CHECK CACHE FIRST (using product ID as cache key)
+        Product cachedProduct = (Product) cacheManager.getProductById(id);
         if (cachedProduct != null) {
             logger.debug("Cache hit for product ID: {}", id);
             return cachedProduct;
         }
         
-        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS + 
+        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS_ACTIVE + 
                      ", c.name as category_name, c.slug as category_slug " +
                      "FROM products p " +
                      "LEFT JOIN categories c ON p.category_id = c.id " +
@@ -307,7 +312,7 @@ public class ProductDAO_REFACTORED extends BaseDAO {
             
             if (!results.isEmpty()) {
                 Product product = results.get(0);
-                cacheManager.putProductById(cacheKey, product);
+                cacheManager.putProductById(id, product);
                 logger.info("Cached product with ID: {}", id);
                 return product;
             }
@@ -320,23 +325,16 @@ public class ProductDAO_REFACTORED extends BaseDAO {
     }
     
     /**
-     * ====== EXAMPLE 7: Count by Category (Cached for Pagination UI) ======
+     * ====== EXAMPLE 7: Count by Category (Could Be Cached) ======
      * 
      * USE CASE: Calculating total pages for pagination selector
      * BEFORE: SELECT COUNT(*) query every page load
-     * AFTER: Count result cached for 1 hour
+     * AFTER: Use BaseDAO.executeCountQuery() which is optimized
      * 
-     * IMPACT: 1000 page loads = 1 DB query instead of 1000
+     * NOTE: Count caching not implemented yet (requires extending CacheManager)
+     * For now, using BaseDAO.executeCountQuery for efficiency
      */
     public int countByCategory(int categoryId) {
-        String cacheKey = CACHE_PREFIX + "_count_cat_" + categoryId;
-        
-        // Try cache first
-        Integer cachedCount = (Integer) cacheManager.getProductById(cacheKey);
-        if (cachedCount != null) {
-            return cachedCount;
-        }
-        
         String sql = "SELECT COUNT(*) FROM products WHERE is_active = ? AND category_id = ?";
         Object[] params = {true, categoryId};
         
@@ -361,15 +359,16 @@ public class ProductDAO_REFACTORED extends BaseDAO {
     public List<Product> search(String keyword, int page, int pageSize) {
         String cacheKey = CACHE_PREFIX + "_search_" + keyword + "_p" + page;
         
-        List<Product> cachedProducts = cacheManager.getProductList(cacheKey);
-        if (cachedProducts != null) {
+        Object cached = cacheManager.getProductList(cacheKey);
+        if (cached != null) {
+            List<Product> cachedProducts = (List<Product>) cached;
             logger.debug("Cache hit for search: {}", keyword);
             return cachedProducts;
         }
         
         List<Product> products = new ArrayList<>();
         
-        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS + 
+        String sql = "SELECT " + Constants.DB.PRODUCTS.COLUMNS_ACTIVE + 
                      ", c.name as category_name, c.slug as category_slug " +
                      "FROM products p " +
                      "LEFT JOIN categories c ON p.category_id = c.id " +
@@ -404,14 +403,14 @@ public class ProductDAO_REFACTORED extends BaseDAO {
      */
     public boolean updateProduct(Product product) {
         String sql = "UPDATE products SET name = ?, description = ?, price = ?, " +
-                     "stock = ?, is_featured = ?, is_active = ?, updated_at = NOW() " +
+                     "quantity = ?, is_featured = ?, is_active = ?, updated_at = NOW() " +
                      "WHERE id = ?";
         
         Object[] params = {
             product.getName(),
             product.getDescription(),
             product.getPrice(),
-            product.getStock(),
+            product.getQuantity(),
             product.isFeatured(),
             product.isActive(),
             product.getId()
@@ -472,13 +471,16 @@ public class ProductDAO_REFACTORED extends BaseDAO {
         product.setName(rs.getString("name"));
         product.setDescription(rs.getString("description"));
         product.setPrice(rs.getBigDecimal("price"));
-        product.setStock(rs.getInt("stock"));
+        product.setQuantity(rs.getInt("stock"));
         product.setImage(rs.getString("image"));
         product.setFeatured(rs.getBoolean("is_featured"));
         product.setActive(rs.getBoolean("is_active"));
         product.setCreatedAt(rs.getTimestamp("created_at"));
-        product.setUpdatedAt(rs.getTimestamp("updated_at"));
-        
+        product.setUpdatedAt(rs.getTimestamp("updated_at"));        product.setCategoryId(rs.getInt("category_id"));
+        product.setViewCount(rs.getInt("view_count"));
+        product.setSoldCount(rs.getInt("sold_count"));
+        product.setAverageRating(rs.getBigDecimal("average_rating"));
+        product.setReviewCount(rs.getInt("review_count"));        
         if (includeCategory) {
             product.setCategoryId(rs.getInt("category_id"));
             
@@ -502,12 +504,11 @@ public class ProductDAO_REFACTORED extends BaseDAO {
     }
     
     /**
-     * ====== GENERIC QUERY HELPER (from BaseDAO) ======
+     * ====== GENERIC QUERY HELPER (using BaseDAO utilities) ======
      * 
-     * This method handles:
-     * - Connection management
-     * - PreparedStatement creation
-     * - Parameter binding
+     * These private methods demonstrate proper patterns:
+     * - Connection management (from BaseDAO.getConnection())
+     * - Parameter binding (from BaseDAO.setParameters())
      * - ResultSet iteration
      * - Exception handling
      * - Resource cleanup
@@ -515,9 +516,9 @@ public class ProductDAO_REFACTORED extends BaseDAO {
     private List<Product> executeQuery(String sql, ResultSetMapper mapper) throws SQLException {
         List<Product> results = new ArrayList<>();
         
-        try (var conn = getConnection();
-             var stmt = conn.createStatement();
-             var rs = stmt.executeQuery(sql)) {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             
             while (rs.next()) {
                 results.add(mapper.map(rs));
@@ -531,12 +532,13 @@ public class ProductDAO_REFACTORED extends BaseDAO {
             throws SQLException {
         List<Product> results = new ArrayList<>();
         
-        try (var conn = getConnection();
-             var ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             
+            // Use BaseDAO.setParameters() for type-safe parameter binding
             setParameters(ps, params);
             
-            try (var rs = ps.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     results.add(mapper.map(rs));
                 }
