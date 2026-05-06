@@ -880,6 +880,40 @@
         overflow-x: auto;
       }
 
+      .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+      }
+
+
+      .btn-light {
+        background-color: var(--bg-light);
+        color: var(--text-medium);
+        border: 1px solid var(--border);
+      }
+
+      .btn-light:hover {
+        background-color: var(--primary-light);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+
       .tab {
         padding: 14px 24px;
         cursor: pointer;
@@ -967,6 +1001,7 @@
         align-items: center;
         background-color: var(--bg-light);
       }
+      
 
       .modal-header h3 {
         font-size: 1.4rem;
@@ -1272,6 +1307,38 @@
       /* ============================================
            RESPONSIVE
            ============================================ */
+
+      .stat-row strong {
+        font-size: 1.1rem;
+        color: var(--primary-dark);
+        font-weight: 700;
+      }
+
+      /* ============================================
+           STATS GRID
+           ============================================ */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 8px 0;
+      }
+
+      .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
       @media (max-width: 1024px) {
         .sidebar {
           width: 70px;
