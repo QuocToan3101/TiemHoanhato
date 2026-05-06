@@ -333,6 +333,23 @@
       .search-btn:active {
         transform: translateY(0);
       }
+      /*padding: 0.5rem 1.25rem;
+
+        border-radius: 60px;
+
+        background: #f0e3de;
+
+        border: 2px solid transparent;
+
+        cursor: pointer;
+
+        font-weight: 400;
+
+        font-size: 1 rem;
+
+        transition: all 0.3s ease;
+
+        color: var(--brown-soft);*/
 
       /* Filter Chips */
       .chip {
@@ -559,7 +576,25 @@
         font-size: 0.6rem;
       }
 
-      
+      /* 
+        color: var(--brown-soft);
+
+        margin-bottom: 1.5rem;
+
+        flex: 1;
+
+        line-height: 1.5;
+
+        display: -webkit-box;
+
+        -webkit-line-clamp: 4;
+
+        line-clamp: 4;
+
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
+      */
 
       .news-excerpt {
         color: var(--brown-soft);
