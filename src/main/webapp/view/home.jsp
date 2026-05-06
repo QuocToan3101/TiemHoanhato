@@ -718,7 +718,30 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         box-shadow: var(--shadow-md);
       }
+      /*
+      .product-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #e74c3c;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+      }
 
+      .product-image img {
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+
+        transition: transform 0.6s ease;
+      }
+      */
       .action-btn:hover {
         background: var(--primary);
 
@@ -887,6 +910,29 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         color: #333;
 
         outline: none;
+      }
+      
+      .product-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #e74c3c;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+      }
+
+      .product-image img {
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+
+        transition: transform 0.6s ease;
       }
       
       .newsletter-form input::placeholder {
