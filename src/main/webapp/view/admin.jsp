@@ -1445,6 +1445,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
   <body>
     <!-- ============================================
@@ -4896,7 +4903,9 @@
       }
 
       async function banCustomer(userId) {
-        if (!confirm('Bạn có chắc chắn muốn cấm khách hàng này?')) return;
+        if (!showConfirm('Bạn có chắc chắn muốn cấm khách hàng này?', function() {
+            // Ban user logic here
+        })) return;
         
         try {
           const params = new URLSearchParams({ id: userId, status: 'banned' });
@@ -4918,7 +4927,9 @@
       }
 
       async function deleteCustomer(userId, email) {
-        if (!confirm('Bạn có chắc chắn muốn xóa khách hàng ' + email + '?')) return;
+        if (!showConfirm('Bạn có chắc chắn muốn xóa khách hàng ' + email + '?', function() {
+            // Delete user logic here
+        })) return;
         
         try {
           const response = await fetch(
@@ -5081,7 +5092,9 @@
       }
 
       async function deleteCategory(categoryId, categoryName) {
-        if (!confirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?')) return;
+        if (!showConfirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?', function() {
+            // Delete category logic here
+        })) return;
 
         try {
           const response = await fetch(
@@ -5254,7 +5267,9 @@
       }
 
       async function deleteCoupon(couponId, couponCode) {
-        if (!confirm('Bạn có chắc chắn muốn xóa mã "' + couponCode + '"?')) return;
+        if (!showConfirm('Bạn có chắc chắn muốn xóa mã "' + couponCode + '"?', function() {
+            // Delete coupon logic here
+        })) return;
 
         try {
           const response = await fetch(
@@ -5384,7 +5399,9 @@
       }
 
       async function deleteContact(contactId) {
-        if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
+        if (!showConfirm('Bạn có chắc chắn muốn xóa liên hệ này?', function() {
+            // Delete contact logic here
+        })) return;
 
         try {
           const response = await fetch(
@@ -6073,7 +6090,9 @@
       
       // Delete gallery
       async function deleteGallery(id) {
-        if (!confirm('Bạn có chắc chắn muốn xóa ảnh này?')) return;
+        if (!showConfirm('Bạn có chắc chắn muốn xóa ảnh này?', function() {
+            // Delete image logic here
+        })) return;
         
         try {
           const response = await fetch(contextPath + '/api/gallery/' + id, {
@@ -6343,7 +6362,9 @@
       
       // Delete news
       async function deleteNews(id) {
-        if (!confirm('Bạn có chắc chắn muốn xóa tin tức này?')) return;
+        if (!showConfirm('Bạn có chắc chắn muốn xóa tin tức này?', function() {
+            // Delete news logic here
+        })) return;
         
         try {
           const response = await fetch(contextPath + '/api/news?action=delete', {

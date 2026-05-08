@@ -1595,6 +1595,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -2082,8 +2089,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             cartItems = cartItems.filter((item) => item.id !== id);
             renderCart();
             updateCartBadge(data.cartCount || data.itemCount || 0);
+            showSuccess('Đã xóa sản phẩm khỏi giỏ hàng');
           } else {
-            alert('Lỗi: ' + data.message);
+            showError('Lỗi: ' + data.message);
           }
         })
         .catch(error => {
@@ -2110,7 +2118,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           .then(response => response.json())
           .then(data => {
             if (!data.success) {
-              alert(data.message || 'Không thể cập nhật số lượng');
+              showError(data.message || 'Không thể cập nhật số lượng');
               return;
             }
             item.quantity = newQuantity;
@@ -2119,7 +2127,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           })
           .catch(error => {
             console.error('Error updating quantity:', error);
-            alert('Có lỗi xảy ra khi cập nhật số lượng');
+            showError('Có lỗi xảy ra khi cập nhật số lượng');
           });
         }
       }
@@ -2144,7 +2152,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           .then(response => response.json())
           .then(data => {
             if (!data.success) {
-              alert(data.message || 'Không thể cập nhật số lượng');
+              showError(data.message || 'Không thể cập nhật số lượng');
               return;
             }
 
@@ -2159,7 +2167,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           })
           .catch(error => {
             console.error('Error updating quantity:', error);
-            alert('Có lỗi xảy ra khi cập nhật số lượng');
+            showError('Có lỗi xảy ra khi cập nhật số lượng');
           });
         }
       }
@@ -2177,12 +2185,17 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         });
       }
 
-      // Apply discount coupon using API
       async function applyDiscount() {
-        const code = document.getElementById("discountCode").value.trim();
+        const discountInput = document.getElementById("discountCode");
+        const code = discountInput.value.trim();
 
         if (!code) {
-          alert("❌ Vui lòng nhập mã giảm giá!");
+          showWarning("Vui lòng nhập mã giảm giá!");
+          return;
+        }
+
+        if (cartItems.length === 0) {
+          showWarning("Giỏ hàng đang trống, chưa thể áp mã giảm giá.");
           return;
         }
 
@@ -2192,33 +2205,43 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         );
 
         try {
-          const response = await axios.post(contextPath + "/api/coupon/validate", {
-            code: code,
-            subtotal: subtotal
+          const response = await fetch(contextPath + "/api/coupon/validate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": getCsrfToken()
+            },
+            body: JSON.stringify({
+              code: code,
+              subtotal: subtotal
+            })
           });
 
-          if (response.data.success) {
-            discountAmount = parseFloat(response.data.discountAmount);
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            discountAmount = parseFloat(data.discountAmount || 0);
             appliedCouponCode = code.toUpperCase();
-            
-            // Show applied coupon info
+
             document.getElementById("appliedCouponInfo").style.display = "block";
             document.getElementById("appliedCouponCode").textContent = appliedCouponCode;
-            document.getElementById("discountCode").value = "";
-            document.getElementById("discountCode").disabled = true;
-            
+            discountInput.value = "";
+            discountInput.disabled = true;
+
             updateSummary();
-            alert("✅ Áp dụng mã giảm giá thành công! Giảm " + formatCurrency(discountAmount));
+            showSuccess("Áp dụng mã giảm giá thành công! Giảm " + formatCurrency(discountAmount));
           } else {
-            alert("❌ " + (response.data.message || "Mã giảm giá không hợp lệ!"));
             discountAmount = 0;
+            appliedCouponCode = null;
             updateSummary();
+            showError(data.message || "Mã giảm giá không hợp lệ!");
           }
         } catch (error) {
           console.error("Error validating coupon:", error);
-          alert("❌ Không thể kiểm tra mã giảm giá. Vui lòng thử lại!");
           discountAmount = 0;
+          appliedCouponCode = null;
           updateSummary();
+          showError("Không thể kiểm tra mã giảm giá. Vui lòng thử lại!");
         }
       }
 
@@ -2232,7 +2255,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         document.getElementById("discountCode").value = "";
         
         updateSummary();
-        alert("✅ Đã hủy mã giảm giá!");
+        showSuccess("Đã hủy mã giảm giá!");
       }
 
       function continueShopping() {
@@ -2241,7 +2264,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       function showCheckoutConfirm() {
         if (cartItems.length === 0) {
-          alert("❌ Giỏ hàng trống!");
+          showWarning("Giỏ hàng trống!", "Thông báo");
           return;
         }
 
@@ -2645,7 +2668,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         const canvas = document.getElementById("aiCanvas");
         if (!canvas) {
           console.error("❌ Canvas not found!");
-          alert("Không tìm thấy canvas. Vui lòng thử lại.");
+          showError("Không tìm thấy canvas. Vui lòng thử lại.");
           return;
         }
         

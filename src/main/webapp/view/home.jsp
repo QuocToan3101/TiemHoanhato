@@ -1434,6 +1434,13 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -2668,17 +2675,17 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              alert("Đã thêm vào giỏ hàng!");
+              showSuccess("Đã thêm vào giỏ hàng!");
               if (typeof updateCartCount === "function") {
                 updateCartCount(data.cartCount || data.itemCount || 0);
               }
             } else {
-              alert(data.message || "Có lỗi xảy ra");
+              showError(data.message || "Có lỗi xảy ra");
             }
           })
           .catch((error) => {
             console.error("Error:", error);
-            alert("Có lỗi xảy ra khi thêm vào giỏ hàng");
+            showError("Có lỗi xảy ra khi thêm vào giỏ hàng");
           });
       }
     </script>

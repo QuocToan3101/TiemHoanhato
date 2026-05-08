@@ -257,22 +257,22 @@ async function viewOrderDetail(orderId) {
 }
 
 async function updateOrderStatus(orderId, newStatus) {
-    if (!confirm('Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng?')) return;
+    showConfirm('Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng?', function() {
+        (async () => {
+            try {
+                const response = await fetch(contextPath + `/admin/api/order/update-status?id=${orderId}&status=${newStatus}`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
 
-    try {
-        const response = await fetch(contextPath + `/admin/api/order/update-status?id=${orderId}&status=${newStatus}`, {
-            method: 'POST'
-        });
-        const result = await response.json();
-
-        if (result.success) {
-            showToast("Cập nhật trạng thái thành công");
-            loadOrders();
-            loadDashboard();
-        } else {
-            showToast(result.message || "Cập nhật thất bại", "error");
-        }
-    } catch (error) {
+                if (result.success) {
+                    showSuccess("Đã cập nhật trạng thái thành công");
+                    loadOrders();
+                    loadDashboard();
+                } else {
+                    showError(result.message || "Cập nhật thất bại");
+                }
+            } catch (error) {
         console.error("Error updating order status:", error);
         showToast("Không thể cập nhật trạng thái", "error");
     }
@@ -416,7 +416,7 @@ async function saveProduct() {
 }
 
 async function deleteProduct(productId, productName) {
-    if (!confirm(`Bạn có chắc chắn muốn xóa sản phẩm "${productName}"?`)) return;
+    if (!showConfirm(`Bạn có chắc chắn muốn xóa sản phẩm "${productName}"?`, function() {
 
     try {
         const response = await fetch(contextPath + "/admin/api/product/" + productId, {
@@ -560,7 +560,7 @@ async function saveCategory() {
 }
 
 async function deleteCategory(categoryId, categoryName) {
-    if (!confirm(`Bạn có chắc chắn muốn xóa danh mục "${categoryName}"?`)) return;
+    if (!showConfirm(`Bạn có chắc chắn muốn xóa danh mục "${categoryName}"?`, function() {
 
     try {
         const response = await fetch(contextPath + "/admin/api/category/" + categoryId, {
@@ -784,7 +784,7 @@ async function saveCoupon() {
 }
 
 async function deleteCoupon(couponId, couponCode) {
-    if (!confirm(`Bạn có chắc chắn muốn xóa mã "${couponCode}"?`)) return;
+    if (!showConfirm(`Bạn có chắc chắn muốn xóa mã "${couponCode}"?`, function() {
 
     try {
         const response = await fetch(contextPath + "/admin/api/coupon/" + couponId, {
@@ -885,7 +885,7 @@ async function viewContactMessage(contactId) {
 }
 
 async function deleteContact(contactId) {
-    if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
+    if (!showConfirm('Bạn có chắc chắn muốn xóa liên hệ này?', function() {
 
     try {
         const response = await fetch(contextPath + "/admin/api/contact/" + contactId, {
