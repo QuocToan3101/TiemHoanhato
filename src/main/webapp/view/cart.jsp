@@ -192,6 +192,14 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         --error: #ef4444;
       }
 
+      .container {
+        max-width: 1400px !important;
+
+        margin: 0 auto !important;
+
+        padding: 0 2rem !important;
+      }
+
       .page-title {
         font-family: "Playfair Display", serif;
 

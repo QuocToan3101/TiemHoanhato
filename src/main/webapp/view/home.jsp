@@ -491,11 +491,11 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       }
 
       .container {
-        max-width: 1400px;
+        max-width: 1400px !important;
 
-        margin: 0 auto;
+        margin: 0 auto !important;
 
-        padding: 0 2rem;
+        padding: 0 2rem !important;
       }
 
       .section-header {
