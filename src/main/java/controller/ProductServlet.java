@@ -114,22 +114,76 @@ public class ProductServlet extends HttpServlet {
     private void handleCategoryPage(HttpServletRequest request, HttpServletResponse response, String categorySlug)
             throws ServletException, IOException {
 
+        final int PAGE_SIZE = 12; // 3 hàng x 4 cột
+
         if (categorySlug == null || categorySlug.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/products");
             return;
         }
 
         Category category = categoryDAO.findBySlug(categorySlug);
-        List<Product> products = (category != null) ? productDAO.findByCategorySlug(categorySlug) : new ArrayList<>();
+        if (category == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        // Lấy page number từ request, mặc định là 1
+        int pageNumber = 1;
+        try {
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.trim().isEmpty()) {
+                pageNumber = Integer.parseInt(pageParam);
+                if (pageNumber < 1) pageNumber = 1;
+            }
+        } catch (NumberFormatException e) {
+            pageNumber = 1;
+        }
+
+        // Lấy tổng số sản phẩm trong danh mục
+        int totalProducts = productDAO.countByCategory(category.getId());
+        int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
+
+        // Đảm bảo page không vượt quá tổng số trang
+        if (pageNumber > totalPages && totalPages > 0) {
+            pageNumber = totalPages;
+        }
+
+        // Lấy sản phẩm của danh mục trong trang hiện tại
+        List<Product> products = productDAO.findByCategoryWithPagination(category.getId(), pageNumber, PAGE_SIZE);
         List<Category> parentCategories = categoryDAO.findParentCategories();
 
-        request.setAttribute("products", products);
-        request.setAttribute("parentCategories", parentCategories);
-        request.setAttribute("category", category);
-        request.setAttribute("searchKeyword", null);
-        request.setAttribute("totalProducts", products.size());
+        // Kiểm tra xem có phải AJAX request không
+        String isAjax = request.getParameter("ajax");
 
-        request.getRequestDispatcher("/view/products.jsp").forward(request, response);
+        if ("true".equals(isAjax)) {
+            // Trả về JSON cho AJAX
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", true);
+            jsonResponse.addProperty("currentPage", pageNumber);
+            jsonResponse.addProperty("totalPages", totalPages);
+            jsonResponse.addProperty("totalProducts", totalProducts);
+
+            // Convert products to JSON array
+            Gson gson = new Gson();
+            jsonResponse.add("products", gson.toJsonTree(products));
+
+            response.getWriter().print(jsonResponse.toString());
+        } else {
+            // Regular page load - trả về JSP
+            request.setAttribute("products", products);
+            request.setAttribute("parentCategories", parentCategories);
+            request.setAttribute("category", category);
+            request.setAttribute("searchKeyword", null);
+            request.setAttribute("totalProducts", totalProducts);
+            request.setAttribute("currentPage", pageNumber);
+            request.setAttribute("totalPages", totalPages);
+            request.setAttribute("pageSize", PAGE_SIZE);
+
+            request.getRequestDispatcher("/view/products.jsp").forward(request, response);
+        }
     }
 
     private void handleDetailPage(HttpServletRequest request, HttpServletResponse response, String slug)

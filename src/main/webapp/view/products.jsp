@@ -512,26 +512,39 @@
         /* PAGINATION */
         .pagination-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 6px;
+            gap: 12px;
             margin-top: 40px;
+            padding: 20px;
+            background: #faf5ef;
+            border-radius: 16px;
         }
         
         .page-btn {
-            background: #f4e1d1;
+            background: #fff;
             border: 1px solid #d8c1b0;
-            padding: 8px 14px;
+            padding: 10px 14px;
             border-radius: 10px;
             cursor: pointer;
             color: #6c5845;
             font-weight: 600;
+            font-size: 0.95rem;
             transition: 0.2s;
             text-decoration: none;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            justify-content: center;
         }
         
         .page-btn:hover {
-            background: #e9d2bd;
+            background: #f9f1e8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(160,130,100,0.15);
         }
         
         .page-btn.disabled {
@@ -540,21 +553,32 @@
         }
         
         .page-number {
-            padding: 8px 14px;
+            padding: 10px 14px;
             background: #fff;
             border: 1px solid #d8c1b0;
             border-radius: 10px;
             cursor: pointer;
             color: #6c5845;
             transition: 0.2s;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 600;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+        }
+        
+        .page-number:hover:not(.active) {
+            background: #f9f1e8;
+            transform: translateY(-2px);
         }
         
         .page-number.active {
             background: var(--accent-dark);
             color: #fff;
             border-color: var(--accent-dark);
+            box-shadow: 0 4px 12px rgba(170,106,63,0.25);
         }
         
         /* Sidebar */
@@ -1101,8 +1125,8 @@
             
             // Nút Previous
             if (currentPage > 1) {
-                html += '<a href="#" onclick="loadPage(' + (currentPage - 1) + '); return false;" class="page-btn">' +
-                    '<i class="fas fa-chevron-left"></i> Trước' +
+                html += '<a href="#" onclick="loadPage(' + (currentPage - 1) + '); return false;" class="page-btn" title="Trang trước">' +
+                    '<i class="fas fa-chevron-left"></i>' +
                 '</a>';
             }
             
@@ -1116,8 +1140,8 @@
             
             // Nút Next
             if (currentPage < totalPages) {
-                html += '<a href="#" onclick="loadPage(' + (currentPage + 1) + '); return false;" class="page-btn">' +
-                    'Sau <i class="fas fa-chevron-right"></i>' +
+                html += '<a href="#" onclick="loadPage(' + (currentPage + 1) + '); return false;" class="page-btn" title="Trang sau">' +
+                    '<i class="fas fa-chevron-right"></i>' +
                 '</a>';
             }
             
