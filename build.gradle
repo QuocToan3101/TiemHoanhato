@@ -53,6 +53,12 @@ dependencies {
     // Logging (REFACTOR - Phase 1)
     implementation 'org.slf4j:slf4j-api:2.0.11'
     implementation 'ch.qos.logback:logback-classic:1.5.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.named('processResources') {

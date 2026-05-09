@@ -12,6 +12,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <!-- CSRF Token -->
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
+    <meta name="context-path" content="${pageContext.request.contextPath}">
+    <script>window.CONTEXT_PATH = '${pageContext.request.contextPath}';</script>
 
     <!-- Google Tag Manager -->
 
@@ -1658,6 +1660,47 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             Ghi lời chúc kèm bó hoa
           </div>
 
+          <!-- SHIPPING WIDGET -->
+          <div class="shipping-widget" style="padding: 14px 18px; border-top: 1px dashed #f0cddd;">
+            <label style="display:block; font-weight:600; margin-bottom:8px;">Địa chỉ giao hàng</label>
+            <div style="display:flex; gap:8px; margin-bottom:8px;">
+              <input id="shippingAddressInput" placeholder="Nhập địa chỉ - chọn từ gợi ý" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee;" />
+              <button id="useLocationBtn" class="btn secondary" style="padding:8px 10px;">Vị trí hiện tại</button>
+            </div>
+            <div id="shippingSuggestions" class="shipping-suggestions" style="display:none"></div>
+            <input type="hidden" id="shipping_lat" />
+            <input type="hidden" id="shipping_lng" />
+            <input type="hidden" id="shipping_place_id" />
+            <input type="hidden" id="shipping_osm_type" />
+            <input type="hidden" id="shipping_osm_id" />
+            <div id="shippingMap" style="width:100%; height:160px; border-radius:8px; overflow:hidden; background:#f5f5f5; margin-bottom:8px; display:none"></div>
+            <div id="shippingInfo" style="font-size:14px; color:var(--muted);">
+              <div id="shippingSkeleton" class="shipping-skeleton" style="display:none">
+                <div class="sk-line sk-line-lg"></div>
+                <div class="sk-line"></div>
+                <div class="sk-line sk-line-sm"></div>
+              </div>
+              <div id="shippingResult" style="display:none">
+                <div>Khoảng cách: <span id="ship_distance">-</span></div>
+                <div>Thời gian: <span id="ship_eta">-</span></div>
+                <div>Phí ship: <strong id="ship_fee">Miễn phí</strong></div>
+                <div>Phí tham khảo GHN: <span id="ship_fee_estimate">-</span></div>
+              </div>
+              <div id="shippingError" style="display:none; color:var(--error)"></div>
+            </div>
+          </div>
+
+          <div id="addressConfirmModal" class="shipping-modal" style="display:none;">
+            <div class="shipping-modal-card">
+              <h3 style="margin:0 0 8px;">Xác nhận địa chỉ giao hàng</h3>
+              <p id="addressConfirmText" style="margin:0 0 12px; color:var(--muted);"></p>
+              <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+                <button type="button" class="btn secondary" id="addressConfirmCancel">Chỉnh lại</button>
+                <button type="button" class="btn" id="addressConfirmAccept">Xác nhận địa chỉ</button>
+              </div>
+            </div>
+          </div>
+
           <div class="note" style="padding: 0 18px 18px">
             <textarea
               id="giftNote"
@@ -3119,5 +3162,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       renderCart();
     </script>
+      <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
   </body>
 </html>

@@ -111,6 +111,18 @@ public class AppConfig {
             return defaultValue;
         }
     }
+
+    public double getDoubleProperty(String key, double defaultValue) {
+        String value = properties.getProperty(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
     
     // Database Configuration
     public String getDbUrl() {
