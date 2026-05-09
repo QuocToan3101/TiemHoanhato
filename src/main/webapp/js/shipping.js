@@ -157,6 +157,11 @@
     osmTypeInput.value = selectedAddress.osmType || '';
     osmIdInput.value = String(selectedAddress.osmId || '');
 
+    const addressDetail = document.getElementById('addressDetail');
+    if (addressDetail) {
+      addressDetail.value = selectedAddress.displayName;
+    }
+
     hideSuggestions();
     showConfirmModal(selectedAddress);
     renderMap(selectedAddress.lat, selectedAddress.lng, selectedAddress.displayName);
@@ -241,10 +246,38 @@
     shipFeeEstimate.textContent = estimatedFee > 0 ? formatMoney(estimatedFee) : 'Đang chờ GHN';
     result.style.display = 'block';
 
+    syncCheckoutFields(payload, displayFee);
+    dispatchShippingUpdated(payload);
+
     const shippingEl = document.getElementById('shipping');
     if (shippingEl) {
       shippingEl.textContent = shipFee.textContent;
     }
+  }
+
+  function syncCheckoutFields(payload, displayFee) {
+    const shippingFeeInput = document.getElementById('shippingFeeInput');
+    const totalInput = document.getElementById('totalInput');
+    const grandTotal = document.getElementById('grandTotal');
+    const subtotalInput = document.querySelector('input[name="subtotal"]');
+    const subtotalValue = subtotalInput ? parseInt(subtotalInput.value || '0', 10) : getOrderAmount();
+    const shippingValue = Number.isFinite(displayFee) ? Math.round(displayFee) : 0;
+    const totalValue = subtotalValue + shippingValue - getDiscountValue();
+
+    if (shippingFeeInput) shippingFeeInput.value = String(shippingValue);
+    if (totalInput) totalInput.value = String(totalValue);
+    if (grandTotal) grandTotal.textContent = formatMoney(totalValue);
+  }
+
+  function getDiscountValue() {
+    const discountInput = document.getElementById('discountInput');
+    if (!discountInput) return 0;
+    const value = parseInt(discountInput.value || '0', 10);
+    return Number.isNaN(value) ? 0 : value;
+  }
+
+  function dispatchShippingUpdated(payload) {
+    document.dispatchEvent(new CustomEvent('shipping:updated', { detail: payload }));
   }
 
   function renderMap(lat, lng, label) {

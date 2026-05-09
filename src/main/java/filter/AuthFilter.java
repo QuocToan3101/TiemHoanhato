@@ -76,6 +76,7 @@ public class AuthFilter implements Filter {
         "/login",
         "/register",
         "/logout",
+        "/api/shipping/",
         ".css",
         ".js",
         ".png",

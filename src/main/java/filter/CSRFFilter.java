@@ -111,6 +111,7 @@ public class CSRFFilter implements Filter {
                uri.startsWith("/oauth/") ||
                uri.equals("/reset-password") ||
              uri.equals("/forgot-password") ||
+             uri.startsWith("/api/shipping/") ||
              uri.equals("/api/upload-image");
     }
 }
