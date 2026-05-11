@@ -1668,35 +1668,65 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
         </section>
 
-          <div id="appliedCouponInfo" style="display: none; margin: 10px 0; padding: 10px; background: #e8f5e9; border-radius: 8px; border-left: 3px solid #27ae60;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="color: #27ae60; font-weight: 500;">
-                <i class="fas fa-check-circle"></i> Mã <strong id="appliedCouponCode"></strong>
-              </span>
-              <button onclick="removeCoupon()" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 14px;">
-                <i class="fas fa-times"></i> Xóa
-              </button>
+        <!-- RIGHT: Order summary (cart page) -->
+        <aside class="order-summary">
+          <div class="checkout-card">
+            <div class="card-header">
+              <i class="fas fa-shopping-bag"></i>
+              <h3>Đơn hàng của bạn</h3>
             </div>
-          </div>
+            <div class="card-body">
+              <div class="summary-items" id="summaryItems">
+                <!-- JS will fill a compact summary of items here -->
+              </div>
+            </div>
 
-          <div class="sum-total">
-            <span>Tổng cộng</span>
+            <!-- Coupon (cart) -->
+            <div class="coupon-section" style="padding:12px 18px;">
+              <div class="coupon-input" style="display:flex; gap:8px;">
+                <input type="text" name="discountCode" id="discountCode" placeholder="Nhập mã giảm giá" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee;">
+                <button type="button" class="coupon-btn" onclick="applyDiscount()">Áp dụng</button>
+              </div>
+              <div id="appliedCouponInfo" style="display: none; margin-top:10px; padding: 10px; background: #e8f5e9; border-radius: 8px; border-left: 3px solid #27ae60;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="color: #27ae60; font-weight: 500;"><i class="fas fa-check-circle"></i> Mã <strong id="appliedCouponCode"></strong></span>
+                  <button onclick="removeCoupon()" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 14px;"><i class="fas fa-times"></i> Xóa</button>
+                </div>
+              </div>
+            </div>
 
-            <span id="total">0đ</span>
-          </div>
+            <!-- Totals -->
+            <div class="summary-totals" style="padding:12px 18px;">
+              <div class="total-row">
+                <span>Tạm tính</span>
+                <span id="subtotal">0₫</span>
+              </div>
+              <div class="total-row">
+                <span>Phí vận chuyển</span>
+                <span id="shipping">0₫</span>
+              </div>
+              <div class="total-row discount" id="discountRow" style="display: none;">
+                <span>Giảm giá</span>
+                <span id="discount">-0₫</span>
+              </div>
+              <div class="total-row grand-total" style="margin-top:8px; font-weight:700;">
+                <span>Tổng cộng</span>
+                <span class="amount" id="total">0₫</span>
+              </div>
+            </div>
 
-          <div class="actions">
-            <button class="btn secondary" onclick="continueShopping()">
-              Tiếp tục mua
-            </button>
+            <!-- Hidden fields used by checkout flow -->
+            <input type="hidden" name="subtotal" value="0">
+            <input type="hidden" name="shippingFee" id="shippingFeeInput" value="0">
+            <input type="hidden" name="discount" id="discountInput" value="0">
+            <input type="hidden" name="total" id="totalInput" value="0">
+            <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
 
-            <button class="btn" onclick="showAICardModal()">
-              Tạo thiệp tự động
-            </button>
-
-            <button class="btn" onclick="showCheckoutConfirm()">
-              Thanh toán
-            </button>
+            <!-- Actions -->
+            <div style="padding:12px 18px; display:flex; gap:8px; flex-direction:column;">
+              <button class="btn" onclick="showCheckoutConfirm()">Thanh toán</button>
+              <button class="btn secondary" onclick="continueShopping()">Tiếp tục mua</button>
+            </div>
           </div>
         </aside>
       </div>
@@ -1911,13 +1941,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           .then(data => {
             if (data.success && data.items) {
               cartItems = data.items.map(item => ({
-                id: item.productId,
+                id: item.productId || item.id,
                 name: item.name || (item.product ? item.product.name : 'Sản phẩm'),
                 meta: item.product && item.product.category ? item.product.category.name : 'Hoa tươi',
                 price: item.price ? parseFloat(item.price) : (item.product ? parseFloat(item.product.salePrice || item.product.price) : 0),
-                quantity: item.quantity,
+                quantity: Number(item.quantity || 0),
                 image: item.image || (item.product && item.product.image ? item.product.image : 'https://via.placeholder.com/100x100?text=No+Image')
-              }));
+              })).filter(item => item.id && item.quantity > 0);
               updateCartBadge(data.itemCount || data.cartCount || 0);
             } else {
               cartItems = [];
@@ -2033,15 +2063,23 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         const total = subtotal + shippingFee - discountAmount;
 
-        document.getElementById("subtotal").textContent = formatPrice(subtotal);
+        const subtotalEl = document.getElementById("subtotal");
+        const shippingEl = document.getElementById("shipping");
+        const discountEl = document.getElementById("discount");
+        const totalEl = document.getElementById("total");
 
-        document.getElementById("shipping").textContent =
-          formatPrice(shippingFee);
-
-        document.getElementById("discount").textContent =
-          "-" + formatPrice(discountAmount);
-
-        document.getElementById("total").textContent = formatPrice(total);
+        if (subtotalEl) {
+          subtotalEl.textContent = formatPrice(subtotal);
+        }
+        if (shippingEl) {
+          shippingEl.textContent = formatPrice(shippingFee);
+        }
+        if (discountEl) {
+          discountEl.textContent = "-" + formatPrice(discountAmount);
+        }
+        if (totalEl) {
+          totalEl.textContent = formatPrice(total);
+        }
       }
 
       function removeItem(id) {
@@ -3080,5 +3118,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       renderCart();
     </script>
+    <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
   </body>
 </html>
