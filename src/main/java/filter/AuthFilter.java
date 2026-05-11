@@ -156,8 +156,37 @@ public class AuthFilter implements Filter {
      * Kiểm tra xem URL có phải là public không
      */
     private boolean isPublicUrl(String path) {
+        if (path == null || path.isEmpty()) {
+            return true;
+        }
+
+        // Static assets should always be publicly accessible.
+        if (path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/fileJS/") ||
+            path.startsWith("/uploads/") || path.startsWith("/images/") || path.startsWith("/assets/")) {
+            return true;
+        }
+
+        String lowerPath = path.toLowerCase();
+        String[] staticExts = {
+            ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".ico",
+            ".woff", ".woff2", ".ttf", ".svg", ".eot", ".map", ".webp"
+        };
+        for (String ext : staticExts) {
+            if (lowerPath.endsWith(ext)) {
+                return true;
+            }
+        }
+
         for (String publicUrl : PUBLIC_URLS) {
-            if (path.contains(publicUrl)) {
+            if (publicUrl.endsWith("/")) {
+                if (path.startsWith(publicUrl)) {
+                    return true;
+                }
+            } else if (publicUrl.startsWith(".")) {
+                if (lowerPath.endsWith(publicUrl)) {
+                    return true;
+                }
+            } else if (path.equals(publicUrl) || path.startsWith(publicUrl + "/")) {
                 return true;
             }
         }

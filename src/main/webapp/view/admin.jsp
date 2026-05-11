@@ -4903,50 +4903,46 @@
       }
 
       async function banCustomer(userId) {
-        if (!showConfirm('Bạn có chắc chắn muốn cấm khách hàng này?', function() {
-            // Ban user logic here
-        })) return;
-        
-        try {
-          const params = new URLSearchParams({ id: userId, status: 'banned' });
-          const response = await fetch(
-            contextPath + "/admin/api/user/update-status?" + params.toString(),
-            { method: "POST", headers: withCsrfHeaders() }
-          );
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification("Thành công", "Đã cấm khách hàng", "success");
-            loadCustomers();
-          } else {
-            throw new Error(result.message);
+        showConfirm('Bạn có chắc chắn muốn cấm khách hàng này?', async function() {
+          try {
+            const params = new URLSearchParams({ id: userId, status: 'banned' });
+            const response = await fetch(
+              contextPath + "/admin/api/user/update-status?" + params.toString(),
+              { method: "POST", headers: withCsrfHeaders() }
+            );
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification("Thành công", "Đã cấm khách hàng", "success");
+              loadCustomers();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể cấm khách hàng", "error");
           }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể cấm khách hàng", "error");
-        }
+        });
       }
 
       async function deleteCustomer(userId, email) {
-        if (!showConfirm('Bạn có chắc chắn muốn xóa khách hàng ' + email + '?', function() {
-            // Delete user logic here
-        })) return;
-        
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/user/" + userId,
-            { method: "DELETE", headers: withCsrfHeaders() }
-          );
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification("Thành công", "Đã xóa khách hàng", "success");
-            loadCustomers();
-          } else {
-            throw new Error(result.message);
+        showConfirm('Bạn có chắc chắn muốn xóa khách hàng ' + email + '?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/user/" + userId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification("Thành công", "Đã xóa khách hàng", "success");
+              loadCustomers();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa khách hàng", "error");
           }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa khách hàng", "error");
-        }
+        });
       }
 
       // ============================================
@@ -5092,27 +5088,25 @@
       }
 
       async function deleteCategory(categoryId, categoryName) {
-        if (!showConfirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?', function() {
-            // Delete category logic here
-        })) return;
+        showConfirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/category/" + categoryId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
 
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/category/" + categoryId,
-            { method: "DELETE", headers: withCsrfHeaders() }
-          );
+            const result = await response.json();
 
-          const result = await response.json();
+            if (!result.success) {
+              throw new Error(result.message || "Failed to delete category");
+            }
 
-          if (!result.success) {
-            throw new Error(result.message || "Failed to delete category");
+            showNotification("Thành công", "Đã xóa danh mục", "success");
+            loadCategoriesTable();
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
           }
-
-          showNotification("Thành công", "Đã xóa danh mục", "success");
-          loadCategoriesTable();
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
-        }
+        });
       }
 
       // ============================================
@@ -5267,27 +5261,25 @@
       }
 
       async function deleteCoupon(couponId, couponCode) {
-        if (!showConfirm('Bạn có chắc chắn muốn xóa mã "' + couponCode + '"?', function() {
-            // Delete coupon logic here
-        })) return;
+        showConfirm('Bạn có chắc chắn muốn xóa mã "' + couponCode + '"?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/coupon/" + couponId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
 
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/coupon/" + couponId,
-            { method: "DELETE", headers: withCsrfHeaders() }
-          );
+            const result = await response.json();
 
-          const result = await response.json();
+            if (!result.success) {
+              throw new Error(result.message || "Failed to delete coupon");
+            }
 
-          if (!result.success) {
-            throw new Error(result.message || "Failed to delete coupon");
+            showNotification("Thành công", "Đã xóa mã giảm giá", "success");
+            loadCoupons();
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa mã giảm giá", "error");
           }
-
-          showNotification("Thành công", "Đã xóa mã giảm giá", "success");
-          loadCoupons();
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa mã giảm giá", "error");
-        }
+        });
       }
 
       // ============================================
@@ -5399,27 +5391,25 @@
       }
 
       async function deleteContact(contactId) {
-        if (!showConfirm('Bạn có chắc chắn muốn xóa liên hệ này?', function() {
-            // Delete contact logic here
-        })) return;
+        showConfirm('Bạn có chắc chắn muốn xóa liên hệ này?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/contact/" + contactId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
 
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/contact/" + contactId,
-            { method: "DELETE", headers: withCsrfHeaders() }
-          );
+            const result = await response.json();
 
-          const result = await response.json();
-
-          if (result.success) {
-            showNotification("Thành công", "Đã xóa liên hệ", "success");
-            loadContacts();
-          } else {
-            throw new Error(result.message);
+            if (result.success) {
+              showNotification("Thành công", "Đã xóa liên hệ", "success");
+              loadContacts();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa liên hệ", "error");
           }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa liên hệ", "error");
-        }
+        });
       }
 
       // Initialize section data when menu clicked
@@ -6090,27 +6080,25 @@
       
       // Delete gallery
       async function deleteGallery(id) {
-        if (!showConfirm('Bạn có chắc chắn muốn xóa ảnh này?', function() {
-            // Delete image logic here
-        })) return;
-        
-        try {
-          const response = await fetch(contextPath + '/api/gallery/' + id, {
-            method: 'DELETE'
-          });
-          
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification('Thành công', result.message, 'success');
-            loadGalleries();
-          } else {
-            showNotification('Lỗi', result.message, 'error');
+        showConfirm('Bạn có chắc chắn muốn xóa ảnh này?', async function() {
+          try {
+            const response = await fetch(contextPath + '/api/gallery/' + id, {
+              method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification('Thành công', result.message, 'success');
+              loadGalleries();
+            } else {
+              showNotification('Lỗi', result.message, 'error');
+            }
+          } catch (error) {
+            console.error('Error deleting gallery:', error);
+            showNotification('Lỗi', 'Không thể xóa gallery', 'error');
           }
-        } catch (error) {
-          console.error('Error deleting gallery:', error);
-          showNotification('Lỗi', 'Không thể xóa gallery', 'error');
-        }
+        });
       }
       
       // Preview image when URL changes
@@ -6362,31 +6350,29 @@
       
       // Delete news
       async function deleteNews(id) {
-        if (!showConfirm('Bạn có chắc chắn muốn xóa tin tức này?', function() {
-            // Delete news logic here
-        })) return;
-        
-        try {
-          const response = await fetch(contextPath + '/api/news?action=delete', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: id })
-          });
-          
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification('Thành công', result.message, 'success');
-            loadNews();
-          } else {
-            showNotification('Lỗi', result.message, 'error');
+        showConfirm('Bạn có chắc chắn muốn xóa tin tức này?', async function() {
+          try {
+            const response = await fetch(contextPath + '/api/news?action=delete', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ id: id })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification('Thành công', result.message, 'success');
+              loadNews();
+            } else {
+              showNotification('Lỗi', result.message, 'error');
+            }
+          } catch (error) {
+            console.error('Error deleting news:', error);
+            showNotification('Lỗi', 'Không thể xóa tin tức', 'error');
           }
-        } catch (error) {
-          console.error('Error deleting news:', error);
-          showNotification('Lỗi', 'Không thể xóa tin tức', 'error');
-        }
+        });
       }
     </script>
   </body>

@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -584,11 +585,26 @@ public class AdminServlet extends HttpServlet {
     private void handleAddProduct(HttpServletRequest request, Map<String, Object> result) {
         try {
             String name = request.getParameter("name");
+            if (name == null || name.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "Tên sản phẩm không được để trống");
+                return;
+            }
             String slug = request.getParameter("slug");
             BigDecimal price = new BigDecimal(request.getParameter("price"));
+            if (price.compareTo(BigDecimal.ZERO) < 0) {
+                result.put("success", false);
+                result.put("message", "Giá sản phẩm không hợp lệ");
+                return;
+            }
             String salePriceStr = request.getParameter("salePrice");
             BigDecimal salePrice = (salePriceStr != null && !salePriceStr.isEmpty()) ? new BigDecimal(salePriceStr) : null;
             int quantity = Integer.parseInt(request.getParameter("quantity"));
+            if (quantity < 0) {
+                result.put("success", false);
+                result.put("message", "Số lượng không hợp lệ");
+                return;
+            }
             String categoryIdStr = request.getParameter("categoryId");
             Integer categoryId = (categoryIdStr != null && !categoryIdStr.isEmpty()) ? Integer.parseInt(categoryIdStr) : null;
             String description = request.getParameter("description");
@@ -634,11 +650,26 @@ public class AdminServlet extends HttpServlet {
             }
             
             String name = request.getParameter("name");
+            if (name == null || name.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "Tên sản phẩm không được để trống");
+                return;
+            }
             String slug = request.getParameter("slug");
             BigDecimal price = new BigDecimal(request.getParameter("price"));
+            if (price.compareTo(BigDecimal.ZERO) < 0) {
+                result.put("success", false);
+                result.put("message", "Giá sản phẩm không hợp lệ");
+                return;
+            }
             String salePriceStr = request.getParameter("salePrice");
             BigDecimal salePrice = (salePriceStr != null && !salePriceStr.isEmpty()) ? new BigDecimal(salePriceStr) : null;
             int quantity = Integer.parseInt(request.getParameter("quantity"));
+            if (quantity < 0) {
+                result.put("success", false);
+                result.put("message", "Số lượng không hợp lệ");
+                return;
+            }
             String categoryIdStr = request.getParameter("categoryId");
             Integer categoryId = (categoryIdStr != null && !categoryIdStr.isEmpty()) ? Integer.parseInt(categoryIdStr) : null;
             String description = request.getParameter("description");
@@ -760,9 +791,22 @@ public class AdminServlet extends HttpServlet {
     private void handleAddCoupon(HttpServletRequest request, Map<String, Object> result) {
         try {
             String code = request.getParameter("code");
+            if (code == null || code.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "Mã coupon không được để trống");
+                return;
+            }
             String description = request.getParameter("description");
             String discountType = request.getParameter("discountType");
+            if ("percentage".equalsIgnoreCase(discountType)) {
+                discountType = "percent";
+            }
             BigDecimal discountValue = new BigDecimal(request.getParameter("discountValue"));
+            if (discountValue.compareTo(BigDecimal.ZERO) <= 0) {
+                result.put("success", false);
+                result.put("message", "Giá trị giảm giá phải lớn hơn 0");
+                return;
+            }
             
             String minOrderValueStr = request.getParameter("minOrderValue");
             BigDecimal minOrderValue = (minOrderValueStr != null && !minOrderValueStr.isEmpty()) 
@@ -773,8 +817,19 @@ public class AdminServlet extends HttpServlet {
                 ? new BigDecimal(maxDiscountStr) : null;
                 
             String usageLimitStr = request.getParameter("usageLimit");
+            if (usageLimitStr == null || usageLimitStr.isEmpty()) {
+                usageLimitStr = request.getParameter("maxUsage");
+            }
             Integer usageLimit = (usageLimitStr != null && !usageLimitStr.isEmpty()) 
                 ? Integer.parseInt(usageLimitStr) : null;
+
+            Timestamp startDate = parseDateParam(request.getParameter("startDate"), false);
+            Timestamp endDate = parseDateParam(request.getParameter("endDate"), true);
+            if (startDate != null && endDate != null && startDate.after(endDate)) {
+                result.put("success", false);
+                result.put("message", "Ngày bắt đầu phải trước ngày kết thúc");
+                return;
+            }
             
             Coupon newCoupon = new Coupon();
             newCoupon.setCode(code);
@@ -784,6 +839,8 @@ public class AdminServlet extends HttpServlet {
             newCoupon.setMinOrderValue(minOrderValue);
             newCoupon.setMaxDiscount(maxDiscount);
             newCoupon.setUsageLimit(usageLimit);
+            newCoupon.setStartDate(startDate);
+            newCoupon.setEndDate(endDate);
             newCoupon.setActive(true);
             
             boolean success = couponDAO.insert(newCoupon);
@@ -810,9 +867,22 @@ public class AdminServlet extends HttpServlet {
             }
             
             String code = request.getParameter("code");
+            if (code == null || code.trim().isEmpty()) {
+                result.put("success", false);
+                result.put("message", "Mã coupon không được để trống");
+                return;
+            }
             String description = request.getParameter("description");
             String discountType = request.getParameter("discountType");
+            if ("percentage".equalsIgnoreCase(discountType)) {
+                discountType = "percent";
+            }
             BigDecimal discountValue = new BigDecimal(request.getParameter("discountValue"));
+            if (discountValue.compareTo(BigDecimal.ZERO) <= 0) {
+                result.put("success", false);
+                result.put("message", "Giá trị giảm giá phải lớn hơn 0");
+                return;
+            }
             
             String minOrderValueStr = request.getParameter("minOrderValue");
             BigDecimal minOrderValue = (minOrderValueStr != null && !minOrderValueStr.isEmpty()) 
@@ -823,8 +893,19 @@ public class AdminServlet extends HttpServlet {
                 ? new BigDecimal(maxDiscountStr) : null;
                 
             String usageLimitStr = request.getParameter("usageLimit");
+            if (usageLimitStr == null || usageLimitStr.isEmpty()) {
+                usageLimitStr = request.getParameter("maxUsage");
+            }
             Integer usageLimit = (usageLimitStr != null && !usageLimitStr.isEmpty()) 
                 ? Integer.parseInt(usageLimitStr) : null;
+
+            Timestamp startDate = parseDateParam(request.getParameter("startDate"), false);
+            Timestamp endDate = parseDateParam(request.getParameter("endDate"), true);
+            if (startDate != null && endDate != null && startDate.after(endDate)) {
+                result.put("success", false);
+                result.put("message", "Ngày bắt đầu phải trước ngày kết thúc");
+                return;
+            }
             
             coupon.setCode(code);
             coupon.setDescription(description);
@@ -833,6 +914,8 @@ public class AdminServlet extends HttpServlet {
             coupon.setMinOrderValue(minOrderValue);
             coupon.setMaxDiscount(maxDiscount);
             coupon.setUsageLimit(usageLimit);
+            coupon.setStartDate(startDate);
+            coupon.setEndDate(endDate);
             
             boolean success = couponDAO.update(coupon);
             result.put("success", success);
@@ -857,6 +940,25 @@ public class AdminServlet extends HttpServlet {
                 .replaceAll("\\s+", "-")
                 .replaceAll("-+", "-")
                 .replaceAll("^-|-$", "");
+    }
+
+    private Timestamp parseDateParam(String value, boolean endOfDay) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            String normalized = value.trim();
+            if (normalized.length() == 10) {
+                return Timestamp.valueOf(normalized + (endOfDay ? " 23:59:59" : " 00:00:00"));
+            }
+            normalized = normalized.replace('T', ' ');
+            if (normalized.length() == 16) {
+                normalized += ":00";
+            }
+            return Timestamp.valueOf(normalized);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     private void handleApiDelete(HttpServletRequest request, HttpServletResponse response, String pathInfo) 

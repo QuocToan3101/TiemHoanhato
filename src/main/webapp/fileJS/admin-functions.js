@@ -273,9 +273,11 @@ async function updateOrderStatus(orderId, newStatus) {
                     showError(result.message || "Cập nhật thất bại");
                 }
             } catch (error) {
-        console.error("Error updating order status:", error);
-        showToast("Không thể cập nhật trạng thái", "error");
-    }
+                console.error("Error updating order status:", error);
+                showToast("Không thể cập nhật trạng thái", "error");
+            }
+        })();
+    });
 }
 
 // ==============================================
@@ -386,7 +388,7 @@ async function saveProduct() {
             name,
             categoryId,
             price,
-            stockQuantity: stock,
+            quantity: stock,
             description,
             image,
             isActive
@@ -416,26 +418,28 @@ async function saveProduct() {
 }
 
 async function deleteProduct(productId, productName) {
-    if (!showConfirm(`Bạn có chắc chắn muốn xóa sản phẩm "${productName}"?`, function() {
+    showConfirm(`Bạn có chắc chắn muốn xóa sản phẩm "${productName}"?`, function() {
+        (async () => {
+            try {
+                const response = await fetch(contextPath + "/admin/api/product/" + productId, {
+                    method: 'DELETE'
+                });
 
-    try {
-        const response = await fetch(contextPath + "/admin/api/product/" + productId, {
-            method: 'DELETE'
-        });
+                const result = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
-            showToast("Xóa sản phẩm thành công");
-            loadProducts();
-            loadDashboard();
-        } else {
-            showToast(result.message || "Xóa thất bại", "error");
-        }
-    } catch (error) {
-        console.error("Error deleting product:", error);
-        showToast("Không thể xóa sản phẩm", "error");
-    }
+                if (result.success) {
+                    showToast("Xóa sản phẩm thành công");
+                    loadProducts();
+                    loadDashboard();
+                } else {
+                    showToast(result.message || "Xóa thất bại", "error");
+                }
+            } catch (error) {
+                console.error("Error deleting product:", error);
+                showToast("Không thể xóa sản phẩm", "error");
+            }
+        })();
+    });
 }
 
 // ==============================================
@@ -560,25 +564,27 @@ async function saveCategory() {
 }
 
 async function deleteCategory(categoryId, categoryName) {
-    if (!showConfirm(`Bạn có chắc chắn muốn xóa danh mục "${categoryName}"?`, function() {
+    showConfirm(`Bạn có chắc chắn muốn xóa danh mục "${categoryName}"?`, function() {
+        (async () => {
+            try {
+                const response = await fetch(contextPath + "/admin/api/category/" + categoryId, {
+                    method: 'DELETE'
+                });
 
-    try {
-        const response = await fetch(contextPath + "/admin/api/category/" + categoryId, {
-            method: 'DELETE'
-        });
+                const result = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
-            showToast("Xóa danh mục thành công");
-            loadCategories();
-        } else {
-            showToast(result.message || "Xóa thất bại", "error");
-        }
-    } catch (error) {
-        console.error("Error deleting category:", error);
-        showToast("Không thể xóa danh mục", "error");
-    }
+                if (result.success) {
+                    showToast("Xóa danh mục thành công");
+                    loadCategories();
+                } else {
+                    showToast(result.message || "Xóa thất bại", "error");
+                }
+            } catch (error) {
+                console.error("Error deleting category:", error);
+                showToast("Không thể xóa danh mục", "error");
+            }
+        })();
+    });
 }
 
 function populateCategoryParentSelect() {
@@ -784,25 +790,27 @@ async function saveCoupon() {
 }
 
 async function deleteCoupon(couponId, couponCode) {
-    if (!showConfirm(`Bạn có chắc chắn muốn xóa mã "${couponCode}"?`, function() {
+    showConfirm(`Bạn có chắc chắn muốn xóa mã "${couponCode}"?`, function() {
+        (async () => {
+            try {
+                const response = await fetch(contextPath + "/admin/api/coupon/" + couponId, {
+                    method: 'DELETE'
+                });
 
-    try {
-        const response = await fetch(contextPath + "/admin/api/coupon/" + couponId, {
-            method: 'DELETE'
-        });
+                const result = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
-            showToast("Xóa mã giảm giá thành công");
-            loadCoupons();
-        } else {
-            showToast(result.message || "Xóa thất bại", "error");
-        }
-    } catch (error) {
-        console.error("Error deleting coupon:", error);
-        showToast("Không thể xóa mã giảm giá", "error");
-    }
+                if (result.success) {
+                    showToast("Xóa mã giảm giá thành công");
+                    loadCoupons();
+                } else {
+                    showToast(result.message || "Xóa thất bại", "error");
+                }
+            } catch (error) {
+                console.error("Error deleting coupon:", error);
+                showToast("Không thể xóa mã giảm giá", "error");
+            }
+        })();
+    });
 }
 
 // ==============================================
@@ -874,7 +882,7 @@ async function viewContactMessage(contactId) {
     // Update status to read if new
     if (contact.status === 'new') {
         try {
-            await fetch(contextPath + `/admin/api/contact/status?id=${contactId}&status=read`, {
+            await fetch(contextPath + `/admin/api/contact/update-status?id=${contactId}&status=read`, {
                 method: 'POST'
             });
             loadContacts();
@@ -885,25 +893,27 @@ async function viewContactMessage(contactId) {
 }
 
 async function deleteContact(contactId) {
-    if (!showConfirm('Bạn có chắc chắn muốn xóa liên hệ này?', function() {
+    showConfirm('Bạn có chắc chắn muốn xóa liên hệ này?', function() {
+        (async () => {
+            try {
+                const response = await fetch(contextPath + "/admin/api/contact/" + contactId, {
+                    method: 'DELETE'
+                });
 
-    try {
-        const response = await fetch(contextPath + "/admin/api/contact/" + contactId, {
-            method: 'DELETE'
-        });
+                const result = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
-            showToast("Xóa liên hệ thành công");
-            loadContacts();
-        } else {
-            showToast(result.message || "Xóa thất bại", "error");
-        }
-    } catch (error) {
-        console.error("Error deleting contact:", error);
-        showToast("Không thể xóa liên hệ", "error");
-    }
+                if (result.success) {
+                    showToast("Xóa liên hệ thành công");
+                    loadContacts();
+                } else {
+                    showToast(result.message || "Xóa thất bại", "error");
+                }
+            } catch (error) {
+                console.error("Error deleting contact:", error);
+                showToast("Không thể xóa liên hệ", "error");
+            }
+        })();
+    });
 }
 
 // ==============================================
