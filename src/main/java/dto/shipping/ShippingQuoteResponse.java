@@ -9,7 +9,7 @@ public class ShippingQuoteResponse {
     private int etaMinutes;
     private BigDecimal displayFee;
     private BigDecimal estimatedFee;
-    private BigDecimal ghnFee;
+    private BigDecimal ghtkFee;
     private boolean freeShipping;
 
     public boolean isDeliverable() { return deliverable; }
@@ -24,8 +24,8 @@ public class ShippingQuoteResponse {
     public void setDisplayFee(BigDecimal displayFee) { this.displayFee = displayFee; }
     public BigDecimal getEstimatedFee() { return estimatedFee; }
     public void setEstimatedFee(BigDecimal estimatedFee) { this.estimatedFee = estimatedFee; }
-    public BigDecimal getGhnFee() { return ghnFee; }
-    public void setGhnFee(BigDecimal ghnFee) { this.ghnFee = ghnFee; }
+    public BigDecimal getGhtkFee() { return ghtkFee; }
+    public void setGhtkFee(BigDecimal ghtkFee) { this.ghtkFee = ghtkFee; }
     public boolean isFreeShipping() { return freeShipping; }
     public void setFreeShipping(boolean freeShipping) { this.freeShipping = freeShipping; }
 }

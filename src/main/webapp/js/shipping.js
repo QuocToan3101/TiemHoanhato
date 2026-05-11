@@ -238,12 +238,12 @@
     const distance = Number(payload.distance_km || 0);
     const eta = Number(payload.eta_minutes || 0);
     const displayFee = Number(payload.display_fee || 0);
-    const estimatedFee = Number(payload.estimated_fee || payload.ghn_fee || 0);
+    const estimatedFee = Number(payload.estimated_fee || payload.ghtk_fee || 0);
 
     shipDistance.textContent = `${distance.toFixed(2)} km`;
     shipEta.textContent = `${eta} phút`;
     shipFee.textContent = payload.free_shipping || displayFee === 0 ? 'Miễn phí' : formatMoney(displayFee);
-    shipFeeEstimate.textContent = estimatedFee > 0 ? formatMoney(estimatedFee) : 'Đang chờ GHN';
+    shipFeeEstimate.textContent = estimatedFee > 0 ? formatMoney(estimatedFee) : 'Đang chờ GHTK';
     result.style.display = 'block';
 
     syncCheckoutFields(payload, displayFee);

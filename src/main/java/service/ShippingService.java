@@ -13,7 +13,7 @@ import model.DeliveryZone;
 import model.ShippingFeeRule;
 import util.AppConfig;
 import util.GeoUtils;
-import util.GhnClient;
+import util.GhtkClient;
 import util.NominatimClient;
 import util.RedisCache;
 
@@ -32,12 +32,12 @@ import java.util.concurrent.TimeUnit;
  * Production-oriented shipping service:
  * - validates address with Nominatim
  * - caches route result by place_id
- * - estimates GHN fee server-side
+ * - estimates GHTK fee server-side
  * - falls back to internal free-shipping-friendly fee rules
  */
 public class ShippingService {
     private final AppConfig config = AppConfig.getInstance();
-    private final GhnClient ghnClient;
+     private final GhtkClient ghtkClient;
     private final NominatimClient nominatimClient;
     private final RedisCache redisCache;
     private final Gson gson = new Gson();
@@ -53,11 +53,16 @@ public class ShippingService {
     private final BigDecimal defaultPeakSurcharge;
     private final BigDecimal defaultHolidaySurcharge;
     private final Set<String> holidayDates;
+    private final String pickProvince;
+    private final String pickDistrict;
+    private final String pickAddress;
+    private final BigDecimal shipmentWeightGrams;
+    private final BigDecimal shipmentValueVnd;
 
-    public ShippingService(String storeLatStr, String storeLngStr, GhnClient ghnClient, NominatimClient nominatimClient, RedisCache redisCache) {
+    public ShippingService(String storeLatStr, String storeLngStr, GhtkClient ghtkClient, NominatimClient nominatimClient, RedisCache redisCache) {
         this.storeLat = parseDouble(storeLatStr, 0d);
         this.storeLng = parseDouble(storeLngStr, 0d);
-        this.ghnClient = ghnClient;
+        this.ghtkClient = ghtkClient;
         this.nominatimClient = nominatimClient;
         this.redisCache = redisCache;
         this.maxRadiusKm = config.getDoubleProperty("shipping.max_radius_km", 25d);
@@ -69,6 +74,11 @@ public class ShippingService {
         this.defaultPeakSurcharge = new BigDecimal(config.getProperty("shipping.peak_surcharge_vnd", "0"));
         this.defaultHolidaySurcharge = new BigDecimal(config.getProperty("shipping.holiday_surcharge_vnd", "0"));
         this.holidayDates = parseHolidayDates(config.getProperty("shipping.holiday_dates", "01-01,04-30,05-01,09-02,12-25"));
+        this.pickProvince = config.getProperty("ghtk.pick_province", "Hồ Chí Minh");
+        this.pickDistrict = config.getProperty("ghtk.pick_district", "Quận 1");
+        this.pickAddress = config.getProperty("ghtk.pick_address", "Tiệm hoa nhà tớ");
+        this.shipmentWeightGrams = new BigDecimal(config.getProperty("ghtk.shipment_weight_grams", "1000"));
+        this.shipmentValueVnd = new BigDecimal(config.getProperty("ghtk.shipment_value_vnd", "100000"));
         this.localCache = Caffeine.newBuilder()
                 .maximumSize(config.getIntProperty("shipping.cache.max_size", 2000))
                 .expireAfterWrite(config.getIntProperty("shipping.cache.ttl_minutes", 30), TimeUnit.MINUTES)
@@ -160,10 +170,10 @@ public class ShippingService {
 
         ShippingFeeRule rule = loadActiveRule();
         BigDecimal estimatedFee = calculateInternalFee(rule, distanceKm, orderAmount);
-        BigDecimal ghnFee = estimateGhnFee(lat, lng, placeId).orElse(null);
+        BigDecimal ghtkFee = estimateGhtkFee(validation.getSuggestion(), displayName).orElse(null);
 
         quote.setEstimatedFee(estimatedFee);
-        quote.setGhnFee(ghnFee);
+        quote.setGhtkFee(ghtkFee);
         quote.setFreeShipping(freeShippingEnabled);
         quote.setDisplayFee(resolveDisplayFee(estimatedFee));
         quote.setEtaMinutes(Math.max(10, GeoUtils.estimateMinutes(distanceKm, avgSpeedKmh)));
@@ -175,10 +185,23 @@ public class ShippingService {
         return quote;
     }
 
-    private Optional<BigDecimal> estimateGhnFee(double lat, double lng, String placeId) {
+    private Optional<BigDecimal> estimateGhtkFee(AddressSuggestion suggestion, String fallbackAddress) {
         try {
-            String payload = gson.toJson(new GhnRequest(storeLat, storeLng, lat, lng, placeId));
-            return ghnClient.calculateFee(payload);
+            if (ghtkClient == null || suggestion == null) {
+                return Optional.empty();
+            }
+            String query = GhtkClient.buildQuery(
+                    pickProvince,
+                    pickDistrict,
+                    pickAddress,
+                    firstNonBlank(suggestion.getProvince(), suggestion.getDisplayName()),
+                    firstNonBlank(suggestion.getDistrict(), suggestion.getProvince(), suggestion.getDisplayName()),
+                    suggestion.getWard(),
+                    firstNonBlank(fallbackAddress, suggestion.getDisplayName()),
+                    shipmentWeightGrams,
+                    shipmentValueVnd
+            );
+            return ghtkClient.calculateFee(query);
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -330,19 +353,15 @@ public class ShippingService {
         }
     }
 
-    private static class GhnRequest {
-        final double from_lat;
-        final double from_lng;
-        final double to_lat;
-        final double to_lng;
-        final String place_id;
-
-        GhnRequest(double fromLat, double fromLng, double toLat, double toLng, String placeId) {
-            this.from_lat = fromLat;
-            this.from_lng = fromLng;
-            this.to_lat = toLat;
-            this.to_lng = toLng;
-            this.place_id = placeId;
+    private String firstNonBlank(String... values) {
+        if (values == null) {
+            return null;
         }
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 }

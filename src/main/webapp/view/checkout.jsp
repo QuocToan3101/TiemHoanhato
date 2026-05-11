@@ -1049,7 +1049,7 @@
                                                     <div>Khoảng cách: <span id="ship_distance">-</span></div>
                                                     <div>Thời gian: <span id="ship_eta">-</span></div>
                                                     <div>Phí ship: <strong id="ship_fee">Miễn phí</strong></div>
-                                                    <div>Phí tham khảo GHN: <span id="ship_fee_estimate">-</span></div>
+                                                    <div>Phí tham khảo GHTK: <span id="ship_fee_estimate">-</span></div>
                                                 </div>
                                                 <div id="shippingError" style="display:none; color:var(--error)"></div>
                                             </div>

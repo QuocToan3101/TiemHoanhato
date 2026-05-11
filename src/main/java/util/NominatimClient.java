@@ -128,6 +128,30 @@ public class NominatimClient {
         JsonObject address = obj.has("address") && obj.get("address").isJsonObject() ? obj.getAsJsonObject("address") : null;
         if (address != null) {
             suggestion.setCountryCode(getString(address, "country_code"));
+            suggestion.setProvince(firstNonBlank(
+                getString(address, "state"),
+                getString(address, "province"),
+                getString(address, "region")
+            ));
+            suggestion.setDistrict(firstNonBlank(
+                getString(address, "county"),
+                getString(address, "city_district"),
+                getString(address, "district"),
+                getString(address, "municipality"),
+                getString(address, "city")
+            ));
+            suggestion.setWard(firstNonBlank(
+                getString(address, "suburb"),
+                getString(address, "quarter"),
+                getString(address, "borough"),
+                getString(address, "town"),
+                getString(address, "village")
+            ));
+            suggestion.setStreet(firstNonBlank(
+                getString(address, "road"),
+                getString(address, "pedestrian"),
+                getString(address, "residential")
+            ));
         }
         if (suggestion.getCountryCode() == null) {
             suggestion.setCountryCode("vn");
@@ -147,5 +171,17 @@ public class NominatimClient {
     private long getLong(JsonObject obj, String key) {
         try { return obj != null && obj.has(key) && !obj.get(key).isJsonNull() ? obj.get(key).getAsLong() : 0L; }
         catch (Exception e) { return 0L; }
+    }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 }

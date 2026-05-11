@@ -1660,47 +1660,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             Ghi lời chúc kèm bó hoa
           </div>
 
-          <!-- SHIPPING WIDGET -->
-          <div class="shipping-widget" style="padding: 14px 18px; border-top: 1px dashed #f0cddd;">
-            <label style="display:block; font-weight:600; margin-bottom:8px;">Địa chỉ giao hàng</label>
-            <div style="display:flex; gap:8px; margin-bottom:8px;">
-              <input id="shippingAddressInput" placeholder="Nhập địa chỉ - chọn từ gợi ý" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee;" />
-              <button id="useLocationBtn" class="btn secondary" style="padding:8px 10px;">Vị trí hiện tại</button>
-            </div>
-            <div id="shippingSuggestions" class="shipping-suggestions" style="display:none"></div>
-            <input type="hidden" id="shipping_lat" />
-            <input type="hidden" id="shipping_lng" />
-            <input type="hidden" id="shipping_place_id" />
-            <input type="hidden" id="shipping_osm_type" />
-            <input type="hidden" id="shipping_osm_id" />
-            <div id="shippingMap" style="width:100%; height:160px; border-radius:8px; overflow:hidden; background:#f5f5f5; margin-bottom:8px; display:none"></div>
-            <div id="shippingInfo" style="font-size:14px; color:var(--muted);">
-              <div id="shippingSkeleton" class="shipping-skeleton" style="display:none">
-                <div class="sk-line sk-line-lg"></div>
-                <div class="sk-line"></div>
-                <div class="sk-line sk-line-sm"></div>
-              </div>
-              <div id="shippingResult" style="display:none">
-                <div>Khoảng cách: <span id="ship_distance">-</span></div>
-                <div>Thời gian: <span id="ship_eta">-</span></div>
-                <div>Phí ship: <strong id="ship_fee">Miễn phí</strong></div>
-                <div>Phí tham khảo GHN: <span id="ship_fee_estimate">-</span></div>
-              </div>
-              <div id="shippingError" style="display:none; color:var(--error)"></div>
-            </div>
-          </div>
-
-          <div id="addressConfirmModal" class="shipping-modal" style="display:none;">
-            <div class="shipping-modal-card">
-              <h3 style="margin:0 0 8px;">Xác nhận địa chỉ giao hàng</h3>
-              <p id="addressConfirmText" style="margin:0 0 12px; color:var(--muted);"></p>
-              <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
-                <button type="button" class="btn secondary" id="addressConfirmCancel">Chỉnh lại</button>
-                <button type="button" class="btn" id="addressConfirmAccept">Xác nhận địa chỉ</button>
-              </div>
-            </div>
-          </div>
-
           <div class="note" style="padding: 0 18px 18px">
             <textarea
               id="giftNote"
@@ -1709,47 +1668,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
         </section>
 
-        <!-- RIGHT: SUMMARY -->
-
-        <aside class="card summary">
-          <div class="section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 3l2.7 5.4 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6L3.3 9.3l6-.9L12 3z"
-                stroke="#a97155"
-                stroke-width="1.2"
-              />
-            </svg>
-
-            Tóm tắt đơn hàng
-          </div>
-
-          <div class="code">
-            <input id="discountCode" placeholder="Nhập mã giảm giá" />
-
-            <button class="btn secondary" onclick="applyDiscount()">
-              Áp dụng
-            </button>
-          </div>
-
-          <div class="sum-row muted">
-            <span>Tạm tính</span>
-
-            <span id="subtotal">0đ</span>
-          </div>
-
-          <div class="sum-row muted">
-            <span>Phí giao (ước tính)</span>
-
-            <span id="shipping">0đ</span>
-          </div>
-
-          <div class="sum-row muted">
-            <span>Giảm giá</span>
-
-            <span id="discount" style="color: #27ae60;">0đ</span>
-          </div>
-          
           <div id="appliedCouponInfo" style="display: none; margin: 10px 0; padding: 10px; background: #e8f5e9; border-radius: 8px; border-left: 3px solid #27ae60;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <span style="color: #27ae60; font-weight: 500;">
@@ -3162,6 +3080,5 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       renderCart();
     </script>
-      <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
   </body>
 </html>

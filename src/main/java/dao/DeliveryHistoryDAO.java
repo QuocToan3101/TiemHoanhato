@@ -11,7 +11,7 @@ public class DeliveryHistoryDAO extends BaseDAO {
     public void insert(String placeId, String formattedAddress, double lat, double lng, ShippingQuoteResponse quote,
                        String addressStatus, String reason, String clientIp, String userAgent) {
         String sql = "INSERT INTO delivery_history " +
-                "(place_id, formatted_address, latitude, longitude, distance_km, fee, ghn_fee, deliverable, shipping_status, address_status, reason, client_ip, user_agent, created_at) " +
+                "(place_id, formatted_address, latitude, longitude, distance_km, fee, ghtk_fee, deliverable, shipping_status, address_status, reason, client_ip, user_agent, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, placeId);
@@ -20,7 +20,7 @@ public class DeliveryHistoryDAO extends BaseDAO {
             ps.setDouble(4, lng);
             ps.setDouble(5, quote != null ? quote.getDistanceKm() : 0d);
             ps.setBigDecimal(6, quote != null ? quote.getDisplayFee() : null);
-            ps.setBigDecimal(7, quote != null ? quote.getGhnFee() : null);
+            ps.setBigDecimal(7, quote != null ? quote.getGhtkFee() : null);
             if (quote != null) {
                 ps.setBoolean(8, quote.isDeliverable());
             } else {

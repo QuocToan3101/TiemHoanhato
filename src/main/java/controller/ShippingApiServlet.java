@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import dto.shipping.ShippingQuoteResponse;
 import service.ShippingService;
 import util.AppConfig;
-import util.GhnClient;
+import util.GhtkClient;
 import util.NominatimClient;
 import util.RedisCache;
 
@@ -32,8 +32,9 @@ public class ShippingApiServlet extends HttpServlet {
 
         String storeLat = config.getProperty("store.latitude", "0");
         String storeLng = config.getProperty("store.longitude", "0");
-        String ghnBase = config.getProperty("ghn.base_url", "https://online-gateway.ghn.vn");
-        String ghnToken = config.getProperty("ghn.token", "");
+        String ghtkBase = config.getProperty("ghtk.base_url", "https://api.ghtk.vn");
+        String ghtkToken = config.getProperty("ghtk.token", "");
+        String ghtkClientSource = config.getProperty("ghtk.client_source", "");
         String userAgent = config.getProperty("nominatim.user_agent", "FlowerStore/1.0");
         String nominatimBase = config.getProperty("nominatim.base_url", "https://nominatim.openstreetmap.org");
 
@@ -47,7 +48,7 @@ public class ShippingApiServlet extends HttpServlet {
         shippingService = new ShippingService(
                 storeLat,
                 storeLng,
-                new GhnClient(ghnBase, ghnToken),
+            new GhtkClient(ghtkBase, ghtkToken, ghtkClientSource),
                 new NominatimClient(userAgent, nominatimBase),
                 redis
         );
@@ -120,7 +121,7 @@ public class ShippingApiServlet extends HttpServlet {
             response.addProperty("eta_minutes", quote.getEtaMinutes());
             response.addProperty("display_fee", quote.getDisplayFee() == null ? 0 : quote.getDisplayFee().doubleValue());
             response.addProperty("estimated_fee", quote.getEstimatedFee() == null ? 0 : quote.getEstimatedFee().doubleValue());
-            response.addProperty("ghn_fee", quote.getGhnFee() == null ? 0 : quote.getGhnFee().doubleValue());
+            response.addProperty("ghtk_fee", quote.getGhtkFee() == null ? 0 : quote.getGhtkFee().doubleValue());
             response.addProperty("free_shipping", quote.isFreeShipping());
             response.addProperty("message", quote.getMessage() == null ? "" : quote.getMessage());
             resp.getWriter().write(gson.toJson(response));

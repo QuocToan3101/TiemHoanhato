@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS delivery_history (
   longitude DOUBLE NULL,
   distance_km DOUBLE NULL,
   fee DECIMAL(10,2) NULL,
-  ghn_fee DECIMAL(10,2) NULL,
+  ghtk_fee DECIMAL(10,2) NULL,
   deliverable BOOLEAN NULL,
   shipping_status VARCHAR(32) NULL,
   address_status VARCHAR(32) NULL,
