@@ -6,9 +6,9 @@ import com.google.gson.JsonParser;
 import dto.shipping.ShippingQuoteResponse;
 import service.ShippingService;
 import util.AppConfig;
-import util.GhtkClient;
 import util.NominatimClient;
 import util.RedisCache;
+import util.ShippingClientFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,9 +32,6 @@ public class ShippingApiServlet extends HttpServlet {
 
         String storeLat = config.getProperty("store.latitude", "0");
         String storeLng = config.getProperty("store.longitude", "0");
-        String ghtkBase = config.getProperty("ghtk.base_url", "https://api.ghtk.vn");
-        String ghtkToken = config.getProperty("ghtk.token", "");
-        String ghtkClientSource = config.getProperty("ghtk.client_source", "");
         String userAgent = config.getProperty("nominatim.user_agent", "FlowerStore/1.0");
         String nominatimBase = config.getProperty("nominatim.base_url", "https://nominatim.openstreetmap.org");
 
@@ -45,10 +42,13 @@ public class ShippingApiServlet extends HttpServlet {
             redis = new RedisCache(redisHost, redisPort, config.getIntProperty("shipping.cache.ttl_minutes", 30) * 60);
         }
 
+        // Use factory to create appropriate client (real or mock)
+        var shippingClient = ShippingClientFactory.createShippingClient(config);
+
         shippingService = new ShippingService(
                 storeLat,
                 storeLng,
-            new GhtkClient(ghtkBase, ghtkToken, ghtkClientSource),
+                shippingClient,
                 new NominatimClient(userAgent, nominatimBase),
                 redis
         );
