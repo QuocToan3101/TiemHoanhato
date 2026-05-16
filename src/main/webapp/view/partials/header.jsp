@@ -13,7 +13,7 @@
                 <div class="logo col-md-2 col-xs-2 col-sm-4 pd-right-0 pd-left-0">
                     <a href="${pageContext.request.contextPath}/home">
                         <img class="dt-width-auto" height="30" width="185"
-                            src="${pageContext.request.contextPath}/view/Logo%20Ti%E1%BB%87m%20Hoa.png"
+                            src="${pageContext.request.contextPath}/view/logo.png"
                             alt="Tiệm Hoa Nhà Tớ">
                     </a>
                 </div>
@@ -178,7 +178,7 @@
                                 </c:choose>
                             </li>
                             <li class="list-inline-item mr-0">
-                                <a href="${pageContext.request.contextPath}/view/cart.jsp" class="cart js-call-minicart" data-original-title="Giỏ hàng"
+                                <a href="${pageContext.request.contextPath}/cart" class="cart js-call-minicart" data-original-title="Giỏ hàng"
                                     data-tooltip="tooltip">
                                     <svg aria-hidden="true" focusable="false" role="presentation"
                                         class="icon icon-bag-minimal" viewBox="0 0 64 64">
@@ -465,18 +465,33 @@
         fetch(contextPath + '/api/cart')
             .then(response => response.json())
             .then(result => {
-                if (result.success && result.itemCount > 0) {
-                    updateCartCount(result.itemCount);
+                if (result.success) {
+                    updateCartCount(result.itemCount || 0);
                 }
             })
             .catch(error => {
                 console.error('Error loading cart count:', error);
             });
     }
+
+    function getCsrfToken() {
+        return window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+
+    function withCsrfHeaders(headers) {
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            return headers || {};
+        }
+        return {
+            ...(headers || {}),
+            'X-CSRF-Token': csrfToken
+        };
+    }
     
     // Function to update cart count display
     function updateCartCount(count) {
-        const cartCountElements = document.querySelectorAll('.js-number-cart, .number-cart');
+        const cartCountElements = document.querySelectorAll('.js-number-cart, .number-cart, .cart-count');
         cartCountElements.forEach(function(element) {
             if (count > 0) {
                 element.textContent = count;

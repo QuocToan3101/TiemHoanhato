@@ -8,9 +8,11 @@ import java.sql.Timestamp;
  */
 public class CartItem {
     private int id;
+    private int cartId;
     private int userId;
     private int productId;
     private int quantity;
+    private BigDecimal price;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     
@@ -32,12 +34,18 @@ public class CartItem {
     
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
+
+    public int getCartId() { return cartId; }
+    public void setCartId(int cartId) { this.cartId = cartId; }
     
     public int getProductId() { return productId; }
     public void setProductId(int productId) { this.productId = productId; }
     
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
     
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
@@ -53,6 +61,9 @@ public class CartItem {
      * Tính tổng tiền của item này
      */
     public BigDecimal getSubtotal() {
+        if (price != null) {
+            return price.multiply(new BigDecimal(quantity));
+        }
         if (product == null) return BigDecimal.ZERO;
         return product.getDisplayPrice().multiply(new BigDecimal(quantity));
     }

@@ -5,13 +5,26 @@
 <!DOCTYPE html>
 <html lang="vi">
   <head>
+    <!-- [FIX #1] charset phải là thẻ đầu tiên để browser decode HTML đúng trước khi parse bất kỳ nội dung nào -->
+    <meta charset="utf-8" />
+
     <title>Tin Tức - La Vie Est Belle - Flower & Gift</title>
-    
+
+    <!-- Google Fonts: load sớm nhất để tránh FOUT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="${fn:escapeXml(csrfToken)}">
     <script>window.csrfToken = '<c:out value="${csrfToken}" />';</script>
 
-    <!-- Google Tag Manager -->
+    <!-- [FIX #2] Giữ lại cả hai GTM container vì chúng dùng ID khác nhau (GTM-W8R4GL2 và GTM-NSBT6HTK).
+         Nếu chỉ cần một, hãy xóa bỏ block không dùng. -->
+    <!-- Google Tag Manager: GTM-W8R4GL2 -->
     <script>
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
@@ -27,8 +40,9 @@
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-W8R4GL2");
     </script>
-    <!-- End Google Tag Manager -->
-    <!-- Google Tag Manager -->
+    <!-- End Google Tag Manager: GTM-W8R4GL2 -->
+
+    <!-- Google Tag Manager: GTM-NSBT6HTK -->
     <script>
       (function (w, d, s, l, i) {
         w[l] = w[l] || [];
@@ -44,10 +58,7 @@
         f.parentNode.insertBefore(j, f);
       })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
     </script>
-
-    <!-- End Google Tag Manager -->
-
-    <meta charset="utf-8" />
+    <!-- End Google Tag Manager: GTM-NSBT6HTK -->
 
     <link
       rel="shortcut icon"
@@ -322,6 +333,23 @@
       .search-btn:active {
         transform: translateY(0);
       }
+      /*padding: 0.5rem 1.25rem;
+
+        border-radius: 60px;
+
+        background: #f0e3de;
+
+        border: 2px solid transparent;
+
+        cursor: pointer;
+
+        font-weight: 400;
+
+        font-size: 1 rem;
+
+        transition: all 0.3s ease;
+
+        color: var(--brown-soft);*/
 
       /* Filter Chips */
       .chip {
@@ -416,6 +444,8 @@
         display: flex;
 
         flex-direction: column;
+
+        animation: fadeInUp 0.6s ease-out;
       }
 
       .news-grid {
@@ -546,7 +576,25 @@
         font-size: 0.6rem;
       }
 
-      
+      /* 
+        color: var(--brown-soft);
+
+        margin-bottom: 1.5rem;
+
+        flex: 1;
+
+        line-height: 1.5;
+
+        display: -webkit-box;
+
+        -webkit-line-clamp: 4;
+
+        line-clamp: 4;
+
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
+      */
 
       .news-excerpt {
         color: var(--brown-soft);
@@ -891,10 +939,6 @@
         }
       }
 
-      .news-card {
-        animation: fadeInUp 0.6s ease-out;
-      }
-
       .news-card:nth-child(1) {
         animation-delay: 0.1s;
       }
@@ -918,12 +962,83 @@
       .news-card:nth-child(6) {
         animation-delay: 0.35s;
       }
-    </style>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
-      rel="stylesheet"
-    />
+      /* Skeleton Loading */
+
+      @keyframes shimmer {
+        0% { background-position: -600px 0; }
+        100% { background-position: 600px 0; }
+      }
+
+      .skeleton-card {
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(210, 180, 160, 0.2);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .skeleton-shimmer {
+        background: linear-gradient(
+          90deg,
+          #f0e8df 0px,
+          #faf5ef 40%,
+          #f0e8df 80%
+        );
+        background-size: 600px 100%;
+        animation: shimmer 1.6s infinite linear;
+      }
+
+      .skeleton-image {
+        width: 100%;
+        height: 240px;
+      }
+
+      .skeleton-body {
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .skeleton-meta {
+        height: 20px;
+        width: 45%;
+        border-radius: 50px;
+      }
+
+      .skeleton-title {
+        height: 22px;
+        width: 90%;
+        border-radius: 6px;
+      }
+
+      .skeleton-title-short {
+        height: 22px;
+        width: 65%;
+        border-radius: 6px;
+      }
+
+      .skeleton-line {
+        height: 15px;
+        border-radius: 4px;
+      }
+
+      .skeleton-line-short {
+        height: 15px;
+        width: 75%;
+        border-radius: 4px;
+      }
+
+      .skeleton-link {
+        height: 16px;
+        width: 30%;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+      }
+    </style>
 
     <link
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"
@@ -1019,11 +1134,13 @@
         Haravan = {};
       }
 
+      // [FIX #3] Chỉ giữ một giá trị Haravan.shop. Đã xóa dòng gán đè "lavieestbelle.myharavan.com".
+      // Nếu cần dùng domain Haravan nội bộ, hãy lưu vào một biến riêng, ví dụ: Haravan.internalDomain
       Haravan.shop = "lavieestbelle.vn";
 
       Haravan.culture = "vi-VN";
 
-      Haravan.shop = "lavieestbelle.myharavan.com";
+      // Haravan.internalDomain = "lavieestbelle.myharavan.com"; // bỏ comment nếu cần dùng
 
       Haravan.theme = {
         name: "Customize Lavieestbelle",
@@ -1103,7 +1220,11 @@
 
           <div class="chip" data-filter="proposal">Cầu hôn</div>
 
+          <div class="chip" data-filter="wedding">Đám cưới</div>
+
           <div class="chip" data-filter="story">Story từ Tiệm</div>
+
+          <div class="chip" data-filter="budget">Ngân sách</div>
         </div>
       </div>
 
@@ -1154,7 +1275,7 @@
                     Bó hoa pastel cho Giỗ Tổ nên ưu tiên Sen hồng, Cúc mẫu đơn hoặc Hồng kem. Phối màu nã nhặn (trắng - hồng phấn - xanh lơ) tạo vẻ đẹp thanh tao, thành kính. Kiểu bó tròn đầy đặn, gói giấy trung tính giúp tôn vinh sự sang trọng, thể hiện trọn vẹn đạo lý "Uống nước nhớ nguồn" và lòng tri ân sâu sắc.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/hoa-pastel-gio-to-hung-vuong" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1188,7 +1309,7 @@
                     tượng hơn rất nhiều.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/chon-ke-hoa-khai-truong" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1222,13 +1343,13 @@
                     lại nhé…".
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/mot-ngay-chuan-bi-20-don-to-tinh" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
               <!-- Article 4 -->
 
-              <article class="news-card" data-category="tips">
+              <article class="news-card" data-category="budget">
                 <div class="news-image-wrapper">
                   <img
                     class="news-thumb"
@@ -1254,7 +1375,7 @@
                     Bạn không cần chi quá nhiều để có một bó hoa xinh – Ưu tiên hoa Cát Tường hoặc Cúc mẫu đơn nội địa tông hồng kem, trắng để tiết kiệm chi phí. Phối cùng nhiều lá bạc, hoa baby giúp bó hoa đầy đặn, sang trọng. Sử dụng giấy gói Kraft hoặc nơ tối giản giúp tổng thể trông chỉn chu, thành kính mà vẫn vừa vặn ngân sách.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/tang-hoa-ngan-sach-vua-phai" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1288,7 +1409,7 @@
                     ấy.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/bo-hoa-cau-hon-hoan-hao" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1321,7 +1442,7 @@
                     mẹo đơn giản này, hoa có thể tươi hơn bạn nghĩ rất nhiều.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/5-bi-quyet-giu-hoa-tuoi-lau" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
 
@@ -1331,8 +1452,8 @@
                 <div class="news-image-wrapper">
                   <img
                     class="news-thumb"
-                    src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=400"
-                    alt="Chăm sóc hoa"
+                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
+                    alt="Chọn hoa theo màu sắc"
                   />
 
                   <div class="news-overlay"></div>
@@ -1346,14 +1467,14 @@
                   </div>
 
                   <h2 class="news-heading">
-                    5 bí quyết giữ hoa tươi lâu mà ít ai biết
+                    Ý nghĩa màu sắc hoa – Chọn đúng tông để nói đúng điều muốn nói
                   </h2>
 
                   <p class="news-excerpt">
-                    Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ..
+                    Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ.
                   </p>
 
-                  <a href="#" class="news-link">Xem chi tiết</a>
+                  <a href="${pageContext.request.contextPath}/news/y-nghia-mau-sac-hoa" class="news-link">Xem chi tiết</a>
                 </div>
               </article>
             </section>
@@ -1528,47 +1649,24 @@
       // Filter functionality
 
       document.addEventListener("DOMContentLoaded", function () {
-        const chips = document.querySelectorAll(".chip");
-        const getNewsCards = () => document.querySelectorAll(".news-card");
-
         const searchInput = document.getElementById("searchInput");
 
         const searchBtn = document.getElementById("searchBtn");
 
         const loadMoreBtn = document.getElementById("loadMoreBtn");
 
-        // Filter chips
-        chips.forEach((chip) => {
-          chip.addEventListener("click", function () {
-            chips.forEach((c) => c.classList.remove("active"));
-
-            this.classList.add("active");
-
-            const filter = this.getAttribute("data-filter");
-
-            getNewsCards().forEach((card) => {
-              if (
-                filter === "all" ||
-                card.getAttribute("data-category") === filter
-              ) {
-                card.style.display = "flex";
-
-                card.style.animation = "fadeInUp 0.6s ease-out";
-              } else {
-                card.style.display = "none";
-              }
-            });
-          });
-        });
+        // Filter chips và card click được xử lý bởi initFilterAndCardEvents() (event delegation)
+        // — không gán event trực tiếp ở đây để tránh double-trigger
 
         // Search functionality
 
         function performSearch() {
           const searchTerm = searchInput.value.toLowerCase().trim();
+          const newsCards = document.querySelectorAll(".news-card");
 
           if (searchTerm === "") {
             document.getElementById("searchEmptyState").classList.remove("visible");
-            getNewsCards().forEach((card) => {
+            newsCards.forEach((card) => {
               card.style.display = "flex";
             });
 
@@ -1577,7 +1675,7 @@
 
           let foundCount = 0;
 
-          getNewsCards().forEach((card) => {
+          newsCards.forEach((card) => {
             const title = card
               .querySelector(".news-heading")
               .textContent.toLowerCase();
@@ -1623,8 +1721,8 @@
           loadMoreNews();
         });
 
-        // Initial binding for existing cards
-        attachFilterEvents();
+        // Khởi tạo event delegation một lần duy nhất
+        initFilterAndCardEvents();
 
         // Recent posts click
         const recentPosts = document.querySelectorAll(".recent-post-item");
@@ -1687,20 +1785,58 @@
         return date && !isNaN(date) ? date.toLocaleDateString('vi-VN') : '';
       }
 
+      function buildSkeletonCard() {
+        const card = document.createElement('div');
+        card.className = 'skeleton-card';
+        card.setAttribute('data-skeleton', 'true');
+        card.innerHTML =
+          '<div class="skeleton-image skeleton-shimmer"></div>' +
+          '<div class="skeleton-body">' +
+            '<div class="skeleton-meta skeleton-shimmer"></div>' +
+            '<div class="skeleton-title skeleton-shimmer"></div>' +
+            '<div class="skeleton-title-short skeleton-shimmer"></div>' +
+            '<div class="skeleton-line skeleton-shimmer"></div>' +
+            '<div class="skeleton-line skeleton-shimmer"></div>' +
+            '<div class="skeleton-line-short skeleton-shimmer"></div>' +
+            '<div class="skeleton-link skeleton-shimmer"></div>' +
+          '</div>';
+        return card;
+      }
+
+      function showSkeletons(count) {
+        const newsGrid = document.getElementById('newsGrid');
+        for (let i = 0; i < count; i++) {
+          newsGrid.appendChild(buildSkeletonCard());
+        }
+      }
+
+      function removeSkeletons() {
+        const newsGrid = document.getElementById('newsGrid');
+        newsGrid.querySelectorAll('[data-skeleton]').forEach(function(el) {
+          el.remove();
+        });
+      }
+
       async function loadNewsFromDB(page, append) {
         page = page || 1;
         append = append || false;
         try {
+          const newsGrid = document.getElementById('newsGrid');
+
+          // Hiển thị skeleton trước khi fetch
+          if (!append) {
+            newsGrid.innerHTML = '';
+          }
+          showSkeletons(PAGE_SIZE);
+
           const url = contextPath + '/api/news/list?page=' + page + '&pageSize=' + PAGE_SIZE;
           const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
           const result = await response.json();
+
+          // Xóa skeleton sau khi có dữ liệu
+          removeSkeletons();
           
           if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-            const newsGrid = document.getElementById('newsGrid');
-            if (!append) {
-              newsGrid.innerHTML = '';
-            }
-            
             result.data.forEach(news => {
               newsGrid.appendChild(buildNewsCard(news));
             });
@@ -1716,12 +1852,12 @@
               loadMoreBtn.disabled = false;
             }
 
-            // Re-attach filter events with fresh nodes
-            attachFilterEvents();
+            // Re-attach filter events with fresh nodes — không cần với event delegation
           } else if (!append) {
             // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
           }
         } catch (error) {
+          removeSkeletons();
           console.error('Error loading news:', error);
         }
       }
@@ -1779,45 +1915,47 @@
           'story': 'Câu chuyện',
           'proposal': 'Cầu hôn',
           'wedding': 'Đám cưới',
-          'birthday': 'Sinh nhật'
+          'birthday': 'Sinh nhật',
+          'budget': 'Ngân sách'
         };
         return categories[category] || category;
       }
       
-function attachFilterEvents() {
-        const filterButtons = document.querySelectorAll(".chip");
-        const newsCards = document.querySelectorAll(".news-card");
+function initFilterAndCardEvents() {
+        const filterChips = document.querySelector(".filter-chips");
+        const newsGrid   = document.getElementById("newsGrid");
 
-        filterButtons.forEach((btn) => {
-          btn.onclick = function () {
-            filterButtons.forEach((b) => b.classList.remove("active"));
-            this.classList.add("active");
+        // --- Chip filter: delegation trên container .filter-chips ---
+        if (filterChips && !filterChips._delegated) {
+          filterChips._delegated = true;
+          filterChips.addEventListener("click", function (e) {
+            const btn = e.target.closest(".chip");
+            if (!btn) return;
 
-            const filter = this.getAttribute("data-filter");
-
-            newsCards.forEach((card) => {
-              const category = card.getAttribute("data-category");
-
-              if (filter === "all" || category === filter) {
-                card.style.display = "flex";
-              } else {
-                card.style.display = "none";
-              }
+            document.querySelectorAll(".chip").forEach(function (b) {
+              b.classList.remove("active");
             });
-          };
-        });
+            btn.classList.add("active");
 
-        newsCards.forEach((card) => {
-          card.onclick = function (e) {
-            if (!e.target.classList.contains("news-link")) {
-              const link = this.querySelector(".news-link");
+            const filter = btn.getAttribute("data-filter");
+            document.querySelectorAll(".news-card").forEach(function (card) {
+              const category = card.getAttribute("data-category");
+              card.style.display = (filter === "all" || category === filter) ? "flex" : "none";
+            });
+          });
+        }
 
-              if (link) {
-                window.location.href = link.getAttribute("href");
-              }
-            }
-          };
-        });
+        // --- Card click: delegation trên #newsGrid ---
+        if (newsGrid && !newsGrid._delegated) {
+          newsGrid._delegated = true;
+          newsGrid.addEventListener("click", function (e) {
+            if (e.target.classList.contains("news-link")) return;
+            const card = e.target.closest(".news-card");
+            if (!card) return;
+            const link = card.querySelector(".news-link");
+            if (link) window.location.href = link.getAttribute("href");
+          });
+        }
       }
       // Async loading
 
@@ -1825,6 +1963,8 @@ function attachFilterEvents() {
 
       let loadasyncdefer = () => {};
 
+      // [FIX #4] Thêm resolve() sau khi dispatch xong các setTimeout,
+      // tránh Promise bị treo mãi mãi không bao giờ settle.
       function resolveAfter5Seconds() {
         return new Promise((resolve) => {
           if (tbag_varible.template == "index") {
@@ -1835,12 +1975,13 @@ function attachFilterEvents() {
 
           setTimeout(() => {
             loadasyncdefer();
+            resolve(); // Promise settle sau khi loadasyncdefer được lên lịch
           }, 200);
         });
       }
 
-      function asyncCall() {
-        resolveAfter5Seconds();
+      async function asyncCall() {
+        await resolveAfter5Seconds();
       }
     </script>
 

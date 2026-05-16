@@ -1065,6 +1065,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -1582,7 +1589,7 @@
             const caption = this.querySelector(".gallery-caption");
 
             if (img && caption) {
-              alert(caption.textContent);
+              showInfo(caption.textContent, "Ánh sản phẩm");
             }
           });
         });

@@ -14,6 +14,19 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
+    <script>
+      function getCsrfToken() {
+        return window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+      }
+
+      function withCsrfHeaders(headers) {
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+          return headers || {};
+        }
+        return Object.assign({}, headers || {}, { 'X-CSRF-Token': csrfToken });
+      }
+    </script>
 
     <!-- Font Awesome -->
     <link
@@ -314,13 +327,9 @@
       }
 
       .user-info:hover {
-        background: rgb(160, 199, 240);
+        background: var(--primary-light);
         border-color: var(--primary);
         box-shadow: var(--shadow-sm);
-      }
-
-      .user-info:hover {
-        background: var(--primary-light);
       }
 
       .user-avatar {
@@ -517,15 +526,6 @@
         box-shadow: 0 4px 12px var(--shadow);
       }
 
-      /* th {
-        background-color: var(--bg-light);
-        font-weight: 700;
-        color: var(--text-dark);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      } */
-
       .stat-icon.success {
         background: linear-gradient(135deg, #10b981, #059669);
       }
@@ -706,31 +706,7 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
       }
-/* 
-      .badge-success {
-        background-color: rgba(16, 185, 129, 0.15);
-        color: #059669;
-      }
-      .badge-warning {
-        background-color: rgba(245, 158, 11, 0.15);
-        color: #d97706;
-      }
-      .badge-danger {
-        background-color: rgba(239, 68, 68, 0.15);
-        color: #dc2626;
-      }
-      .badge-info {
-        background-color: rgba(59, 130, 246, 0.15);
-        color: #2563eb;
-      }
-      .badge-primary {
-        background-color: rgba(201, 147, 102, 0.15);
-        color: var(--primary-dark);
-      }
-      .badge-secondary {
-        background-color: rgba(108, 88, 69, 0.15);
-        color: var(--secondary-soft);
-      } */
+
 
       .btn-light {
         background-color: var(--bg-light);
@@ -904,6 +880,40 @@
         overflow-x: auto;
       }
 
+      .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+      }
+
+
+      .btn-light {
+        background-color: var(--bg-light);
+        color: var(--text-medium);
+        border: 1px solid var(--border);
+      }
+
+      .btn-light:hover {
+        background-color: var(--primary-light);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+
       .tab {
         padding: 14px 24px;
         cursor: pointer;
@@ -982,20 +992,6 @@
         }
       }
 
-      /* .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-        backdrop-filter: blur(5px);
-        animation: fadeIn 0.2s ease;
-      } */
 
       .modal-header {
         padding: 20px 25px;
@@ -1005,6 +1001,7 @@
         align-items: center;
         background-color: var(--bg-light);
       }
+      
 
       .modal-header h3 {
         font-size: 1.4rem;
@@ -1310,6 +1307,38 @@
       /* ============================================
            RESPONSIVE
            ============================================ */
+
+      .stat-row strong {
+        font-size: 1.1rem;
+        color: var(--primary-dark);
+        font-weight: 700;
+      }
+
+      /* ============================================
+           STATS GRID
+           ============================================ */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 8px 0;
+      }
+
+      .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+      }
       @media (max-width: 1024px) {
         .sidebar {
           width: 70px;
@@ -1416,6 +1445,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
   <body>
     <!-- ============================================
@@ -2400,12 +2436,6 @@
                   </div>
                   <div class="form-group">
                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                      <input type="checkbox" id="paymentMomo">
-                      <span><i class="fas fa-mobile-alt"></i> Ví MoMo</span>
-                    </label>
-                  </div>
-                  <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
                       <input type="checkbox" id="paymentVNPay">
                       <span><i class="fas fa-credit-card"></i> VNPay</span>
                     </label>
@@ -2783,12 +2813,13 @@
         </div>
         <div class="modal-footer">
           <button
+            type="button"
             class="btn btn-secondary"
             onclick="closeModal('productModal')"
           >
             Hủy
           </button>
-          <button class="btn btn-primary" onclick="saveProduct()">
+          <button type="button" class="btn btn-primary" onclick="saveProduct()">
             <i class="fas fa-save"></i> Lưu
           </button>
         </div>
@@ -2869,14 +2900,6 @@
       </div>
     </div>
 
-    <!-- <div class="modal-footer">
-          <button class="btn btn-secondary" onclick="closeModal('couponModal')">Hủy</button>
-          <button class="btn btn-primary" onclick="saveCoupon()">
-            <i class="fas fa-save"></i> Lưu
-          </button>
-        </div>
-      </div>
-    </div> -->
     <!-- Coupon Modal -->
     <div class="modal-overlay" id="couponModal">
       <div class="modal">
@@ -2941,25 +2964,7 @@
       </div>
     </div>
 
-<!-- <div>
-              <div class="info-group">
-                <label>Tiêu đề:</label>
-                <p id="contactSubject"></p>
-              </div>
-              <div class="info-group">
-                <label>Ngày gửi:</label>
-                <p id="contactDate"></p>
-              </div>
-              <div class="info-group">
-                <label>Trạng thái:</label>
-                <select id="contactStatus" class="form-input" onchange="updateContactStatus()">
-                  <option value="new">Mới</option>
-                  <option value="read">Đã đọc</option>
-                  <option value="replied">Đã trả lời</option>
-                </select>
-              </div>
-            </div>
-          </div> -->
+
     
     <!-- Contact Detail Modal -->
     <div class="modal-overlay" id="contactModal">
@@ -3110,38 +3115,9 @@
               <input type="text" id="newsSlug" class="form-input" placeholder="tu-dong-tao-hoac-nhap-slug" required />
               <small style="color: #666;">Slug sẽ tự động tạo từ tiêu đề, hoặc bạn có thể tự nhập</small>
             </div>
-            <!-- <div class="modal-body">
-          <input type="hidden" id="galleryId" />
-          <form id="galleryForm">
-            <div class="form-group">
-              <label for="galleryImageUrl">URL Hình Ảnh <span style="color: red;">*</span></label>
-              <input type="url" id="galleryImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
-              <small style="color: #666;">Nhập URL hình ảnh hoặc upload lên server</small>
-            </div>
             
-            <div class="form-group">
-              <label for="galleryCaption">Tiêu Đề <span style="color: red;">*</span></label>
-              <input type="text" id="galleryCaption" class="form-input" placeholder="Bó hoa đẹp" required />
-            </div>
             
-            <div class="form-group">
-              <label for="galleryDescription">Mô Tả</label>
-              <textarea id="galleryDescription" class="form-input" rows="3" placeholder="Mô tả chi tiết về hình ảnh"></textarea>
-            </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-              <div class="form-group">
-                <label for="galleryOrder">Thứ Tự Hiển Thị</label>
-                <input type="number" id="galleryOrder" class="form-input" value="0" min="0" />
-              </div>
-              
-              <div class="form-group">
-                <label>
-                  <input type="checkbox" id="galleryActive" checked />
-                  <span>Hiển thị</span>
-                </label>
-              </div>
-            </div>
             
             <!-- Preview image -->
             <div class="form-group" id="galleryPreviewContainer" style="display: none;">
@@ -3262,17 +3238,7 @@
           customers: "Quản Lý Khách Hàng",
           coupons: "Quản Lý Mã Giảm Giá",
           contacts: "Quản Lý Liên Hệ",
-          // dashboard: "Dashboard",
-          // orders: "Quản Lý Đơn Hàng",
-          // products: "Quản Lý Sản Phẩm",
-          // categories: "Quản Lý Danh Mục",
-          // customers: "Quản Lý Khách Hàng",
-          // coupons: "Quản Lý Mã Giảm Giá",
-          // contacts: "Quản Lý Liên Hệ",
-          // gallery: "Quản Lý Gallery",
-          // news: "Quản Lý Tin Tức",
-          // analytics: "Thống Kê & Báo Cáo",
-          // settings: "Cài Đặt Hệ Thống",
+        
           gallery: "Quản Lý Gallery",
           news: "Quản Lý Tin Tức",
           analytics: "Thống Kê & Báo Cáo",
@@ -3290,29 +3256,13 @@
         } else if (sectionId === 'news') {
           loadNews();
         } else if (sectionId === 'analytics') {
-          console.log("🔄 Switching to analytics section");
           setTimeout(() => loadAnalytics(), 100);
         } else if (sectionId === 'settings') {
           setTimeout(() => loadSettings(), 100);
         }
       }
 
-      // // Basic menu navigation
-      // document.addEventListener("DOMContentLoaded", function () {
-      //   // Menu items click handler
-      //   document.querySelectorAll(".menu-item[data-target]").forEach((item) => {
-      //     item.addEventListener("click", function () {
-      //       const target = this.getAttribute("data-target");
-      //       showSection(target);
-
-      //       // Update active menu
-      //       document
-      //         .querySelectorAll(".menu-item")
-      //         .forEach((m) => m.classList.remove("active"));
-      //       this.classList.add("active");
-      //     });
-      //   });
-      // });
+      
 
       // Show notification function
       function showNotification(title, message, type = "success") {
@@ -3409,10 +3359,7 @@
           if (!response.ok) throw new Error("Failed to load statistics");
 
           const result = await response.json();
-          console.log("📊 Statistics API Response:", result);
           const data = result.data || result;
-          console.log("📊 Statistics Data:", data);
-          console.log("💰 Total Revenue:", data.totalRevenue, typeof data.totalRevenue);
 
           // Update stat cards
           document.getElementById("statTotalOrders").textContent = formatNumber(
@@ -3549,7 +3496,7 @@
           const data = await response.json();
 
           // Prepare chart data
-          const labels = data.map((item) => item.label);
+          const labels = data.map((item) => item.label || item.date);
           const revenues = data.map((item) => item.revenue);
 
           // Destroy existing chart if exists
@@ -3760,12 +3707,6 @@
         }
       }
 
-      // if (!orders || orders.length === 0) {
-      //       tbody.innerHTML =
-      //         '<tr><td colspan="4" class="text-center">Chưa có đơn hàng</td></tr>';
-      //       return;
-      //     }
-
 
       // Load top products
       async function loadTopProducts() {
@@ -3774,7 +3715,6 @@
           if (!response.ok) throw new Error("Failed to load top products");
 
           const result = await response.json();
-          console.log("📦 Top Products Response:", result);
           
           const products = result.data || [];
           const tbody = document.querySelector("#topProductsTable tbody");
@@ -3859,10 +3799,7 @@
 
         // Load analytics when analytics section is active
         const analyticsSection = document.getElementById("analytics");
-        console.log("Analytics section:", analyticsSection);
-        console.log("Is active?", analyticsSection?.classList.contains("active"));
         if (analyticsSection && analyticsSection.classList.contains("active")) {
-          console.log("🚀 Auto-loading analytics on page load...");
           setTimeout(() => loadAnalytics(), 200);
         }
 
@@ -4166,7 +4103,6 @@
         const methodMap = {
           cod: "Thanh toán khi nhận hàng (COD)",
           bank: "Chuyển khoản ngân hàng",
-          momo: "Ví MoMo",
           vnpay: "VNPay",
           zalopay: "ZaloPay",
         };
@@ -4216,9 +4152,9 @@
             contextPath + "/admin/api/order/update-status",
             {
               method: "POST",
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
+              headers: withCsrfHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }),
               body: params.toString()
             }
           );
@@ -4600,6 +4536,11 @@
         formData.append("file", file);
         formData.append("type", "product");
 
+        const csrfToken = window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (csrfToken) {
+          formData.append("csrfToken", csrfToken);
+        }
+
         try {
           showNotification(
             "Đang tải...",
@@ -4609,6 +4550,9 @@
 
           const response = await fetch(contextPath + "/api/upload-image", {
             method: "POST",
+            headers: csrfToken ? {
+              'X-CSRF-Token': csrfToken
+            } : {},
             body: formData,
           });
 
@@ -4693,7 +4637,9 @@
         const description = document
           .getElementById("productDescription")
           .value.trim();
-
+        const currentProduct = productId
+          ? currentProducts.find((product) => String(product.id) === String(productId))
+          : null;
         // Validation
         if (!name || !price || quantity === "") {
           showNotification(
@@ -4721,8 +4667,19 @@
           params.append("quantity", quantity);
           if (image) params.append("image", image);
           if (description) params.append("description", description);
-
-          console.log("Saving product to:", url, "with CSRF token:", csrfToken);
+          if (productId && currentProduct) {
+            if (currentProduct.slug) params.append("slug", currentProduct.slug);
+            if (currentProduct.salePrice !== null && currentProduct.salePrice !== undefined) {
+              params.append("salePrice", currentProduct.salePrice);
+            }
+            if (currentProduct.shortDescription) {
+              params.append("shortDescription", currentProduct.shortDescription);
+            }
+            if (currentProduct.isFeatured !== null && currentProduct.isFeatured !== undefined) {
+              params.append("isFeatured", currentProduct.isFeatured ? "true" : "false");
+            }
+          }
+          if (csrfToken) params.append("csrfToken", csrfToken);
 
           const response = await fetch(url, {
             method: "POST",
@@ -4733,8 +4690,6 @@
             body: params.toString()
           });
 
-          console.log("Response status:", response.status);
-          
           if (!response.ok) {
             const errorText = await response.text();
             console.error("Response error:", errorText);
@@ -4742,7 +4697,6 @@
           }
 
           const result = await response.json();
-          console.log("Save result:", result);
 
           if (!result.success) {
             throw new Error(result.message || "Failed to save product");
@@ -4780,8 +4734,6 @@
           // Get CSRF token
           const csrfToken = window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
           
-          console.log("Deleting product:", productId, "with CSRF token:", csrfToken);
-          
           const response = await fetch(
             contextPath + "/admin/api/product/" + productId,
             {
@@ -4793,8 +4745,6 @@
             }
           );
 
-          console.log("Response status:", response.status);
-          
           if (!response.ok) {
             const errorText = await response.text();
             console.error("Response error:", errorText);
@@ -4802,7 +4752,6 @@
           }
 
           const result = await response.json();
-          console.log("Delete result:", result);
 
           if (!result.success) {
             throw new Error(result.message || "Failed to delete product");
@@ -4938,7 +4887,7 @@
           const params = new URLSearchParams({ id: userId, status: 'active' });
           const response = await fetch(
             contextPath + "/admin/api/user/update-status?" + params.toString(),
-            { method: "POST" }
+            { method: "POST", headers: withCsrfHeaders() }
           );
           const result = await response.json();
           
@@ -4954,46 +4903,46 @@
       }
 
       async function banCustomer(userId) {
-        if (!confirm('Bạn có chắc chắn muốn cấm khách hàng này?')) return;
-        
-        try {
-          const params = new URLSearchParams({ id: userId, status: 'banned' });
-          const response = await fetch(
-            contextPath + "/admin/api/user/update-status?" + params.toString(),
-            { method: "POST" }
-          );
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification("Thành công", "Đã cấm khách hàng", "success");
-            loadCustomers();
-          } else {
-            throw new Error(result.message);
+        showConfirm('Bạn có chắc chắn muốn cấm khách hàng này?', async function() {
+          try {
+            const params = new URLSearchParams({ id: userId, status: 'banned' });
+            const response = await fetch(
+              contextPath + "/admin/api/user/update-status?" + params.toString(),
+              { method: "POST", headers: withCsrfHeaders() }
+            );
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification("Thành công", "Đã cấm khách hàng", "success");
+              loadCustomers();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể cấm khách hàng", "error");
           }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể cấm khách hàng", "error");
-        }
+        });
       }
 
       async function deleteCustomer(userId, email) {
-        if (!confirm('Bạn có chắc chắn muốn xóa khách hàng ' + email + '?')) return;
-        
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/user/" + userId,
-            { method: "DELETE" }
-          );
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification("Thành công", "Đã xóa khách hàng", "success");
-            loadCustomers();
-          } else {
-            throw new Error(result.message);
+        showConfirm('Bạn có chắc chắn muốn xóa khách hàng ' + email + '?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/user/" + userId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification("Thành công", "Đã xóa khách hàng", "success");
+              loadCustomers();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa khách hàng", "error");
           }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa khách hàng", "error");
-        }
+        });
       }
 
       // ============================================
@@ -5051,20 +5000,7 @@
         }).join('');
       }
 
-      // async function loadCategoriesTable() {
-      //   try {
-      //     const response = await fetch(contextPath + "/admin/api/categories");
-      //     const result = await response.json();
-
-      //     if (result.success) {
-      //       allCategoriesData = result.data;
-      //       displayCategories();
-      //       populateCategoryParentSelect();
-      //     }
-      //   } catch (error) {
-      //     console.error("Error loading categories:", error);
-      //   }
-      // }
+      
 
       function populateCategoryParentSelect() {
         const select = document.getElementById("categoryParent");
@@ -5101,27 +5037,7 @@
         }
       }
 
-      // async function deleteCategory(categoryId, categoryName) {
-      //   if (!confirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?')) return;
-
-      //   try {
-      //     const response = await fetch(
-      //       contextPath + "/admin/api/category/" + categoryId,
-      //       { method: "DELETE" }
-      //     );
-
-      //     const result = await response.json();
-
-      //     if (!result.success) {
-      //       throw new Error(result.message || "Failed to delete category");
-      //     }
-
-      //     showNotification("Thành công", "Đã xóa danh mục", "success");
-      //     loadCategoriesTable();
-      //   } catch (error) {
-      //     showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
-      //   }
-      // }
+     
 
       async function saveCategory() {
         const categoryId = document.getElementById("categoryId").value;
@@ -5149,6 +5065,7 @@
             method: "POST",
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRF-Token': getCsrfToken(),
             },
             body: params.toString()
           });
@@ -5171,25 +5088,25 @@
       }
 
       async function deleteCategory(categoryId, categoryName) {
-        if (!confirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?')) return;
+        showConfirm('Bạn có chắc chắn muốn xóa danh mục "' + categoryName + '"?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/category/" + categoryId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
 
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/category/" + categoryId,
-            { method: "DELETE" }
-          );
+            const result = await response.json();
 
-          const result = await response.json();
+            if (!result.success) {
+              throw new Error(result.message || "Failed to delete category");
+            }
 
-          if (!result.success) {
-            throw new Error(result.message || "Failed to delete category");
+            showNotification("Thành công", "Đã xóa danh mục", "success");
+            loadCategoriesTable();
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
           }
-
-          showNotification("Thành công", "Đã xóa danh mục", "success");
-          loadCategoriesTable();
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
-        }
+        });
       }
 
       // ============================================
@@ -5284,20 +5201,6 @@
         openModal("couponModal");
       }
 
-      // async function loadCoupons() {
-      //   try {
-      //     const response = await fetch(contextPath + "/admin/api/coupons");
-      //     const result = await response.json();
-
-      //     if (result.success) {
-      //       allCoupons = result.data;
-      //       displayCoupons();
-      //     }
-      //   } catch (error) {
-      //     console.error("Error loading coupons:", error);
-      //   }
-      // }
-
       async function saveCoupon() {
         const couponId = document.getElementById("couponId").value;
         const code = document.getElementById("couponCode").value.trim().toUpperCase();
@@ -5334,9 +5237,9 @@
 
           const response = await fetch(url, {
             method: "POST",
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: withCsrfHeaders({
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }),
             body: params.toString()
           });
 
@@ -5358,25 +5261,25 @@
       }
 
       async function deleteCoupon(couponId, couponCode) {
-        if (!confirm('Bạn có chắc chắn muốn xóa mã "' + couponCode + '"?')) return;
+        showConfirm('Bạn có chắc chắn muốn xóa mã "' + couponCode + '"?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/coupon/" + couponId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
 
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/coupon/" + couponId,
-            { method: "DELETE" }
-          );
+            const result = await response.json();
 
-          const result = await response.json();
+            if (!result.success) {
+              throw new Error(result.message || "Failed to delete coupon");
+            }
 
-          if (!result.success) {
-            throw new Error(result.message || "Failed to delete coupon");
+            showNotification("Thành công", "Đã xóa mã giảm giá", "success");
+            loadCoupons();
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa mã giảm giá", "error");
           }
-
-          showNotification("Thành công", "Đã xóa mã giảm giá", "success");
-          loadCoupons();
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa mã giảm giá", "error");
-        }
+        });
       }
 
       // ============================================
@@ -5471,7 +5374,7 @@
           const params = new URLSearchParams({ id: contactId, status: status });
           const response = await fetch(
             contextPath + "/admin/api/contact/update-status?" + params.toString(),
-            { method: "POST" }
+            { method: "POST", headers: withCsrfHeaders() }
           );
 
           const result = await response.json();
@@ -5488,34 +5391,25 @@
       }
 
       async function deleteContact(contactId) {
-        if (!confirm('Bạn có chắc chắn muốn xóa liên hệ này?')) return;
+        showConfirm('Bạn có chắc chắn muốn xóa liên hệ này?', async function() {
+          try {
+            const response = await fetch(
+              contextPath + "/admin/api/contact/" + contactId,
+              { method: "DELETE", headers: withCsrfHeaders() }
+            );
 
-        try {
-          const response = await fetch(
-            contextPath + "/admin/api/contact/" + contactId,
-            { method: "DELETE" }
-          //   document.getElementById("contactId").value = contact.id;
-          // document.getElementById("contactName").textContent = contact.name;
-          // document.getElementById("contactEmail").textContent = contact.email;
-          // document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
-          // document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
-          // document.getElementById("contactDate").textContent = contact.createdAt ? 
-          //   new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
-          // document.getElementById("contactMessage").textContent = contact.message;
-          // document.getElementById("contactStatus").value = contact.status || 'new';
-          );
+            const result = await response.json();
 
-          const result = await response.json();
-
-          if (result.success) {
-            showNotification("Thành công", "Đã xóa liên hệ", "success");
-            loadContacts();
-          } else {
-            throw new Error(result.message);
+            if (result.success) {
+              showNotification("Thành công", "Đã xóa liên hệ", "success");
+              loadContacts();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            showNotification("Lỗi", error.message || "Không thể xóa liên hệ", "error");
           }
-        } catch (error) {
-          showNotification("Lỗi", error.message || "Không thể xóa liên hệ", "error");
-        }
+        });
       }
 
       // Initialize section data when menu clicked
@@ -5577,8 +5471,6 @@
       let orderStatusChartInstance = null;
 
       async function loadAnalytics() {
-        console.log("🔄 Loading analytics...");
-        
         const dateRange = document.getElementById("analyticsDateRange");
         const days = dateRange ? dateRange.value : "7";
         
@@ -5587,14 +5479,12 @@
           if (!response.ok) throw new Error("Failed to load analytics");
           
           const result = await response.json();
-          console.log("📊 Analytics API Response:", result);
           
           if (!result.success) {
             throw new Error(result.message || "Failed to load analytics data");
           }
           
           const data = result.data;
-          console.log("📊 Analytics Data:", data);
           
           // Update stats
           document.getElementById("analyticsRevenue").textContent = formatCurrency(data.totalRevenue || 0);
@@ -5636,7 +5526,6 @@
           ];
           loadAnalyticsTopCategories(sampleCategories);
           
-          console.log("✅ Analytics loaded successfully!");
         } catch (error) {
           console.error("❌ Error loading analytics:", error);
           showNotification("Lỗi", "Không thể tải thống kê: " + error.message, "error");
@@ -5825,8 +5714,6 @@
       }
 
       function loadSampleAnalytics() {
-        console.log("📊 Loading sample analytics data...");
-        
         // Sample data for demonstration
         try {
           document.getElementById("analyticsRevenue").textContent = formatCurrency(45000000);
@@ -5839,8 +5726,6 @@
           updateChangeIndicator("analyticsAvgChange", 5.2);
           updateChangeIndicator("analyticsRateChange", 3.1);
 
-          console.log("✅ Stats updated");
-
           // Sample revenue chart
           const sampleRevenue = [
             {date: "01/01", revenue: 1200000},
@@ -5852,7 +5737,6 @@
             {date: "07/01", revenue: 2300000}
           ];
           loadRevenueByDayChart(sampleRevenue);
-          console.log("✅ Revenue chart loaded");
 
           // Sample status chart
           const sampleStatus = {
@@ -5862,7 +5746,6 @@
             cancelled: 6
           };
           loadOrderStatusChartData(sampleStatus);
-          console.log("✅ Status chart loaded");
 
           // Sample top products
           const sampleProducts = [
@@ -5873,7 +5756,6 @@
             {name: "Hoa Hướng Dương", soldCount: 25, revenue: 2500000}
           ];
           loadAnalyticsTopProducts(sampleProducts);
-          console.log("✅ Top products loaded");
 
           // Sample top categories
           const sampleCategories = [
@@ -5884,9 +5766,6 @@
             {name: "Hoa Chia Buồn", productCount: 12, revenue: 4500000}
           ];
           loadAnalyticsTopCategories(sampleCategories);
-          console.log("✅ Top categories loaded");
-          
-          console.log("🎉 All sample data loaded successfully!");
         } catch (error) {
           console.error("❌ Error loading sample analytics:", error);
         }
@@ -5913,7 +5792,6 @@
           
           document.getElementById("paymentCOD").checked = settings.paymentCOD !== false;
           document.getElementById("paymentBank").checked = settings.paymentBank !== false;
-          document.getElementById("paymentMomo").checked = settings.paymentMomo === true;
           document.getElementById("paymentVNPay").checked = settings.paymentVNPay === true;
           
           document.getElementById("emailOrderConfirm").checked = settings.emailOrderConfirm !== false;
@@ -5966,7 +5844,6 @@
         const settings = {
           paymentCOD: document.getElementById("paymentCOD").checked,
           paymentBank: document.getElementById("paymentBank").checked,
-          paymentMomo: document.getElementById("paymentMomo").checked,
           paymentVNPay: document.getElementById("paymentVNPay").checked
         };
 
@@ -6203,25 +6080,25 @@
       
       // Delete gallery
       async function deleteGallery(id) {
-        if (!confirm('Bạn có chắc chắn muốn xóa ảnh này?')) return;
-        
-        try {
-          const response = await fetch(contextPath + '/api/gallery/' + id, {
-            method: 'DELETE'
-          });
-          
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification('Thành công', result.message, 'success');
-            loadGalleries();
-          } else {
-            showNotification('Lỗi', result.message, 'error');
+        showConfirm('Bạn có chắc chắn muốn xóa ảnh này?', async function() {
+          try {
+            const response = await fetch(contextPath + '/api/gallery/' + id, {
+              method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification('Thành công', result.message, 'success');
+              loadGalleries();
+            } else {
+              showNotification('Lỗi', result.message, 'error');
+            }
+          } catch (error) {
+            console.error('Error deleting gallery:', error);
+            showNotification('Lỗi', 'Không thể xóa gallery', 'error');
           }
-        } catch (error) {
-          console.error('Error deleting gallery:', error);
-          showNotification('Lỗi', 'Không thể xóa gallery', 'error');
-        }
+        });
       }
       
       // Preview image when URL changes
@@ -6334,15 +6211,7 @@
       
       // Open news modal for adding
       function openNewsModal() {
-        // document.getElementById("contactId").value = contact.id;
-        //   document.getElementById("contactName").textContent = contact.name;
-        //   document.getElementById("contactEmail").textContent = contact.email;
-        //   document.getElementById("contactPhone").textContent = contact.phone || 'N/A';
-        //   document.getElementById("contactSubject").textContent = contact.subject || 'N/A';
-        //   document.getElementById("contactDate").textContent = contact.createdAt ? 
-        //     new Date(contact.createdAt).toLocaleString('vi-VN') : 'N/A';
-        //   document.getElementById("contactMessage").textContent = contact.message;
-        //   document.getElementById("contactStatus").value = contact.status || 'new';
+       
         document.getElementById('newsModalTitle').textContent = 'Thêm Tin Tức';
         document.getElementById('newsId').value = '';
         document.getElementById('newsForm').reset();
@@ -6481,29 +6350,29 @@
       
       // Delete news
       async function deleteNews(id) {
-        if (!confirm('Bạn có chắc chắn muốn xóa tin tức này?')) return;
-        
-        try {
-          const response = await fetch(contextPath + '/api/news?action=delete', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: id })
-          });
-          
-          const result = await response.json();
-          
-          if (result.success) {
-            showNotification('Thành công', result.message, 'success');
-            loadNews();
-          } else {
-            showNotification('Lỗi', result.message, 'error');
+        showConfirm('Bạn có chắc chắn muốn xóa tin tức này?', async function() {
+          try {
+            const response = await fetch(contextPath + '/api/news?action=delete', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ id: id })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification('Thành công', result.message, 'success');
+              loadNews();
+            } else {
+              showNotification('Lỗi', result.message, 'error');
+            }
+          } catch (error) {
+            console.error('Error deleting news:', error);
+            showNotification('Lỗi', 'Không thể xóa tin tức', 'error');
           }
-        } catch (error) {
-          console.error('Error deleting news:', error);
-          showNotification('Lỗi', 'Không thể xóa tin tức', 'error');
-        }
+        });
       }
     </script>
   </body>

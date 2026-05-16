@@ -21,7 +21,7 @@ public class Order {
     private BigDecimal shippingFee;
     private BigDecimal discount;
     private BigDecimal total;
-    private String paymentMethod; // cod, bank_transfer, vnpay, momo
+    private String paymentMethod; // cod, bank_transfer, vnpay
     private String paymentStatus; // pending, paid, failed, refunded
     private String orderStatus; // pending, confirmed, processing, shipping, delivered, cancelled
     private String cancelledReason;
@@ -118,7 +118,6 @@ public class Order {
             case "cod": return "Thanh toán khi nhận hàng";
             case "bank_transfer": return "Chuyển khoản ngân hàng";
             case "vnpay": return "VNPay";
-            case "momo": return "Ví MoMo";
             default: return paymentMethod;
         }
     }

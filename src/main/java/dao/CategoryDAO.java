@@ -17,7 +17,7 @@ import util.DBConnection;
  */
 public class CategoryDAO {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
     

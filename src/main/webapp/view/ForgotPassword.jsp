@@ -23,6 +23,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body>
@@ -83,27 +90,22 @@
             .then((response) => response.json())
             .then((data) => {
               if (data.success) {
-                alert(data.message);
+                showSuccess(data.message);
                 if (data.resetLink) {
                   console.log("Reset link:", data.resetLink);
-                  // Trong development, có thể tự động redirect
-                  if (
-                    confirm(
-                      "Bạn có muốn đi đến trang đặt lại mật khẩu ngay không?"
-                    )
-                  ) {
+                  showConfirm("Bạn có muốn đi đến trang đặt lại mật khẩu ngay không?", function() {
                     window.location.href = data.resetLink;
-                  }
+                  });
                 }
               } else {
-                alert(data.message || "Có lỗi xảy ra");
+                showError(data.message || "Có lỗi xảy ra");
               }
               btn.disabled = false;
               btn.textContent = originalText;
             })
             .catch((error) => {
               console.error("Error:", error);
-              alert("Có lỗi xảy ra, vui lòng thử lại");
+              showError("Có lỗi xảy ra, vui lòng thử lại");
               btn.disabled = false;
               btn.textContent = originalText;
             });

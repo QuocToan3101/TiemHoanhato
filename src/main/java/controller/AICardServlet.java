@@ -19,7 +19,6 @@ import com.google.gson.JsonObject;
 
 import service.AICardService;
 import service.CardImageGenerator;
-
 /**
  * Servlet API endpoint để tạo thiệp tự động bằng AI và generate ảnh PNG
  */

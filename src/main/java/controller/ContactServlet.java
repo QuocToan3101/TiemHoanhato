@@ -1,5 +1,4 @@
 package controller;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -16,7 +15,6 @@ import com.google.gson.JsonObject;
 import dao.ContactDAO;
 import model.Contact;
 import model.User;
-
 /**
  * Servlet xử lý form liên hệ
  */

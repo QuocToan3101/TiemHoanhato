@@ -489,6 +489,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -723,7 +730,7 @@
         }
         
         function cancelOrder(orderId) {
-            if (confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+            showConfirm('Bạn có chắc chắn muốn hủy đơn hàng này?', function() {
                 fetch('${pageContext.request.contextPath}/orders/cancel/' + orderId, {
                     method: 'POST',
                     headers: {
@@ -734,17 +741,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Đã hủy đơn hàng thành công');
+                        showSuccess('Đã hủy đơn hàng thành công');
                         location.reload();
                     } else {
-                        alert(data.message || 'Không thể hủy đơn hàng');
+                        showError(data.message || 'Không thể hủy đơn hàng');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Có lỗi xảy ra');
+                    showError('Có lỗi xảy ra');
                 });
-            }
+            });
         }
         
         function reorder(orderId) {
@@ -754,15 +761,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    showSuccess(data.message);
                     window.location.href = '${pageContext.request.contextPath}/cart';
                 } else {
-                    alert(data.message || 'Không thể thêm sản phẩm vào giỏ');
+                    showError(data.message || 'Không thể thêm sản phẩm vào giỏ');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra');
+                showError('Có lỗi xảy ra');
             });
         }
         

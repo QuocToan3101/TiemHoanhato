@@ -25,12 +25,10 @@ public class AuthFilter implements Filter {
     
     // Các URL cần đăng nhập mới truy cập được
     private static final List<String> PROTECTED_URLS = Arrays.asList(
-        "/view/cart.jsp",
         "/view/settingProfile.jsp",
         "/view/checkout.jsp",
         "/view/orderSuccess.jsp",
         "/view/purchaseHistory.jsp",
-        "/api/cart",
         "/api/order",
         "/profile",
         "/checkout"
@@ -78,6 +76,7 @@ public class AuthFilter implements Filter {
         "/login",
         "/register",
         "/logout",
+        "/api/shipping/",
         ".css",
         ".js",
         ".png",
@@ -157,8 +156,37 @@ public class AuthFilter implements Filter {
      * Kiểm tra xem URL có phải là public không
      */
     private boolean isPublicUrl(String path) {
+        if (path == null || path.isEmpty()) {
+            return true;
+        }
+
+        // Static assets should always be publicly accessible.
+        if (path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/fileJS/") ||
+            path.startsWith("/uploads/") || path.startsWith("/images/") || path.startsWith("/assets/")) {
+            return true;
+        }
+
+        String lowerPath = path.toLowerCase();
+        String[] staticExts = {
+            ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".ico",
+            ".woff", ".woff2", ".ttf", ".svg", ".eot", ".map", ".webp"
+        };
+        for (String ext : staticExts) {
+            if (lowerPath.endsWith(ext)) {
+                return true;
+            }
+        }
+
         for (String publicUrl : PUBLIC_URLS) {
-            if (path.contains(publicUrl)) {
+            if (publicUrl.endsWith("/")) {
+                if (path.startsWith(publicUrl)) {
+                    return true;
+                }
+            } else if (publicUrl.startsWith(".")) {
+                if (lowerPath.endsWith(publicUrl)) {
+                    return true;
+                }
+            } else if (path.equals(publicUrl) || path.startsWith(publicUrl + "/")) {
                 return true;
             }
         }

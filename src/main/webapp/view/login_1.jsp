@@ -409,7 +409,7 @@
 
       <div class="login-logo">
         <img
-          src="${pageContext.request.contextPath}/view/Logo%20Ti%E1%BB%87m%20Hoa.png"
+            src="${pageContext.request.contextPath}/view/logo.png"
           alt="Tiệm Hoa Nhà Tớ"
         />
       </div>

@@ -3,7 +3,6 @@
 */
 const accounts = [
     { id: "bank", name: "Liên kết Ngân hàng", icon: "bank" }, // dùng icon font
-    { id: "momo", name: "Ví MoMo", icon:"img/MOMO-Logo-App.png" },
     { id: "zalopay", name: "ZaloPay", icon: "img/Logo FA-13.png" },
     { id: "viettelpay", name: "ViettelPay", icon: "img/Logo-Viettelpay.jpg" }
 ];

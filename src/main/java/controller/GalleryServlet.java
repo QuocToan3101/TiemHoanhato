@@ -17,7 +17,6 @@ import com.google.gson.JsonObject;
 import dao.GalleryDAO;
 import model.Gallery;
 import model.User;
-
 /**
  * Servlet xử lý gallery
  */

@@ -23,6 +23,7 @@ import javax.servlet.http.Part;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import util.AppConfig;
 
 /**
  * Servlet xử lý upload ảnh
@@ -36,7 +37,7 @@ import com.google.gson.JsonObject;
 )
 public class ImageUploadServlet extends HttpServlet {
     
-    private static final String UPLOAD_DIR = "uploads";
+    private static final String DEFAULT_UPLOAD_DIR = "uploads";
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"};
     private static final Set<String> ALLOWED_TYPES = Set.of("product", "avatar", "banner");
     private Gson gson;
@@ -75,11 +76,21 @@ public class ImageUploadServlet extends HttpServlet {
                 return;
             }
             
-            // Tạo thư mục upload nếu chưa có
-            String applicationPath = request.getServletContext().getRealPath("");
-            String uploadPath = applicationPath + File.separator + UPLOAD_DIR + 
-                              File.separator + uploadType;
-            
+            // Resolve upload directory: prefer configured env/property -> absolute -> fallback to user home
+            AppConfig appConfig = AppConfig.getInstance();
+            String configured = appConfig.getUploadDirectory();
+            if (configured == null || configured.trim().isEmpty()) configured = DEFAULT_UPLOAD_DIR;
+
+            String resolvedBase;
+            File baseDirCandidate = new File(configured);
+            if (baseDirCandidate.isAbsolute()) {
+                resolvedBase = baseDirCandidate.getAbsolutePath();
+            } else {
+                // Place relative uploads under user's home directory to avoid being wiped on redeploy
+                resolvedBase = System.getProperty("user.home") + File.separator + configured;
+            }
+
+            String uploadPath = resolvedBase + File.separator + uploadType;
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
@@ -90,8 +101,9 @@ public class ImageUploadServlet extends HttpServlet {
             // Xử lý từng file được upload
             for (Part part : request.getParts()) {
                 String fileName = extractFileName(part);
-                
                 if (fileName != null && !fileName.isEmpty()) {
+                    // Sanitize filename to avoid path traversal and keep only the base name
+                    fileName = Paths.get(fileName).getFileName().toString();
                     // Validate file extension
                     if (!isValidExtension(fileName)) {
                         result.addProperty("success", false);
@@ -106,17 +118,20 @@ public class ImageUploadServlet extends HttpServlet {
                         return;
                     }
                     
-                    // Generate unique filename
+                    // Generate unique filename and save file
                     String fileExtension = fileName.substring(fileName.lastIndexOf("."));
                     String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
-                    
-                    // Save file
                     Path filePath = Paths.get(uploadPath, uniqueFileName);
                     Files.copy(part.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                    
-                    // Tạo relative path để lưu vào database
-                    String relativePath = request.getContextPath() + "/" + UPLOAD_DIR + 
-                                        "/" + uploadType + "/" + uniqueFileName;
+
+                    // Determine returned path: if stored inside webapp, return context URL, else return absolute filesystem path
+                    String applicationPath = request.getServletContext().getRealPath("");
+                    String relativePath;
+                    if (filePath.toAbsolutePath().toString().startsWith(applicationPath)) {
+                        relativePath = request.getContextPath() + "/" + DEFAULT_UPLOAD_DIR + "/" + uploadType + "/" + uniqueFileName;
+                    } else {
+                        relativePath = filePath.toAbsolutePath().toString();
+                    }
                     uploadedFiles.add(relativePath);
                 }
             }

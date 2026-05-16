@@ -18,7 +18,7 @@ import util.DBConnection;
  */
 public class UserDAO {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
     
@@ -76,6 +76,23 @@ public class UserDAO {
             return rows > 0;
         } catch (SQLException e) {
             logSQLError("xác thực email", e);
+        }
+        return false;
+    }
+
+    /**
+     * Kích hoạt tài khoản khi gửi email xác thực thất bại
+     */
+    public boolean activateAfterEmailFailure(int userId) {
+        String sql = "UPDATE users SET status = 'active', verification_token = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logSQLError("kích hoạt tài khoản sau khi gửi email thất bại", e);
         }
         return false;
     }
@@ -396,7 +413,31 @@ public class UserDAO {
         }
         return 0;
     }
-    
+    /**
+     * Tìm kiếm user theo tên, email, số điện thoại
+     */
+    public List<User> search(String keyword) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE " + "fullname LIKE ? OR email LIKE ? OR phone LIKE ? " + "ORDER BY created_at DESC";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            String pattern = "%" + keyword + "%";
+            ps.setString(1, pattern);
+            ps.setString(2, pattern);
+            ps.setString(3, pattern);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } 
+        catch (SQLException e) {
+            logSQLError("tìm kiếm user", e);
+        }
+        return users;
+    }
+
+
     /**
      * Xóa user (soft delete - đổi status thành inactive)
      */

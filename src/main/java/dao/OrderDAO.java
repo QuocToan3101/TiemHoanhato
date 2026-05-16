@@ -20,7 +20,7 @@ import util.DBConnection;
  */
 public class OrderDAO {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
     

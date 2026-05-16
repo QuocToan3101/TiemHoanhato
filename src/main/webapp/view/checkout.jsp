@@ -1032,9 +1032,35 @@
                                         
                                         <div class="form-group">
                                             <label class="form-label">Địa chỉ giao hàng <span class="required">*</span></label>
-                                            <textarea name="addressDetail" class="form-control" rows="3"
-                                                      placeholder="Nhập địa chỉ đầy đủ (Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố)" required></textarea>
-                                            <div class="error-message">Vui lòng nhập địa chỉ giao hàng</div>
+                                            <input type="text" id="shippingAddressInput" class="form-control" 
+                                                   placeholder="Nhập địa chỉ và chọn từ gợi ý" autocomplete="off" required>
+                                            <div id="shippingSuggestions" class="shipping-suggestions" style="display:none"></div>
+                                            <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                                                <button type="button" id="useLocationBtn" class="btn btn-outline-secondary">Dùng vị trí hiện tại</button>
+                                            </div>
+                                            <div id="shippingMap" style="width:100%; height:180px; border-radius:12px; overflow:hidden; background:#f5f5f5; margin-top:12px; display:none"></div>
+                                            <div id="shippingInfo" style="font-size:14px; color:var(--muted); margin-top:12px;">
+                                                <div id="shippingSkeleton" class="shipping-skeleton" style="display:none">
+                                                    <div class="sk-line sk-line-lg"></div>
+                                                    <div class="sk-line"></div>
+                                                    <div class="sk-line sk-line-sm"></div>
+                                                </div>
+                                                <div id="shippingResult" style="display:none">
+                                                    <div>Khoảng cách: <span id="ship_distance">-</span></div>
+                                                    <div>Thời gian: <span id="ship_eta">-</span></div>
+                                                    <div>Phí ship: <strong id="ship_fee">Miễn phí</strong></div>
+                                                    <div>Phí tham khảo GHTK: <span id="ship_fee_estimate">-</span></div>
+                                                </div>
+                                                <div id="shippingError" style="display:none; color:var(--error)"></div>
+                                            </div>
+                                            <input type="hidden" id="shipping_lat" name="shippingLat">
+                                            <input type="hidden" id="shipping_lng" name="shippingLng">
+                                            <input type="hidden" id="shipping_place_id" name="shippingPlaceId">
+                                            <input type="hidden" id="shipping_osm_type" name="shippingOsmType">
+                                            <input type="hidden" id="shipping_osm_id" name="shippingOsmId">
+                                            <textarea name="addressDetail" id="addressDetail" class="form-control" rows="3"
+                                                      placeholder="Địa chỉ đã chọn sẽ tự động điền ở đây" readonly required style="margin-top:12px;"></textarea>
+                                            <div class="error-message">Vui lòng chọn địa chỉ từ gợi ý</div>
                                         </div>
                                         
                                         <!-- Hidden fields for backward compatibility -->
@@ -1138,20 +1164,6 @@
                                             </div>
                                         </label>
                                         
-                                        <!-- MoMo -->
-                                        <label class="payment-option">
-                                            <input type="radio" name="paymentMethod" value="momo">
-                                            <div class="payment-icon">
-                                                <i class="fas fa-mobile-alt"></i>
-                                            </div>
-                                            <div class="payment-info">
-                                                <div class="payment-name">Ví MoMo</div>
-                                                <div class="payment-desc">Thanh toán qua ví điện tử MoMo</div>
-                                                <div class="payment-detail">
-                                                    <p>Bạn sẽ được chuyển đến trang MoMo để hoàn tất thanh toán sau khi đặt hàng.</p>
-                                                </div>
-                                            </div>
-                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -1262,6 +1274,7 @@
     
     <!-- CSRF Token Helper - Phải load SAU axios -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+    <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
     
     <script>
         // Variables
@@ -1270,13 +1283,19 @@
         let wards = [];
         let appliedCoupon = null;
         const subtotal = <c:out value="${cartTotal != null ? cartTotal : 0}"/>;
-        let shippingFee = 30000;
+        let shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '30000', 10);
         let discount = 0;
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initPaymentMethods();
             initAddressOptions();
+            updateTotals();
+        });
+
+        document.addEventListener('shipping:updated', function() {
+            shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '0', 10);
+            updateTotals();
         });
         
         // Toggle new address form
@@ -1362,7 +1381,7 @@
         function removeCoupon() {
             appliedCoupon = null;
             discount = 0;
-            shippingFee = 30000;
+            shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '0', 10);
             
             document.getElementById('couponApplied').style.display = 'none';
             document.getElementById('couponCode').disabled = false;
@@ -1374,6 +1393,7 @@
         
         // Update totals
         function updateTotals() {
+            shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || shippingFee || '0', 10);
             const total = subtotal + shippingFee - discount;
             
             document.getElementById('shippingFee').textContent = formatCurrency(shippingFee);
@@ -1474,7 +1494,7 @@
                 if (response.data.success) {
                     // Check if need to redirect to payment gateway
                     if (response.data.redirectUrl) {
-                        // VNPay or MoMo payment - redirect to payment page
+                        // VNPay payment - redirect to payment page
                         showToast(response.data.message || 'Đang chuyển đến trang thanh toán...', 'success');
                         setTimeout(() => {
                             window.location.href = response.data.redirectUrl;

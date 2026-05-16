@@ -12,6 +12,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <!-- CSRF Token -->
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
+    <meta name="context-path" content="${pageContext.request.contextPath}">
+    <script>window.CONTEXT_PATH = '${pageContext.request.contextPath}';</script>
 
     <!-- Google Tag Manager -->
 
@@ -190,6 +192,14 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         --success: #10b981;
 
         --error: #ef4444;
+      }
+
+      .container {
+        max-width: 1400px !important;
+
+        margin: 0 auto !important;
+
+        padding: 0 2rem !important;
       }
 
       .page-title {
@@ -1595,6 +1605,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -1651,76 +1668,65 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
         </section>
 
-        <!-- RIGHT: SUMMARY -->
-
-        <aside class="card summary">
-          <div class="section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 3l2.7 5.4 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6L3.3 9.3l6-.9L12 3z"
-                stroke="#a97155"
-                stroke-width="1.2"
-              />
-            </svg>
-
-            Tóm tắt đơn hàng
-          </div>
-
-          <div class="code">
-            <input id="discountCode" placeholder="Nhập mã giảm giá" />
-
-            <button class="btn secondary" onclick="applyDiscount()">
-              Áp dụng
-            </button>
-          </div>
-
-          <div class="sum-row muted">
-            <span>Tạm tính</span>
-
-            <span id="subtotal">0đ</span>
-          </div>
-
-          <div class="sum-row muted">
-            <span>Phí giao (ước tính)</span>
-
-            <span id="shipping">0đ</span>
-          </div>
-
-          <div class="sum-row muted">
-            <span>Giảm giá</span>
-
-            <span id="discount" style="color: #27ae60;">0đ</span>
-          </div>
-          
-          <div id="appliedCouponInfo" style="display: none; margin: 10px 0; padding: 10px; background: #e8f5e9; border-radius: 8px; border-left: 3px solid #27ae60;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="color: #27ae60; font-weight: 500;">
-                <i class="fas fa-check-circle"></i> Mã <strong id="appliedCouponCode"></strong>
-              </span>
-              <button onclick="removeCoupon()" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 14px;">
-                <i class="fas fa-times"></i> Xóa
-              </button>
+        <!-- RIGHT: Order summary (cart page) -->
+        <aside class="order-summary">
+          <div class="checkout-card">
+            <div class="card-header">
+              <i class="fas fa-shopping-bag"></i>
+              <h3>Đơn hàng của bạn</h3>
             </div>
-          </div>
+            <div class="card-body">
+              <div class="summary-items" id="summaryItems">
+                <!-- JS will fill a compact summary of items here -->
+              </div>
+            </div>
 
-          <div class="sum-total">
-            <span>Tổng cộng</span>
+            <!-- Coupon (cart) -->
+            <div class="coupon-section" style="padding:12px 18px;">
+              <div class="coupon-input" style="display:flex; gap:8px;">
+                <input type="text" name="discountCode" id="discountCode" placeholder="Nhập mã giảm giá" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee;">
+                <button type="button" class="coupon-btn" onclick="applyDiscount()">Áp dụng</button>
+              </div>
+              <div id="appliedCouponInfo" style="display: none; margin-top:10px; padding: 10px; background: #e8f5e9; border-radius: 8px; border-left: 3px solid #27ae60;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="color: #27ae60; font-weight: 500;"><i class="fas fa-check-circle"></i> Mã <strong id="appliedCouponCode"></strong></span>
+                  <button onclick="removeCoupon()" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 14px;"><i class="fas fa-times"></i> Xóa</button>
+                </div>
+              </div>
+            </div>
 
-            <span id="total">0đ</span>
-          </div>
+            <!-- Totals -->
+            <div class="summary-totals" style="padding:12px 18px;">
+              <div class="total-row">
+                <span>Tạm tính</span>
+                <span id="subtotal">0₫</span>
+              </div>
+              <div class="total-row">
+                <span>Phí vận chuyển</span>
+                <span id="shipping">0₫</span>
+              </div>
+              <div class="total-row discount" id="discountRow" style="display: none;">
+                <span>Giảm giá</span>
+                <span id="discount">-0₫</span>
+              </div>
+              <div class="total-row grand-total" style="margin-top:8px; font-weight:700;">
+                <span>Tổng cộng</span>
+                <span class="amount" id="total">0₫</span>
+              </div>
+            </div>
 
-          <div class="actions">
-            <button class="btn secondary" onclick="continueShopping()">
-              Tiếp tục mua
-            </button>
+            <!-- Hidden fields used by checkout flow -->
+            <input type="hidden" name="subtotal" value="0">
+            <input type="hidden" name="shippingFee" id="shippingFeeInput" value="0">
+            <input type="hidden" name="discount" id="discountInput" value="0">
+            <input type="hidden" name="total" id="totalInput" value="0">
+            <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
 
-            <button class="btn" onclick="showAICardModal()">
-              Tạo thiệp tự động
-            </button>
-
-            <button class="btn" onclick="showCheckoutConfirm()">
-              Thanh toán
-            </button>
+            <!-- Actions -->
+            <div style="padding:12px 18px; display:flex; gap:8px; flex-direction:column;">
+              <button class="btn" onclick="showCheckoutConfirm()">Thanh toán</button>
+              <button class="btn secondary" onclick="continueShopping()">Tiếp tục mua</button>
+            </div>
           </div>
         </aside>
       </div>
@@ -1935,15 +1941,17 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           .then(data => {
             if (data.success && data.items) {
               cartItems = data.items.map(item => ({
-                id: item.productId,
-                name: item.product ? item.product.name : 'Sản phẩm',
+                id: item.productId || item.id,
+                name: item.name || (item.product ? item.product.name : 'Sản phẩm'),
                 meta: item.product && item.product.category ? item.product.category.name : 'Hoa tươi',
-                price: item.product ? parseFloat(item.product.salePrice || item.product.price) : 0,
-                quantity: item.quantity,
-                image: item.product && item.product.image ? item.product.image : 'https://via.placeholder.com/100x100?text=No+Image'
-              }));
+                price: item.price ? parseFloat(item.price) : (item.product ? parseFloat(item.product.salePrice || item.product.price) : 0),
+                quantity: Number(item.quantity || 0),
+                image: item.image || (item.product && item.product.image ? item.product.image : 'https://via.placeholder.com/100x100?text=No+Image')
+              })).filter(item => item.id && item.quantity > 0);
+              updateCartBadge(data.itemCount || data.cartCount || 0);
             } else {
               cartItems = [];
+              updateCartBadge(0);
             }
             renderCart();
           })
@@ -2055,34 +2063,42 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         const total = subtotal + shippingFee - discountAmount;
 
-        document.getElementById("subtotal").textContent = formatPrice(subtotal);
+        const subtotalEl = document.getElementById("subtotal");
+        const shippingEl = document.getElementById("shipping");
+        const discountEl = document.getElementById("discount");
+        const totalEl = document.getElementById("total");
 
-        document.getElementById("shipping").textContent =
-          formatPrice(shippingFee);
-
-        document.getElementById("discount").textContent =
-          "-" + formatPrice(discountAmount);
-
-        document.getElementById("total").textContent = formatPrice(total);
+        if (subtotalEl) {
+          subtotalEl.textContent = formatPrice(subtotal);
+        }
+        if (shippingEl) {
+          shippingEl.textContent = formatPrice(shippingFee);
+        }
+        if (discountEl) {
+          discountEl.textContent = "-" + formatPrice(discountAmount);
+        }
+        if (totalEl) {
+          totalEl.textContent = formatPrice(total);
+        }
       }
 
       function removeItem(id) {
         // Call API to remove item
         fetch(contextPath + '/api/cart?productId=' + id, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': getCsrfToken()
+          }
         })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
             cartItems = cartItems.filter((item) => item.id !== id);
             renderCart();
-            // Update cart count in header
-            const cartCount = document.querySelector('.cart-count');
-            if (cartCount && data.cartCount !== undefined) {
-              cartCount.textContent = data.cartCount;
-            }
+            updateCartBadge(data.cartCount || data.itemCount || 0);
+            showSuccess('Đã xóa sản phẩm khỏi giỏ hàng');
           } else {
-            alert('Lỗi: ' + data.message);
+            showError('Lỗi: ' + data.message);
           }
         })
         .catch(error => {
@@ -2096,48 +2112,97 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       function increaseQuantity(id) {
         const item = cartItems.find((item) => item.id === id);
         if (item) {
-          item.quantity++;
-          renderCart();
-          
-          // Call API to update quantity
+          const newQuantity = item.quantity + 1;
+
           fetch(contextPath + '/api/cart', {
-            method: 'POST',
+            method: 'PUT',
             headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': getCsrfToken(),
             },
-            body: 'productId=' + id + '&quantity=1'
-          }).catch(error => console.error('Error updating quantity:', error));
+            body: JSON.stringify({ productId: id, quantity: newQuantity })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (!data.success) {
+              showError(data.message || 'Không thể cập nhật số lượng');
+              return;
+            }
+            item.quantity = newQuantity;
+            renderCart();
+            updateCartBadge(data.cartCount || data.itemCount || 0);
+          })
+          .catch(error => {
+            console.error('Error updating quantity:', error);
+            showError('Có lỗi xảy ra khi cập nhật số lượng');
+          });
         }
       }
       
       function decreaseQuantity(id) {
         const item = cartItems.find((item) => item.id === id);
-        if (item && item.quantity > 1) {
-          item.quantity--;
-          renderCart();
-          
-          // Call API to update quantity
-          fetch(contextPath + '/api/cart', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'productId=' + id + '&quantity=-1'
-          }).catch(error => console.error('Error updating quantity:', error));
-        } else if (item && item.quantity === 1) {
-          // Nếu số lượng = 1, hỏi người dùng có muốn xóa không
-          if (confirm('Bạn có muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-            removeItem(id);
+        if (item && item.quantity > 0) {
+          const newQuantity = item.quantity - 1;
+
+          if (newQuantity < 0) {
+            return;
           }
+
+          fetch(contextPath + '/api/cart', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': getCsrfToken(),
+            },
+            body: JSON.stringify({ productId: id, quantity: newQuantity })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (!data.success) {
+              showError(data.message || 'Không thể cập nhật số lượng');
+              return;
+            }
+
+            if (newQuantity === 0) {
+              cartItems = cartItems.filter((cartItem) => cartItem.id !== id);
+            } else {
+              item.quantity = newQuantity;
+            }
+
+            renderCart();
+            updateCartBadge(data.cartCount || data.itemCount || 0);
+          })
+          .catch(error => {
+            console.error('Error updating quantity:', error);
+            showError('Có lỗi xảy ra khi cập nhật số lượng');
+          });
         }
       }
 
-      // Apply discount coupon using API
+      function updateCartBadge(count) {
+        const badgeElements = document.querySelectorAll('.js-number-cart, .number-cart, .cart-count');
+        badgeElements.forEach((el) => {
+          if (count > 0) {
+            el.textContent = count;
+            el.style.display = 'inline-block';
+          } else {
+            el.textContent = '';
+            el.style.display = 'none';
+          }
+        });
+      }
+
       async function applyDiscount() {
-        const code = document.getElementById("discountCode").value.trim();
+        const discountInput = document.getElementById("discountCode");
+        const code = discountInput.value.trim();
 
         if (!code) {
-          alert("❌ Vui lòng nhập mã giảm giá!");
+          showWarning("Vui lòng nhập mã giảm giá!");
+          return;
+        }
+
+        if (cartItems.length === 0) {
+          showWarning("Giỏ hàng đang trống, chưa thể áp mã giảm giá.");
           return;
         }
 
@@ -2147,33 +2212,43 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         );
 
         try {
-          const response = await axios.post(contextPath + "/api/coupon/validate", {
-            code: code,
-            subtotal: subtotal
+          const response = await fetch(contextPath + "/api/coupon/validate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": getCsrfToken()
+            },
+            body: JSON.stringify({
+              code: code,
+              subtotal: subtotal
+            })
           });
 
-          if (response.data.success) {
-            discountAmount = parseFloat(response.data.discountAmount);
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            discountAmount = parseFloat(data.discountAmount || 0);
             appliedCouponCode = code.toUpperCase();
-            
-            // Show applied coupon info
+
             document.getElementById("appliedCouponInfo").style.display = "block";
             document.getElementById("appliedCouponCode").textContent = appliedCouponCode;
-            document.getElementById("discountCode").value = "";
-            document.getElementById("discountCode").disabled = true;
-            
+            discountInput.value = "";
+            discountInput.disabled = true;
+
             updateSummary();
-            alert("✅ Áp dụng mã giảm giá thành công! Giảm " + formatCurrency(discountAmount));
+            showSuccess("Áp dụng mã giảm giá thành công! Giảm " + formatCurrency(discountAmount));
           } else {
-            alert("❌ " + (response.data.message || "Mã giảm giá không hợp lệ!"));
             discountAmount = 0;
+            appliedCouponCode = null;
             updateSummary();
+            showError(data.message || "Mã giảm giá không hợp lệ!");
           }
         } catch (error) {
           console.error("Error validating coupon:", error);
-          alert("❌ Không thể kiểm tra mã giảm giá. Vui lòng thử lại!");
           discountAmount = 0;
+          appliedCouponCode = null;
           updateSummary();
+          showError("Không thể kiểm tra mã giảm giá. Vui lòng thử lại!");
         }
       }
 
@@ -2187,7 +2262,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         document.getElementById("discountCode").value = "";
         
         updateSummary();
-        alert("✅ Đã hủy mã giảm giá!");
+        showSuccess("Đã hủy mã giảm giá!");
       }
 
       function continueShopping() {
@@ -2196,7 +2271,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       function showCheckoutConfirm() {
         if (cartItems.length === 0) {
-          alert("❌ Giỏ hàng trống!");
+          showWarning("Giỏ hàng trống!", "Thông báo");
           return;
         }
 
@@ -2600,7 +2675,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         const canvas = document.getElementById("aiCanvas");
         if (!canvas) {
           console.error("❌ Canvas not found!");
-          alert("Không tìm thấy canvas. Vui lòng thử lại.");
+          showError("Không tìm thấy canvas. Vui lòng thử lại.");
           return;
         }
         
@@ -3043,5 +3118,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       renderCart();
     </script>
+    <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
   </body>
 </html>

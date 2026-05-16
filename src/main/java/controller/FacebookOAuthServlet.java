@@ -19,6 +19,7 @@ import com.restfb.exception.FacebookException;
 import com.restfb.types.User;
 
 import dao.UserDAO;
+import service.CartService;
 
 @WebServlet(urlPatterns = {"/oauth/facebook", "/oauth/facebook/callback"})
 public class FacebookOAuthServlet extends HttpServlet {
@@ -27,6 +28,8 @@ public class FacebookOAuthServlet extends HttpServlet {
     private static final String APP_SECRET = System.getenv("FACEBOOK_APP_SECRET");
     private static final String REDIRECT_URI = System.getenv("FACEBOOK_REDIRECT_URI");
     private static final String STATE_SESSION_KEY = "oauth_facebook_state";
+
+    private final CartService cartService = new CartService();
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -142,14 +145,26 @@ public class FacebookOAuthServlet extends HttpServlet {
                 user = userDAO.findByEmail(email);
             }
             
-            // Bước 4: Đăng nhập thành công - Tạo session
-            session.removeAttribute(STATE_SESSION_KEY);
-            session = request.getSession();
+            // Bước 4: Đăng nhập thành công - Tạo session mới và merge giỏ hàng guest nếu có
+            HttpSession existingSession = request.getSession(false);
+            Object guestCart = existingSession != null ? existingSession.getAttribute(CartService.SESSION_CART_KEY) : null;
+
+            if (existingSession != null) {
+                existingSession.invalidate();
+            }
+
+            session = request.getSession(true);
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
             session.setAttribute("userEmail", user.getEmail());
             session.setAttribute("userName", user.getFullname());
             session.setAttribute("userRole", user.getRole());
+            session.setMaxInactiveInterval(30 * 60);
+
+            if (guestCart != null) {
+                session.setAttribute(CartService.SESSION_CART_KEY, guestCart);
+                cartService.mergeSessionCartToDb(session, user.getId());
+            }
             
             // Redirect về trang chủ
             response.sendRedirect(request.getContextPath() + "/home");

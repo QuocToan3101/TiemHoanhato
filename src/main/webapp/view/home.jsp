@@ -491,11 +491,11 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       }
 
       .container {
-        max-width: 1400px;
+        max-width: 1400px !important;
 
-        margin: 0 auto;
+        margin: 0 auto !important;
 
-        padding: 0 2rem;
+        padding: 0 2rem !important;
       }
 
       .section-header {
@@ -718,7 +718,30 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         box-shadow: var(--shadow-md);
       }
+      /*
+      .product-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #e74c3c;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+      }
 
+      .product-image img {
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+
+        transition: transform 0.6s ease;
+      }
+      */
       .action-btn:hover {
         background: var(--primary);
 
@@ -887,6 +910,29 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         color: #333;
 
         outline: none;
+      }
+      
+      .product-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #e74c3c;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+      }
+
+      .product-image img {
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+
+        transition: transform 0.6s ease;
       }
       
       .newsletter-form input::placeholder {
@@ -1388,6 +1434,13 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -1524,7 +1577,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
               <div class="hero-card">
                 <span class="hero-badge">New</span>
                 <model-viewer
-                  src="/flowerstore/view/bouquet.glb"
+                  src="${pageContext.request.contextPath}/view/bouquet.glb"
                   alt="Bó hoa 3D"
                   camera-controls
                   auto-rotate
@@ -2614,30 +2667,25 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       function addToCartHome(productId) {
         fetch("${pageContext.request.contextPath}/api/cart/add", {
           method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          headers: withCsrfHeaders({
+            "Content-Type": "application/x-www-form-urlencoded",
+          }),
           body: "productId=" + productId + "&quantity=1",
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              alert("Đã thêm vào giỏ hàng!");
-              // Update cart count if exists
-              const cartCount = document.querySelector(".number-cart");
-              if (cartCount && data.cartCount) {
-                cartCount.textContent = data.cartCount;
+              showSuccess("Đã thêm vào giỏ hàng!");
+              if (typeof updateCartCount === "function") {
+                updateCartCount(data.cartCount || data.itemCount || 0);
               }
             } else {
-              if (data.message && data.message.includes("đăng nhập")) {
-                window.location.href =
-                  "${pageContext.request.contextPath}/login";
-              } else {
-                alert(data.message || "Có lỗi xảy ra");
-              }
+              showError(data.message || "Có lỗi xảy ra");
             }
           })
           .catch((error) => {
             console.error("Error:", error);
-            alert("Có lỗi xảy ra khi thêm vào giỏ hàng");
+            showError("Có lỗi xảy ra khi thêm vào giỏ hàng");
           });
       }
     </script>
