@@ -27,6 +27,13 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
   <body>
     <div class="forgot-container">
@@ -120,7 +127,7 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
             })
             .catch((error) => {
               console.error("Error:", error);
-              alert("Có lỗi xảy ra, vui lòng thử lại");
+              showError("Có lỗi xảy ra, vui lòng thử lại");
               btn.disabled = false;
               btn.textContent = originalText;
             });

@@ -13,7 +13,6 @@ import dao.PasswordResetDAO;
 import dao.UserDAO;
 import model.User;
 import service.EmailService;
-
 /**
  * Servlet xử lý quên mật khẩu với email service
  */

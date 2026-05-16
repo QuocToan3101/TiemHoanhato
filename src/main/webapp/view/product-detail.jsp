@@ -1140,6 +1140,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
 </head>
 
 <body id="wandave-theme" class="index">
@@ -1735,6 +1742,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-Token': getCsrfToken(),
                 },
                 body: 'productId=' + productId + '&quantity=' + quantity
             })
@@ -1742,19 +1750,11 @@
             .then(data => {
                 if (data.success) {
                     showToast('Đã thêm ' + quantity + ' sản phẩm vào giỏ hàng!', 'success');
-                    // Update cart count
-                    const cartCount = document.querySelector('.cart-count');
-                    if (cartCount && data.cartCount) {
-                        cartCount.textContent = data.cartCount;
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount(data.cartCount || data.itemCount || 0);
                     }
                 } else {
-                    if (data.message.includes('đăng nhập')) {
-                        if (confirm('Vui lòng đăng nhập để thêm vào giỏ hàng. Đăng nhập ngay?')) {
-                            window.location.href = '${pageContext.request.contextPath}/login?redirect=' + encodeURIComponent(window.location.pathname);
-                        }
-                    } else {
-                        showToast(data.message, 'error');
-                    }
+                    showToast(data.message || 'Có lỗi xảy ra, vui lòng thử lại!', 'error');
                 }
             })
             .catch(error => {
@@ -1771,6 +1771,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-Token': getCsrfToken(),
                 },
                 body: 'productId=' + productId + '&quantity=' + quantity
             })

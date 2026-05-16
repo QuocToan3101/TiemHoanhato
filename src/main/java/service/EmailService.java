@@ -53,6 +53,12 @@ public class EmailService {
     public boolean sendEmailWithAttachment(String toEmail, String subject, String htmlBody, 
                                           boolean isHtml, byte[] attachmentBytes) {
         try {
+            if (!hasUsableEmailConfig()) {
+                System.err.println("Lỗi cấu hình SMTP: thiếu hoặc đang dùng giá trị placeholder cho email.username/email.password. "
+                        + "Vui lòng cập nhật application.properties hoặc biến môi trường EMAIL_USERNAME/EMAIL_PASSWORD.");
+                return false;
+            }
+
             // Cấu hình properties
             Properties props = new Properties();
             props.put("mail.smtp.host", config.getEmailHost());
@@ -61,6 +67,10 @@ public class EmailService {
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.starttls.required", "true");
             props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+            props.put("mail.smtp.ssl.trust", config.getEmailHost());
+            props.put("mail.smtp.connectiontimeout", "10000");
+            props.put("mail.smtp.timeout", "10000");
+            props.put("mail.smtp.writetimeout", "10000");
             
             // Tạo session với authentication
             Session session = Session.getInstance(props, new Authenticator() {
@@ -123,9 +133,32 @@ public class EmailService {
             return true;
             
         } catch (Exception e) {
-            System.err.println("Lỗi khi gửi email: " + e.getMessage());
+            System.err.println("Lỗi khi gửi email tới " + toEmail + ": " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
+    }
+
+    private boolean hasUsableEmailConfig() {
+        String host = config.getEmailHost();
+        String username = config.getEmailUsername();
+        String password = config.getEmailPassword();
+
+        return isUsable(host) && isUsable(username) && isUsableSecret(password);
+    }
+
+    private boolean isUsable(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private boolean isUsableSecret(String value) {
+        if (!isUsable(value)) {
+            return false;
+        }
+        String trimmed = value.trim();
+        return !trimmed.startsWith("CHANGE_ME")
+                && !trimmed.startsWith("YOUR_")
+                && !trimmed.equalsIgnoreCase("your_client_secret_here");
     }
     
     /**

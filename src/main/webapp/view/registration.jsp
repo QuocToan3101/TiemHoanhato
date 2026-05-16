@@ -35,6 +35,13 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         border: 1px solid #c3e6cb;
       }
     </style>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body>
@@ -152,19 +159,19 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
           if (pass !== repass) {
             e.preventDefault();
-            alert("Mật khẩu không khớp!");
+            showWarning("Mật khẩu không khớp!");
             return false;
           }
 
           if (pass.length < 6) {
             e.preventDefault();
-            alert("Mật khẩu phải có ít nhất 6 ký tự!");
+            showWarning("Mật khẩu phải có ít nhất 6 ký tự!");
             return false;
           }
 
           if (!agree) {
             e.preventDefault();
-            alert("Vui lòng đồng ý với chính sách dịch vụ!");
+            showWarning("Vui lòng đồng ý với chính sách dịch vụ!");
             return false;
           }
 

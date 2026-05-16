@@ -1878,6 +1878,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
 </head>
 <body>
     <%@ include file="partials/header.jsp" %>
@@ -2476,11 +2483,8 @@
         }
         
         function cancelOrder(orderId) {
-            if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
-                return;
-            }
-            
-            fetch(contextPath + '/orders/cancel/' + orderId, {
+            showConfirm('Bạn có chắc chắn muốn hủy đơn hàng này?', function() {
+                fetch(contextPath + '/orders/cancel/' + orderId, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -2525,10 +2529,11 @@
         }
         
         function updateCartCount(count) {
-            const badge = document.querySelector('.cart-badge, .cart-count');
-            if (badge) {
+            const badges = document.querySelectorAll('.cart-badge, .cart-count, .js-number-cart, .number-cart');
+            badges.forEach((badge) => {
                 badge.textContent = count;
-            }
+                badge.style.display = count > 0 ? 'inline-block' : 'none';
+            });
         }
 
         // ==================== Address Book ====================
@@ -2781,11 +2786,8 @@
         }
         
         function deleteAddress(addressId) {
-            if (!confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
-                return;
-            }
-            
-            fetch(contextPath + '/address/delete/' + addressId, {
+            showConfirm('Bạn có chắc muốn xóa địa chỉ này?', function() {
+                fetch(contextPath + '/address/delete/' + addressId, {
                 method: 'POST'
             })
             .then(response => response.json())
@@ -3350,11 +3352,8 @@
         }
         
         async function removeFromWishlist(productId) {
-            if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm khỏi danh sách yêu thích?')) {
-                return;
-            }
-            
-            try {
+            showConfirm('Bạn có chắc chắn muốn xóa sản phẩm khỏi danh sách yêu thích?', async function() {
+                try {
                 const response = await fetch(contextPath + '/api/wishlist', {
                     method: 'POST',
                     headers: {
@@ -3392,7 +3391,8 @@
                 const response = await fetch(contextPath + '/api/cart/add', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCsrfToken()
                     },
                     body: JSON.stringify({
                         productId: productId,
@@ -3404,10 +3404,7 @@
                 
                 if (result.success) {
                     showToast('Đã thêm vào giỏ hàng', 'success');
-                    // Cập nhật cart count nếu có
-                    if (result.cartItemCount) {
-                        updateCartCount(result.cartItemCount);
-                    }
+                    updateCartCount(result.cartItemCount || result.cartCount || result.itemCount || 0);
                 } else {
                     showToast(result.message || 'Không thể thêm vào giỏ hàng', 'error');
                 }

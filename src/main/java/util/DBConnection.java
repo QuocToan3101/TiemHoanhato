@@ -1,101 +1,116 @@
 package util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Lớp quản lý kết nối Database
- * Sử dụng Singleton Pattern để đảm bảo chỉ có 1 connection pool
+ * Lớp quản lý kết nối Database sử dụng HikariCP connection pool
  */
 public class DBConnection {
-    
-    // Đọc cấu hình từ application.properties thay vì hard-code
-    private final AppConfig config = AppConfig.getInstance();
-    private final String DB_URL;
-    private final String DB_USER;
-    private final String DB_PASSWORD;
-    
-    // Singleton instance
+
     private static DBConnection instance;
-    
-    // Constructor private để ngăn tạo instance từ bên ngoài
+    private HikariDataSource dataSource;
+    private SQLException initializationError;
+    private final AppConfig config = AppConfig.getInstance();
+
     private DBConnection() {
-        // Đọc config từ application.properties
-        this.DB_URL = config.getDbUrl();
-        this.DB_USER = config.getDbUsername();
-        this.DB_PASSWORD = config.getDbPassword();
-        
+        String jdbcUrl = config.getDbUrl();
+        String dbUser = config.getDbUsername();
+        String dbPassword = config.getDbPassword();
+
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl(jdbcUrl);
+        if (dbUser != null) hikariConfig.setUsername(dbUser);
+        if (dbPassword != null) hikariConfig.setPassword(dbPassword);
+        hikariConfig.setMaximumPoolSize(20);
+        hikariConfig.setMinimumIdle(2);
+        hikariConfig.setPoolName("FlowerStorePool");
+        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
         try {
-            // Load MySQL JDBC Driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("MySQL JDBC Driver đã được load thành công!");
-            System.out.println("Database URL: " + DB_URL);
-            System.out.println("Database User: " + DB_USER);
-        } catch (ClassNotFoundException e) {
-            System.err.println("Lỗi: Không tìm thấy MySQL JDBC Driver!");
-            System.err.println("Chi tiết lỗi: " + e.getClass().getName() + ": " + e.getMessage());
+            dataSource = new HikariDataSource(hikariConfig);
+            System.out.println("HikariCP pool initialized (poolName=" + hikariConfig.getPoolName() + ")");
+        } catch (Exception e) {
+            initializationError = e instanceof SQLException ? (SQLException) e : new SQLException("Không thể khởi tạo HikariCP", e);
+            System.err.println("Failed to initialize HikariCP: " + e.getMessage());
         }
+
+        // Add shutdown hook to close pool gracefully
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (dataSource != null && !dataSource.isClosed()) {
+                dataSource.close();
+                System.out.println("HikariCP pool closed.");
+            }
+        }));
     }
-    
-    /**
-     * Lấy instance của DBConnection (Singleton)
-     */
+
     public static synchronized DBConnection getInstance() {
         if (instance == null) {
             instance = new DBConnection();
         }
         return instance;
     }
-    
-    /**
-     * Lấy connection đến database
-     * @return Connection object hoặc null nếu lỗi
-     */
-    public Connection getConnection() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-        } catch (SQLException e) {
-            System.err.println("Lỗi kết nối database: " + e.getMessage());
-            System.err.println("SQL State: " + e.getSQLState() + ", Error Code: " + e.getErrorCode());
+
+    public Connection getConnection() throws SQLException {
+        Connection jndiConnection = tryGetJndiConnection();
+        if (jndiConnection != null) {
+            return jndiConnection;
         }
-        return conn;
-    }
-    
-    /**
-     * Đóng connection
-     * @param conn Connection cần đóng
-     */
-    public static void closeConnection(Connection conn) {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                System.err.println("Lỗi đóng connection: " + e.getMessage());
+
+        if (dataSource == null) {
+            if (initializationError != null) {
+                throw new SQLException("Connection pool chưa khởi tạo được", initializationError);
             }
+            throw new SQLException("Connection pool chưa khởi tạo được");
+        }
+
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            System.err.println("Lỗi lấy connection từ pool: " + e.getMessage());
+            throw e;
         }
     }
-    
-    /**
-     * Kiểm tra kết nối database
-     * @return true nếu kết nối thành công
-     */
+
+    private Connection tryGetJndiConnection() {
+        try {
+            Context initContext = new InitialContext();
+            DataSource jndiDataSource = (DataSource) initContext.lookup("java:comp/env/jdbc/FlowerStoreDB");
+            if (jndiDataSource != null) {
+                return jndiDataSource.getConnection();
+            }
+        } catch (NamingException | ClassCastException e) {
+            // Outside Tomcat or when JNDI is not configured, fall back to Hikari.
+        } catch (SQLException e) {
+            System.err.println("Lỗi lấy connection từ JNDI pool: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public void closePool() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
+
     public boolean testConnection() {
         try (Connection conn = getConnection()) {
-            if (conn != null && !conn.isClosed()) {
-                System.out.println("✓ Kết nối database thành công!");
+            if (!conn.isClosed()) {
+                System.out.println("✓ Kết nối database thành công (via pool)!");
                 return true;
             }
         } catch (SQLException e) {
             System.err.println("✗ Kết nối database thất bại: " + e.getMessage());
         }
         return false;
-    }
-    
-    // Main method để test connection
-    public static void main(String[] args) {
-        DBConnection db = DBConnection.getInstance();
-        db.testConnection();
     }
 }

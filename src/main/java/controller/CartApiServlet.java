@@ -15,25 +15,27 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import dao.CartDAO;
 import model.CartItem;
+import model.CartOperationResult;
+import model.SessionCartItem;
 import model.User;
+import service.CartService;
 
 /**
  * API Servlet để quản lý giỏ hàng
  */
 @WebServlet("/api/cart/*")
 public class CartApiServlet extends HttpServlet {
-    
-    private CartDAO cartDAO;
+
+    private CartService cartService;
     private Gson gson;
-    
+
     @Override
     public void init() throws ServletException {
-        cartDAO = new CartDAO();
+        cartService = new CartService();
         gson = new Gson();
     }
-    
+
     /**
      * GET - Lấy thông tin giỏ hàng
      */
@@ -44,36 +46,40 @@ public class CartApiServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
-        
+
         HttpSession session = request.getSession(false);
-        
-        if (session == null || session.getAttribute("user") == null) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Chưa đăng nhập");
-            jsonResponse.addProperty("itemCount", 0);
-            out.print(gson.toJson(jsonResponse));
-            return;
-        }
-        
-        User user = (User) session.getAttribute("user");
-        List<CartItem> cartItems = cartDAO.findByUserId(user.getId());
-        
+
+        User user = session != null ? (User) session.getAttribute("user") : null;
+
         BigDecimal total = BigDecimal.ZERO;
         int itemCount = 0;
-        
-        for (CartItem item : cartItems) {
-            total = total.add(item.getSubtotal());
-            itemCount += item.getQuantity();
+
+        if (user != null) {
+            List<CartItem> cartItems = cartService.getUserCartItems(user.getId());
+            for (CartItem item : cartItems) {
+                total = total.add(item.getSubtotal());
+                itemCount += item.getQuantity();
+            }
+            jsonResponse.add("items", gson.toJsonTree(cartItems));
+        } else {
+            List<SessionCartItem> sessionItems = cartService.getSessionCartItems(session);
+            for (SessionCartItem item : sessionItems) {
+                total = total.add(item.getSubtotal());
+                itemCount += item.getQuantity();
+            }
+            jsonResponse.add("items", gson.toJsonTree(sessionItems));
         }
-        
+
         jsonResponse.addProperty("success", true);
         jsonResponse.addProperty("itemCount", itemCount);
+        jsonResponse.addProperty("cartCount", itemCount);
+        jsonResponse.addProperty("cart_count", itemCount);
         jsonResponse.addProperty("total", total.toString());
-        jsonResponse.add("items", gson.toJsonTree(cartItems));
-        
+        jsonResponse.addProperty("cart_total", total);
+
         out.print(gson.toJson(jsonResponse));
     }
-    
+
     /**
      * POST - Thêm sản phẩm vào giỏ hàng
      */
@@ -85,89 +91,61 @@ public class CartApiServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
-        
-        HttpSession session = request.getSession(false);
-        
-        if (session == null || session.getAttribute("user") == null) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Vui lòng đăng nhập để thêm vào giỏ hàng");
-            out.print(gson.toJson(jsonResponse));
-            return;
-        }
-        
+
+        HttpSession session = request.getSession(true);
+
         try {
             User user = (User) session.getAttribute("user");
-            
+
             // Kiểm tra xem có phải là path /add hay không
             String pathInfo = request.getPathInfo();
-            
+
             int productId;
             int quantity;
-            
+
             // Đọc dữ liệu từ JSON body
             if (pathInfo != null && pathInfo.equals("/add")) {
-                // Đọc JSON từ body
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = request.getReader().readLine()) != null) {
-                    sb.append(line);
-                }
-                
-                String jsonString = sb.toString();
-                System.out.println("Received JSON: " + jsonString);
-                
-                JsonObject jsonRequest = gson.fromJson(jsonString, JsonObject.class);
-                if (jsonRequest == null || !jsonRequest.has("productId")) {
+                JsonObject jsonRequest = parseRequestBody(request);
+                Integer parsedProductId = getIntFromBodyOrParam(jsonRequest, request, "productId");
+                Integer parsedQuantity = getIntFromBodyOrParam(jsonRequest, request, "quantity");
+                if (parsedProductId == null) {
                     jsonResponse.addProperty("success", false);
                     jsonResponse.addProperty("message", "Thiếu productId");
                     out.print(gson.toJson(jsonResponse));
                     return;
                 }
+                productId = parsedProductId;
+                quantity = parsedQuantity != null ? parsedQuantity : 1;
+            } else {
+                // Đọc từ parameters (backward compatibility)
                 try {
-                    productId = jsonRequest.get("productId").getAsInt();
-                    quantity = jsonRequest.has("quantity") ? jsonRequest.get("quantity").getAsInt() : 1;
+                    productId = Integer.parseInt(request.getParameter("productId"));
+                    String quantityParam = request.getParameter("quantity");
+                    quantity = quantityParam == null ? 1 : Integer.parseInt(quantityParam);
                 } catch (Exception ex) {
                     jsonResponse.addProperty("success", false);
                     jsonResponse.addProperty("message", "Tham số không hợp lệ");
                     out.print(gson.toJson(jsonResponse));
                     return;
                 }
-            } else {
-                // Đọc từ parameters (backward compatibility)
-                try {
-                    productId = Integer.parseInt(request.getParameter("productId"));
-                    quantity = Integer.parseInt(request.getParameter("quantity"));
-                } catch (NumberFormatException ex) {
-                    jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "Tham số không hợp lệ");
-                    out.print(gson.toJson(jsonResponse));
-                    return;
-                }
             }
-            
-            if (quantity <= 0) {
-                quantity = 1;
-            }
-            
-            boolean success = cartDAO.addToCart(user.getId(), productId, quantity);
-            
-            if (success) {
-                int cartCount = cartDAO.getTotalQuantity(user.getId());
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Đã thêm vào giỏ hàng");
-                jsonResponse.addProperty("cartItemCount", cartCount);
-            } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không thể thêm vào giỏ hàng");
-            }
+
+            CartOperationResult result = cartService.addToCart(
+                session,
+                user != null ? user.getId() : null,
+                productId,
+                quantity
+            );
+
+            writeOperationResult(jsonResponse, result);
         } catch (Exception e) {
             jsonResponse.addProperty("success", false);
             jsonResponse.addProperty("message", "Lỗi: " + e.getMessage());
         }
-        
+
         out.print(gson.toJson(jsonResponse));
     }
-    
+
     /**
      * PUT - Cập nhật số lượng sản phẩm
      */
@@ -179,64 +157,38 @@ public class CartApiServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
-        
+
         HttpSession session = request.getSession(false);
-        
-        if (session == null || session.getAttribute("user") == null) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Chưa đăng nhập");
-            out.print(gson.toJson(jsonResponse));
-            return;
-        }
-        
+
         try {
-            User user = (User) session.getAttribute("user");
-            int productId;
-            int quantity;
-            try {
-                productId = Integer.parseInt(request.getParameter("productId"));
-                quantity = Integer.parseInt(request.getParameter("quantity"));
-            } catch (NumberFormatException ex) {
+            User user = session != null ? (User) session.getAttribute("user") : null;
+            JsonObject jsonRequest = parseRequestBody(request);
+            Integer productId = getIntFromBodyOrParam(jsonRequest, request, "productId");
+            Integer quantity = getIntFromBodyOrParam(jsonRequest, request, "quantity");
+
+            if (productId == null || quantity == null) {
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Tham số không hợp lệ");
                 out.print(gson.toJson(jsonResponse));
                 return;
             }
-            
-            boolean success;
-            if (quantity <= 0) {
-                success = cartDAO.removeFromCart(user.getId(), productId);
-            } else {
-                success = cartDAO.updateQuantity(user.getId(), productId, quantity);
-            }
-            
-            if (success) {
-                // Lấy thông tin giỏ hàng mới
-                List<CartItem> cartItems = cartDAO.findByUserId(user.getId());
-                BigDecimal total = BigDecimal.ZERO;
-                int itemCount = 0;
-                
-                for (CartItem item : cartItems) {
-                    total = total.add(item.getSubtotal());
-                    itemCount += item.getQuantity();
-                }
-                
-                jsonResponse.addProperty("success", true);
-                jsonResponse.addProperty("message", "Đã cập nhật giỏ hàng");
-                jsonResponse.addProperty("cartCount", itemCount);
-                jsonResponse.addProperty("total", total.toString());
-            } else {
-                jsonResponse.addProperty("success", false);
-                jsonResponse.addProperty("message", "Không thể cập nhật giỏ hàng");
-            }
+
+            CartOperationResult result = cartService.updateQuantity(
+                session,
+                user != null ? user.getId() : null,
+                productId,
+                quantity
+            );
+
+            writeOperationResult(jsonResponse, result);
         } catch (Exception e) {
             jsonResponse.addProperty("success", false);
             jsonResponse.addProperty("message", "Lỗi: " + e.getMessage());
         }
-        
+
         out.print(gson.toJson(jsonResponse));
     }
-    
+
     /**
      * DELETE - Xóa sản phẩm khỏi giỏ hàng
      */
@@ -247,53 +199,90 @@ public class CartApiServlet extends HttpServlet {
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
         JsonObject jsonResponse = new JsonObject();
-        
+
         HttpSession session = request.getSession(false);
-        
-        if (session == null || session.getAttribute("user") == null) {
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Chưa đăng nhập");
-            out.print(gson.toJson(jsonResponse));
-            return;
-        }
-        
+
         try {
-            User user = (User) session.getAttribute("user");
+            User user = session != null ? (User) session.getAttribute("user") : null;
             String pathInfo = request.getPathInfo();
-            
+
             if (pathInfo != null && pathInfo.equals("/clear")) {
-                // Xóa toàn bộ giỏ hàng
-                boolean success = cartDAO.clearCart(user.getId());
-                jsonResponse.addProperty("success", success);
-                jsonResponse.addProperty("message", success ? "Đã xóa giỏ hàng" : "Không thể xóa giỏ hàng");
+                CartOperationResult result = cartService.clearCart(session, user != null ? user.getId() : null);
+                writeOperationResult(jsonResponse, result);
             } else {
-                // Xóa một sản phẩm
-                int productId;
-                try {
-                    productId = Integer.parseInt(request.getParameter("productId"));
-                } catch (NumberFormatException ex) {
+                JsonObject jsonRequest = parseRequestBody(request);
+                Integer productId = getIntFromBodyOrParam(jsonRequest, request, "productId");
+
+                if (productId == null) {
                     jsonResponse.addProperty("success", false);
                     jsonResponse.addProperty("message", "Tham số không hợp lệ");
                     out.print(gson.toJson(jsonResponse));
                     return;
                 }
-                boolean success = cartDAO.removeFromCart(user.getId(), productId);
-                
-                if (success) {
-                    int cartCount = cartDAO.getTotalQuantity(user.getId());
-                    jsonResponse.addProperty("success", true);
-                    jsonResponse.addProperty("message", "Đã xóa khỏi giỏ hàng");
-                    jsonResponse.addProperty("cartCount", cartCount);
-                } else {
-                    jsonResponse.addProperty("success", false);
-                    jsonResponse.addProperty("message", "Không thể xóa khỏi giỏ hàng");
-                }
+
+                CartOperationResult result = cartService.removeFromCart(
+                    session,
+                    user != null ? user.getId() : null,
+                    productId
+                );
+                writeOperationResult(jsonResponse, result);
             }
         } catch (Exception e) {
             jsonResponse.addProperty("success", false);
             jsonResponse.addProperty("message", "Lỗi: " + e.getMessage());
         }
-        
+
         out.print(gson.toJson(jsonResponse));
+    }
+
+    private void writeOperationResult(JsonObject jsonResponse, CartOperationResult result) {
+        jsonResponse.addProperty("success", result.isSuccess());
+        jsonResponse.addProperty("message", result.getMessage());
+        jsonResponse.addProperty("cartCount", result.getCartCount());
+        jsonResponse.addProperty("itemCount", result.getCartCount());
+        jsonResponse.addProperty("cartItemCount", result.getCartCount());
+        jsonResponse.addProperty("cart_count", result.getCartCount());
+        jsonResponse.addProperty("total", result.getCartTotal().toString());
+        jsonResponse.addProperty("cart_total", result.getCartTotal());
+    }
+
+    private JsonObject parseRequestBody(HttpServletRequest request) {
+        String contentType = request.getContentType();
+        if (contentType == null || !contentType.toLowerCase().contains("application/json")) {
+            return null;
+        }
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = request.getReader().readLine()) != null) {
+                sb.append(line);
+            }
+            if (sb.length() == 0) {
+                return null;
+            }
+            return gson.fromJson(sb.toString(), JsonObject.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Integer getIntFromBodyOrParam(JsonObject body, HttpServletRequest request, String key) {
+        try {
+            if (body != null && body.has(key) && !body.get(key).isJsonNull()) {
+                return body.get(key).getAsInt();
+            }
+        } catch (Exception ignored) {
+            // Fall through to request parameter.
+        }
+
+        String value = request.getParameter(key);
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 }

@@ -5,6 +5,7 @@ import model.Product;
 import util.DBConnection;
 
 import java.sql.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class CartDAO {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
     
@@ -22,12 +23,15 @@ public class CartDAO {
      */
     public List<CartItem> findByUserId(int userId) {
         List<CartItem> items = new ArrayList<>();
-        String sql = "SELECT c.*, p.name as product_name, p.slug, p.price, p.sale_price, " +
+        String sql = "SELECT ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.price as item_price, " +
+                    "ci.created_at, ci.updated_at, " +
+                    "p.name as product_name, p.slug, p.price, p.sale_price, " +
                     "p.image, p.quantity as product_quantity " +
-                    "FROM cart c " +
-                    "JOIN products p ON c.product_id = p.id " +
-                    "WHERE c.user_id = ? AND p.is_active = TRUE " +
-                    "ORDER BY c.created_at DESC";
+                    "FROM carts c " +
+                    "JOIN cart_items ci ON c.id = ci.cart_id " +
+                    "JOIN products p ON ci.product_id = p.id " +
+                    "WHERE c.user_id = ? AND c.is_active = TRUE AND p.is_active = TRUE " +
+                    "ORDER BY ci.created_at DESC";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -48,6 +52,7 @@ public class CartDAO {
                 product.setImage(rs.getString("image"));
                 product.setQuantity(rs.getInt("product_quantity"));
                 item.setProduct(product);
+                item.setPrice(resolveItemPrice(rs, product));
                 
                 items.add(item);
             }
@@ -61,6 +66,10 @@ public class CartDAO {
      * Thêm sản phẩm vào giỏ hàng
      */
     public boolean addToCart(int userId, int productId, int quantity) {
+        if (quantity <= 0) {
+            return false;
+        }
+
         // Kiểm tra sản phẩm đã có trong giỏ chưa
         CartItem existing = findByUserAndProduct(userId, productId);
         
@@ -70,14 +79,20 @@ public class CartDAO {
         }
         
         // Thêm mới
-        String sql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+            int cartId = getOrCreateActiveCartId(conn, userId);
+            BigDecimal itemPrice = getCurrentProductDisplayPrice(conn, productId);
+            if (itemPrice == null) {
+                return false;
+            }
             
-            ps.setInt(1, userId);
+            ps.setInt(1, cartId);
             ps.setInt(2, productId);
             ps.setInt(3, quantity);
+            ps.setBigDecimal(4, itemPrice);
             
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -94,8 +109,10 @@ public class CartDAO {
             return removeFromCart(userId, productId);
         }
         
-        String sql = "UPDATE cart SET quantity = ?, updated_at = CURRENT_TIMESTAMP " +
-                    "WHERE user_id = ? AND product_id = ?";
+        String sql = "UPDATE cart_items ci " +
+                    "JOIN carts c ON ci.cart_id = c.id " +
+                    "SET ci.quantity = ?, ci.updated_at = CURRENT_TIMESTAMP " +
+                    "WHERE c.user_id = ? AND c.is_active = TRUE AND ci.product_id = ?";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -115,7 +132,9 @@ public class CartDAO {
      * Xóa sản phẩm khỏi giỏ hàng
      */
     public boolean removeFromCart(int userId, int productId) {
-        String sql = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
+        String sql = "DELETE ci FROM cart_items ci " +
+                    "JOIN carts c ON ci.cart_id = c.id " +
+                    "WHERE c.user_id = ? AND c.is_active = TRUE AND ci.product_id = ?";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -134,7 +153,9 @@ public class CartDAO {
      * Xóa toàn bộ giỏ hàng của user
      */
     public boolean clearCart(int userId) {
-        String sql = "DELETE FROM cart WHERE user_id = ?";
+        String sql = "DELETE ci FROM cart_items ci " +
+                    "JOIN carts c ON ci.cart_id = c.id " +
+                    "WHERE c.user_id = ? AND c.is_active = TRUE";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -151,7 +172,11 @@ public class CartDAO {
      * Tìm cart item theo user và product
      */
     public CartItem findByUserAndProduct(int userId, int productId) {
-        String sql = "SELECT * FROM cart WHERE user_id = ? AND product_id = ?";
+        String sql = "SELECT ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.price as item_price, " +
+                    "ci.created_at, ci.updated_at " +
+                    "FROM cart_items ci " +
+                    "JOIN carts c ON ci.cart_id = c.id " +
+                    "WHERE c.user_id = ? AND c.is_active = TRUE AND ci.product_id = ?";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -173,7 +198,10 @@ public class CartDAO {
      * Đếm số sản phẩm trong giỏ hàng
      */
     public int countItems(int userId) {
-        String sql = "SELECT COUNT(*) FROM cart WHERE user_id = ?";
+        String sql = "SELECT COUNT(*) " +
+                    "FROM cart_items ci " +
+                    "JOIN carts c ON ci.cart_id = c.id " +
+                    "WHERE c.user_id = ? AND c.is_active = TRUE";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -194,7 +222,10 @@ public class CartDAO {
      * Tính tổng số lượng sản phẩm (quantity) trong giỏ
      */
     public int getTotalQuantity(int userId) {
-        String sql = "SELECT SUM(quantity) FROM cart WHERE user_id = ?";
+        String sql = "SELECT COALESCE(SUM(ci.quantity), 0) " +
+                    "FROM cart_items ci " +
+                    "JOIN carts c ON ci.cart_id = c.id " +
+                    "WHERE c.user_id = ? AND c.is_active = TRUE";
         
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -217,11 +248,84 @@ public class CartDAO {
     private CartItem mapResultSetToCartItem(ResultSet rs) throws SQLException {
         CartItem item = new CartItem();
         item.setId(rs.getInt("id"));
-        item.setUserId(rs.getInt("user_id"));
+        if (hasColumn(rs, "cart_id")) {
+            item.setCartId(rs.getInt("cart_id"));
+        }
+        item.setUserId(0);
         item.setProductId(rs.getInt("product_id"));
         item.setQuantity(rs.getInt("quantity"));
         item.setCreatedAt(rs.getTimestamp("created_at"));
         item.setUpdatedAt(rs.getTimestamp("updated_at"));
+        if (hasColumn(rs, "item_price")) {
+            item.setPrice(rs.getBigDecimal("item_price"));
+        }
         return item;
+    }
+
+    public int getCurrentQuantity(int userId, int productId) {
+        CartItem item = findByUserAndProduct(userId, productId);
+        return item != null ? item.getQuantity() : 0;
+    }
+
+    private int getOrCreateActiveCartId(Connection conn, int userId) throws SQLException {
+        String findSql = "SELECT id FROM carts WHERE user_id = ? AND is_active = TRUE LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(findSql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+        }
+
+        String createSql = "INSERT INTO carts (user_id, is_active) VALUES (?, TRUE)";
+        try (PreparedStatement ps = conn.prepareStatement(createSql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+
+        throw new SQLException("Không thể tạo cart cho user: " + userId);
+    }
+
+    private BigDecimal getCurrentProductDisplayPrice(Connection conn, int productId) throws SQLException {
+        String sql = "SELECT price, sale_price FROM products WHERE id = ? AND is_active = TRUE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                BigDecimal salePrice = rs.getBigDecimal("sale_price");
+                if (salePrice != null && salePrice.compareTo(BigDecimal.ZERO) > 0) {
+                    return salePrice;
+                }
+                return rs.getBigDecimal("price");
+            }
+        }
+    }
+
+    private BigDecimal resolveItemPrice(ResultSet rs, Product product) throws SQLException {
+        BigDecimal itemPrice = null;
+        if (hasColumn(rs, "item_price")) {
+            itemPrice = rs.getBigDecimal("item_price");
+        }
+        if (itemPrice != null) {
+            return itemPrice;
+        }
+        return product != null ? product.getDisplayPrice() : BigDecimal.ZERO;
+    }
+
+    private boolean hasColumn(ResultSet rs, String columnName) {
+        try {
+            rs.findColumn(columnName);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 }

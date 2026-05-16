@@ -17,7 +17,6 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
 /**
  * Servlet xử lý tin tức
  */
@@ -26,7 +25,6 @@ public class NewsServlet extends HttpServlet {
     
     private NewsDAO newsDAO;
     private Gson gson;
-    
     @Override
     public void init() throws ServletException {
         newsDAO = new NewsDAO();

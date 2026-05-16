@@ -12,15 +12,18 @@ import javax.servlet.http.HttpSession;
 
 import dao.UserDAO;
 import model.User;
+import service.CartService;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     
     private UserDAO userDAO;
+    private CartService cartService;
     
     @Override
     public void init() throws ServletException {
         userDAO = new UserDAO();
+        cartService = new CartService();
     }
     
     @Override
@@ -59,7 +62,11 @@ public class LoginServlet extends HttpServlet {
         if (user != null) {
             // Đăng nhập thành công
             HttpSession existing = request.getSession(false);
+            String redirectUrl = null;
+            Object guestCart = null;
             if (existing != null) {
+                redirectUrl = (String) existing.getAttribute("redirectUrl");
+                guestCart = existing.getAttribute(CartService.SESSION_CART_KEY);
                 existing.invalidate();
             }
             HttpSession session = request.getSession(true);
@@ -71,6 +78,12 @@ public class LoginServlet extends HttpServlet {
             
             // Set session timeout (30 phút)
             session.setMaxInactiveInterval(30 * 60);
+
+            // Merge guest cart (session) vào cart của user trong DB sau khi đăng nhập.
+            if (guestCart != null) {
+                session.setAttribute(CartService.SESSION_CART_KEY, guestCart);
+                cartService.mergeSessionCartToDb(session, user.getId());
+            }
             
             // Nếu chọn "Remember me", tạo cookie với bảo vệ tốt hơn
             if ("on".equals(remember)) {
@@ -81,14 +94,19 @@ public class LoginServlet extends HttpServlet {
                 emailCookie.setSecure(request.isSecure());
                 response.addCookie(emailCookie);
             }
-            
-            // Chuyển hướng theo role
+
+            // Nếu có redirectUrl (được AuthFilter lưu), ưu tiên redirect về đó
+            if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
+                response.sendRedirect(redirectUrl);
+                return;
+            }
+
+            // Chuyển hướng theo role mặc định
             if (user.isAdmin()) {
                 response.sendRedirect(request.getContextPath() + "/admin");
             } else {
                 response.sendRedirect(request.getContextPath() + "/home");
             }
-            
         } else {
             // Đăng nhập thất bại
             request.setAttribute("error", "Email hoặc mật khẩu không đúng!");

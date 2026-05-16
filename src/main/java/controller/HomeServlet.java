@@ -13,6 +13,7 @@ import dao.CategoryDAO;
 import dao.ProductDAO;
 import model.Category;
 import model.Product;
+import java.util.ArrayList;
 
 /**
  * Servlet xử lý trang chủ
@@ -34,20 +35,41 @@ public class HomeServlet extends HttpServlet {
             throws ServletException, IOException {
         
         System.out.println("=== HomeServlet được gọi ===");
-        
+
+        List<Category> featuredCategories = new ArrayList<>();
+        List<Product> bestSellerProducts = new ArrayList<>();
+        List<Product> newProducts = new ArrayList<>();
+        List<Product> featuredProducts = new ArrayList<>();
+
         // Lấy danh mục nổi bật (8 danh mục con có sản phẩm)
-        List<Category> featuredCategories = categoryDAO.findFeaturedCategories(8);
+        try {
+            featuredCategories = categoryDAO.findFeaturedCategories(8);
+        } catch (RuntimeException ex) {
+            log("Không thể tải featuredCategories", ex);
+        }
         System.out.println("Featured Categories: " + (featuredCategories != null ? featuredCategories.size() : "null"));
         
         // Lấy sản phẩm best seller (bán chạy nhất - 8 sản phẩm)
-        List<Product> bestSellerProducts = productDAO.findBestSellers(8);
+        try {
+            bestSellerProducts = productDAO.findBestSellers(8);
+        } catch (RuntimeException ex) {
+            log("Không thể tải bestSellerProducts", ex);
+        }
         System.out.println("Best Sellers: " + (bestSellerProducts != null ? bestSellerProducts.size() : "null"));
         
         // Lấy sản phẩm mới nhất (4 sản phẩm)
-        List<Product> newProducts = productDAO.findLatest(4);
+        try {
+            newProducts = productDAO.findLatest(4);
+        } catch (RuntimeException ex) {
+            log("Không thể tải newProducts", ex);
+        }
         
         // Lấy sản phẩm nổi bật/featured (4 sản phẩm)
-        List<Product> featuredProducts = productDAO.findFeatured(4);
+        try {
+            featuredProducts = productDAO.findFeatured(4);
+        } catch (RuntimeException ex) {
+            log("Không thể tải featuredProducts", ex);
+        }
         
         // Set attributes
         request.setAttribute("featuredCategories", featuredCategories);

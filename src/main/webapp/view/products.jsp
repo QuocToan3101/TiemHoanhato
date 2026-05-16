@@ -512,26 +512,39 @@
         /* PAGINATION */
         .pagination-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 6px;
+            gap: 12px;
             margin-top: 40px;
+            padding: 20px;
+            background: #faf5ef;
+            border-radius: 16px;
         }
         
         .page-btn {
-            background: #f4e1d1;
+            background: #fff;
             border: 1px solid #d8c1b0;
-            padding: 8px 14px;
+            padding: 10px 14px;
             border-radius: 10px;
             cursor: pointer;
             color: #6c5845;
             font-weight: 600;
+            font-size: 0.95rem;
             transition: 0.2s;
             text-decoration: none;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            justify-content: center;
         }
         
         .page-btn:hover {
-            background: #e9d2bd;
+            background: #f9f1e8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(160,130,100,0.15);
         }
         
         .page-btn.disabled {
@@ -540,21 +553,32 @@
         }
         
         .page-number {
-            padding: 8px 14px;
+            padding: 10px 14px;
             background: #fff;
             border: 1px solid #d8c1b0;
             border-radius: 10px;
             cursor: pointer;
             color: #6c5845;
             transition: 0.2s;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 600;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+        }
+        
+        .page-number:hover:not(.active) {
+            background: #f9f1e8;
+            transform: translateY(-2px);
         }
         
         .page-number.active {
             background: var(--accent-dark);
             color: #fff;
             border-color: var(--accent-dark);
+            box-shadow: 0 4px 12px rgba(170,106,63,0.25);
         }
         
         /* Sidebar */
@@ -715,6 +739,13 @@
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
 </head>
 
 <body id="wandave-theme" class="index">
@@ -1101,8 +1132,8 @@
             
             // Nút Previous
             if (currentPage > 1) {
-                html += '<a href="#" onclick="loadPage(' + (currentPage - 1) + '); return false;" class="page-btn">' +
-                    '<i class="fas fa-chevron-left"></i> Trước' +
+                html += '<a href="#" onclick="loadPage(' + (currentPage - 1) + '); return false;" class="page-btn" title="Trang trước">' +
+                    '<i class="fas fa-chevron-left"></i>' +
                 '</a>';
             }
             
@@ -1116,8 +1147,8 @@
             
             // Nút Next
             if (currentPage < totalPages) {
-                html += '<a href="#" onclick="loadPage(' + (currentPage + 1) + '); return false;" class="page-btn">' +
-                    'Sau <i class="fas fa-chevron-right"></i>' +
+                html += '<a href="#" onclick="loadPage(' + (currentPage + 1) + '); return false;" class="page-btn" title="Trang sau">' +
+                    '<i class="fas fa-chevron-right"></i>' +
                 '</a>';
             }
             
@@ -1166,6 +1197,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-Token': getCsrfToken()
                 },
                 body: 'productId=' + productId + '&quantity=' + quantity
             })
@@ -1173,17 +1205,11 @@
             .then(data => {
                 if (data.success) {
                     showToast('Đã thêm vào giỏ hàng!');
-                    // Update cart count in header if exists
-                    const cartCount = document.querySelector('.cart-count');
-                    if (cartCount && data.cartCount) {
-                        cartCount.textContent = data.cartCount;
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount(data.cartCount || data.itemCount || 0);
                     }
                 } else {
-                    if (data.message.includes('đăng nhập')) {
-                        window.location.href = contextPath + '/login';
-                    } else {
-                        showToast(data.message, 'error');
-                    }
+                    showToast(data.message || 'Có lỗi xảy ra!', 'error');
                 }
             })
             .catch(error => {
