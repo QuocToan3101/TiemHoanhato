@@ -184,7 +184,21 @@ public class AdminServlet extends HttpServlet {
         
         try {
             if (pathInfo.equals("/api/users")) {
-                List<User> users = userDAO.findAll();
+                String search = request.getParameter("search");
+                String statusFilter = request.getParameter("status");
+
+                List<User> users;
+                if (search != null && !search.trim().isEmpty()) {
+                    users = userDAO.search(search); // Gọi method mới
+                } else {
+                    users = userDAO.findAll();
+                }
+                if (statusFilter != null && !statusFilter.trim().isEmpty()) {
+                    boolean isActive = "active".equals(statusFilter);
+                    users = users.stream()
+                        .filter(u -> u.isActive() == isActive)
+                        .collect(java.util.stream.Collectors.toList());
+                }
                 result.put("success", true);
                 result.put("data", users);
             } else if (pathInfo.equals("/api/products/top")) {

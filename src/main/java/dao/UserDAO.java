@@ -182,6 +182,28 @@ public class UserDAO {
     }
     
     /**
+     * Tìm kiếm user theo tên, email, số điện thoại
+     */
+    public List<User> search(String keyword) {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users WHERE " + "fullname LIKE ? OR email LIKE ? OR phone LIKE ? " + "ORDER BY created_at DESC";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            String pattern = "%" + keyword + "%";
+            ps.setString(1, pattern);
+            ps.setString(2, pattern);
+            ps.setString(3, pattern);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            logSQLError("tìm kiếm user", e);
+        }
+        return users;
+    }
+
+    /**
      * Lấy tất cả users (cho Admin)
      */
     public List<User> findAll() {
