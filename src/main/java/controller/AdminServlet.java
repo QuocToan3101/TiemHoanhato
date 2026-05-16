@@ -63,8 +63,10 @@ public class AdminServlet extends HttpServlet {
         
         if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("/dashboard")) {
             showDashboard(request, response);
-        } else if (pathInfo.equals("/users")) {
+        } else if (pathInfo.equals("/users")) { 
             showUsers(request, response);
+        } else if (pathInfo.matches("/users/\\d+")) {
+            showUserDetail(request, response);
         } else if (pathInfo.equals("/products")) {
             showProducts(request, response);
         } else if (pathInfo.equals("/orders")) {
@@ -130,6 +132,22 @@ public class AdminServlet extends HttpServlet {
         return true;
     }
 
+    private void showUserDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String pathInfo = request.getPathInfo(); // "/users/5"
+        int userId = Integer.parseInt(pathInfo.substring("/users/".length()));
+        
+        User user = userDAO.findById(userId);
+        if (user == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        List<Order> orders = orderDAO.findByUserId(userId);
+    
+        request.setAttribute("user", user);
+        request.setAttribute("orders", orders);
+        request.getRequestDispatcher("/WEB-INF/views/admin/user-detail.jsp").forward(request, response);
+    }
+    
     private void showDashboard(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
