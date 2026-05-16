@@ -537,6 +537,12 @@ public class AdminServlet extends HttpServlet {
                 case "/api/user/update-status":
                     int userId = Integer.parseInt(request.getParameter("id"));
                     String userStatus = request.getParameter("status");
+                    User existingUser = userDAO.findById(userId);
+                    if (existingUser != null && "inactive".equals(existingUser.getStatus())) {
+                        result.put("success", false);
+                        result.put("message", "Không thể thay đổi trạng thái tài khoản đã bị xóa");
+                        break;
+                    }
                     boolean userSuccess = userDAO.updateStatus(userId, userStatus);
                     result.put("success", userSuccess);
                     result.put("message", userSuccess ? "Cập nhật trạng thái người dùng thành công" : "Cập nhật thất bại");
