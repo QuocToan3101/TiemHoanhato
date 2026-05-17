@@ -512,73 +512,78 @@
         /* PAGINATION */
         .pagination-container {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 12px;
-            margin-top: 40px;
-            padding: 20px;
-            background: #faf5ef;
-            border-radius: 16px;
+            gap: 8px;
+            margin-top: 48px;
+            flex-wrap: wrap;
         }
         
         .page-btn {
-            background: #fff;
-            border: 1px solid #d8c1b0;
-            padding: 10px 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            color: #6c5845;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: 0.2s;
-            text-decoration: none;
-            white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            min-width: 44px;
-            justify-content: center;
+            gap: 6px;
+            background: #fff;
+            border: 1.5px solid var(--accent);
+            padding: 9px 18px;
+            border-radius: 999px;          /* pill shape — đồng bộ với btn khắp site */
+            cursor: pointer;
+            color: var(--accent-dark);
+            font-family: 'Crimson Text', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(170,106,63,0.10);
         }
         
         .page-btn:hover {
-            background: #f9f1e8;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(160,130,100,0.15);
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            border-color: transparent;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(170,106,63,0.30);
         }
         
         .page-btn.disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
+            pointer-events: none;
+            transform: none;
+            box-shadow: none;
         }
         
         .page-number {
-            padding: 10px 14px;
-            background: #fff;
-            border: 1px solid #d8c1b0;
-            border-radius: 10px;
-            cursor: pointer;
-            color: #6c5845;
-            transition: 0.2s;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 44px;
+            min-width: 40px;
+            height: 40px;
+            background: #fff;
+            border: 1.5px solid #e8d8c8;
+            border-radius: 50%;            /* tròn cho số trang */
+            cursor: pointer;
+            color: var(--brown-soft);
+            font-family: 'Crimson Text', serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
         
         .page-number:hover:not(.active) {
-            background: #f9f1e8;
-            transform: translateY(-2px);
+            border-color: var(--accent);
+            color: var(--accent-dark);
+            background: #fdf5ed;
         }
         
         .page-number.active {
-            background: var(--accent-dark);
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             color: #fff;
-            border-color: var(--accent-dark);
-            box-shadow: 0 4px 12px rgba(170,106,63,0.25);
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(170,106,63,0.35);
+            transform: scale(1.1);
         }
         
         /* Sidebar */
