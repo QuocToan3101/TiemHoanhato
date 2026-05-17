@@ -64,8 +64,10 @@ public class AdminServlet extends HttpServlet {
         
         if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("/dashboard")) {
             showDashboard(request, response);
-        } else if (pathInfo.equals("/users")) {
+        } else if (pathInfo.equals("/users")) { 
             showUsers(request, response);
+        } else if (pathInfo.matches("/users/\\d+")) {
+            showUserDetail(request, response);
         } else if (pathInfo.equals("/products")) {
             showProducts(request, response);
         } else if (pathInfo.equals("/orders")) {
@@ -131,6 +133,22 @@ public class AdminServlet extends HttpServlet {
         return true;
     }
 
+    private void showUserDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String pathInfo = request.getPathInfo(); // "/users/5"
+        int userId = Integer.parseInt(pathInfo.substring("/users/".length()));
+        
+        User user = userDAO.findById(userId);
+        if (user == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        List<Order> orders = orderDAO.findByUserId(userId);
+    
+        request.setAttribute("user", user);
+        request.setAttribute("orders", orders);
+        request.getRequestDispatcher("/WEB-INF/views/admin/user-detail.jsp").forward(request, response);
+    }
+    
     private void showDashboard(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -185,7 +203,19 @@ public class AdminServlet extends HttpServlet {
         
         try {
             if (pathInfo.equals("/api/users")) {
-                List<User> users = userDAO.findAll();
+                String search = request.getParameter("search");
+                String statusFilter = request.getParameter("status");
+                List<User> users;
+                if (search != null && !search.trim().isEmpty()) {
+                    users = userDAO.search(search); // Gọi method mới
+                } else {
+                    users = userDAO.findAll();
+                }
+                if (statusFilter != null && !statusFilter.trim().isEmpty()) {
+                    users = users.stream()
+                        .filter(u -> statusFilter.equalsIgnoreCase(u.getStatus()))
+                        .collect(java.util.stream.Collectors.toList());
+                }
                 result.put("success", true);
                 result.put("data", users);
             } else if (pathInfo.equals("/api/products/top")) {
@@ -537,6 +567,12 @@ public class AdminServlet extends HttpServlet {
                 case "/api/user/update-status":
                     int userId = Integer.parseInt(request.getParameter("id"));
                     String userStatus = request.getParameter("status");
+                    User existingUser = userDAO.findById(userId);
+                    if (existingUser != null && "inactive".equals(existingUser.getStatus())) {
+                        result.put("success", false);
+                        result.put("message", "Không thể thay đổi trạng thái tài khoản đã bị xóa");
+                        break;
+                    }
                     boolean userSuccess = userDAO.updateStatus(userId, userStatus);
                     result.put("success", userSuccess);
                     result.put("message", userSuccess ? "Cập nhật trạng thái người dùng thành công" : "Cập nhật thất bại");
