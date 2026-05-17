@@ -7,6 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="context-path" content="${pageContext.request.contextPath}">
     <title>Thanh toán - Tiệm Hoa nhà tớ</title>
     
     <!-- CSRF Token -->
@@ -1219,11 +1220,11 @@
                                 <div class="summary-totals">
                                     <div class="total-row">
                                         <span>Tạm tính</span>
-                                        <span><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>₫</span>
+                                        <span id="subtotal"><fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>₫</span>
                                     </div>
                                     <div class="total-row">
                                         <span>Phí vận chuyển</span>
-                                        <span id="shippingFee">30,000₫</span>
+                                        <span id="shippingFee">0₫</span>
                                     </div>
                                     <div class="total-row discount" id="discountRow" style="display: none;">
                                         <span>Giảm giá</span>
@@ -1232,16 +1233,16 @@
                                     <div class="total-row grand-total">
                                         <span>Tổng cộng</span>
                                         <span class="amount" id="grandTotal">
-                                            <fmt:formatNumber value="${cartTotal + 30000}" type="number" groupingUsed="true"/>₫
+                                            <fmt:formatNumber value="${cartTotal}" type="number" groupingUsed="true"/>₫
                                         </span>
                                     </div>
                                 </div>
                                 
                                 <!-- Hidden fields -->
                                 <input type="hidden" name="subtotal" value="${cartTotal}">
-                                <input type="hidden" name="shippingFee" id="shippingFeeInput" value="30000">
+                                <input type="hidden" name="shippingFee" id="shippingFeeInput" value="0">
                                 <input type="hidden" name="discount" id="discountInput" value="0">
-                                <input type="hidden" name="total" id="totalInput" value="${cartTotal + 30000}">
+                                <input type="hidden" name="total" id="totalInput" value="${cartTotal}">
                                 <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
                                 
                                 <!-- Submit -->
@@ -1268,6 +1269,17 @@
     
     <!-- Footer -->
     <%@ include file="partials/footer.jsp" %>
+
+    <div id="addressConfirmModal" class="shipping-modal" style="display:none;">
+        <div class="shipping-modal-card">
+            <h4 style="margin:0 0 10px 0; color: var(--brown-main);">Xác nhận địa chỉ giao hàng</h4>
+            <p id="addressConfirmText" style="margin:0 0 14px 0; color: var(--text-muted); line-height:1.5;"></p>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" id="addressConfirmCancel" class="btn btn-outline-secondary" style="padding:8px 12px; border:1px solid var(--border-color); background:#fff; border-radius:8px; cursor:pointer;">Chọn lại</button>
+                <button type="button" id="addressConfirmAccept" style="padding:8px 12px; border:none; background:var(--primary); color:#fff; border-radius:8px; cursor:pointer;">Xác nhận & tính phí</button>
+            </div>
+        </div>
+    </div>
     
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
@@ -1283,7 +1295,7 @@
         let wards = [];
         let appliedCoupon = null;
         const subtotal = <c:out value="${cartTotal != null ? cartTotal : 0}"/>;
-        let shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '30000', 10);
+        let shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '0', 10);
         let discount = 0;
         
         // Initialize

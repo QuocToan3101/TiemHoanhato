@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import dto.shipping.ShippingQuoteResponse;
 import service.ShippingService;
 import util.AppConfig;
+import util.GhnClient;
 import util.NominatimClient;
 import util.RedisCache;
 import util.ShippingClientFactory;
@@ -43,7 +44,7 @@ public class ShippingApiServlet extends HttpServlet {
         }
 
         // Use factory to create appropriate client (real or mock)
-        var shippingClient = ShippingClientFactory.createShippingClient(config);
+        GhnClient shippingClient = ShippingClientFactory.createShippingClient(config);
 
         shippingService = new ShippingService(
                 storeLat,
@@ -121,6 +122,7 @@ public class ShippingApiServlet extends HttpServlet {
             response.addProperty("eta_minutes", quote.getEtaMinutes());
             response.addProperty("display_fee", quote.getDisplayFee() == null ? 0 : quote.getDisplayFee().doubleValue());
             response.addProperty("estimated_fee", quote.getEstimatedFee() == null ? 0 : quote.getEstimatedFee().doubleValue());
+            response.addProperty("carrier_fee", quote.getGhtkFee() == null ? 0 : quote.getGhtkFee().doubleValue());
             response.addProperty("ghtk_fee", quote.getGhtkFee() == null ? 0 : quote.getGhtkFee().doubleValue());
             response.addProperty("free_shipping", quote.isFreeShipping());
             response.addProperty("message", quote.getMessage() == null ? "" : quote.getMessage());

@@ -5,7 +5,8 @@
 // - realtime shipping estimate from backend
 
 (function () {
-  const ctxPath = window.CONTEXT_PATH || document.querySelector('meta[name="context-path"]')?.content || '';
+  const resolvedContextPath = (window.CONTEXT_PATH || document.querySelector('meta[name="context-path"]')?.content || '').trim();
+  const ctxPath = resolvedContextPath || inferContextPath();
   const addressInput = document.getElementById('shippingAddressInput');
   const suggestionsBox = document.getElementById('shippingSuggestions');
   const latInput = document.getElementById('shipping_lat');
@@ -38,7 +39,7 @@
   initEvents();
 
   function initEvents() {
-    if (!addressInput) return;
+    if (!addressInput || !suggestionsBox) return;
 
     addressInput.addEventListener('input', () => {
       clearSelection(false);
@@ -116,6 +117,7 @@
   }
 
   function renderSuggestions(items) {
+    if (!suggestionsBox) return;
     if (!items.length) {
       suggestionsBox.innerHTML = '<div class="shipping-suggestion-empty">Không tìm thấy địa chỉ phù hợp</div>';
       suggestionsBox.style.display = 'block';
@@ -168,12 +170,18 @@
   }
 
   function showConfirmModal(address) {
+    if (!confirmModal || !confirmText || !confirmAccept) {
+      calculateShipping();
+      return;
+    }
     confirmText.textContent = `${address.displayName} - ${address.lat.toFixed(6)}, ${address.lng.toFixed(6)}`;
     confirmModal.style.display = 'flex';
   }
 
   function hideConfirmModal() {
-    confirmModal.style.display = 'none';
+    if (confirmModal) {
+      confirmModal.style.display = 'none';
+    }
   }
 
   function clearSelection(keepInputValue) {
@@ -184,8 +192,8 @@
     osmTypeInput.value = '';
     osmIdInput.value = '';
     if (!keepInputValue) {
-      result.style.display = 'none';
-      mapContainer.style.display = 'none';
+      if (result) result.style.display = 'none';
+      if (mapContainer) mapContainer.style.display = 'none';
     }
   }
 
@@ -238,20 +246,20 @@
     const distance = Number(payload.distance_km || 0);
     const eta = Number(payload.eta_minutes || 0);
     const displayFee = Number(payload.display_fee || 0);
-    const estimatedFee = Number(payload.estimated_fee || payload.ghtk_fee || 0);
+    const estimatedFee = Number(payload.estimated_fee || payload.carrier_fee || payload.ghtk_fee || 0);
 
-    shipDistance.textContent = `${distance.toFixed(2)} km`;
-    shipEta.textContent = `${eta} phút`;
-    shipFee.textContent = payload.free_shipping || displayFee === 0 ? 'Miễn phí' : formatMoney(displayFee);
-    shipFeeEstimate.textContent = estimatedFee > 0 ? formatMoney(estimatedFee) : 'Đang chờ GHTK';
-    result.style.display = 'block';
+    if (shipDistance) shipDistance.textContent = `${distance.toFixed(2)} km`;
+    if (shipEta) shipEta.textContent = `${eta} phút`;
+    if (shipFee) shipFee.textContent = payload.free_shipping || displayFee === 0 ? 'Miễn phí' : formatMoney(displayFee);
+    if (shipFeeEstimate) shipFeeEstimate.textContent = estimatedFee > 0 ? formatMoney(estimatedFee) : 'Đang chờ GHN';
+    if (result) result.style.display = 'block';
 
     syncCheckoutFields(payload, displayFee);
     dispatchShippingUpdated(payload);
 
-    const shippingEl = document.getElementById('shipping');
+    const shippingEl = document.getElementById('shippingFee');
     if (shippingEl) {
-      shippingEl.textContent = shipFee.textContent;
+      shippingEl.textContent = payload.free_shipping || displayFee === 0 ? 'Miễn phí' : formatMoney(displayFee);
     }
   }
 
@@ -281,6 +289,7 @@
   }
 
   function renderMap(lat, lng, label) {
+    if (!mapContainer) return;
     loadLeaflet(() => {
       mapContainer.style.display = 'block';
       if (!map) {
@@ -306,14 +315,30 @@
     }
     leafletReady = true;
 
-    const css = document.createElement('link');
-    css.rel = 'stylesheet';
-    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-    document.head.appendChild(css);
+    if (!document.querySelector('link[data-leaflet="1"]')) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      css.setAttribute('data-leaflet', '1');
+      document.head.appendChild(css);
+    }
+
+    if (document.querySelector('script[data-leaflet="1"]')) {
+      const waitForLeaflet = () => {
+        if (window.L) {
+          callback();
+          return;
+        }
+        setTimeout(waitForLeaflet, 50);
+      };
+      waitForLeaflet();
+      return;
+    }
 
     const script = document.createElement('script');
     script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
     script.async = true;
+    script.setAttribute('data-leaflet', '1');
     script.onload = callback;
     script.onerror = () => showError('Không thể tải bản đồ Leaflet.');
     document.head.appendChild(script);
@@ -371,26 +396,30 @@
   }
 
   function showSkeleton(visible) {
-    skeleton.style.display = visible ? 'block' : 'none';
+    if (skeleton) skeleton.style.display = visible ? 'block' : 'none';
     if (visible) {
-      result.style.display = 'none';
-      errorBox.style.display = 'none';
+      if (result) result.style.display = 'none';
+      if (errorBox) errorBox.style.display = 'none';
     }
   }
 
   function showError(message) {
-    errorBox.textContent = message;
-    errorBox.style.display = 'block';
-    result.style.display = 'none';
-    skeleton.style.display = 'none';
+    if (errorBox) {
+      errorBox.textContent = message;
+      errorBox.style.display = 'block';
+    }
+    if (result) result.style.display = 'none';
+    if (skeleton) skeleton.style.display = 'none';
   }
 
   function hideSuggestions() {
+    if (!suggestionsBox) return;
     suggestionsBox.style.display = 'none';
     suggestionsBox.innerHTML = '';
   }
 
   function showSuggestionsLoading() {
+    if (!suggestionsBox) return;
     suggestionsBox.innerHTML = '<div class="shipping-suggestion-empty">Đang tìm địa chỉ...</div>';
     suggestionsBox.style.display = 'block';
   }
@@ -414,9 +443,19 @@
   }
 
   function getOrderAmount() {
-    const subtotalText = document.getElementById('subtotal')?.textContent || '0';
-    const total = parseInt(subtotalText.replace(/[^0-9]/g, ''), 10);
+    const subtotalInput = document.querySelector('input[name="subtotal"]');
+    const rawValue = subtotalInput?.value || document.getElementById('subtotal')?.textContent || '0';
+    const total = parseInt(String(rawValue).replace(/[^0-9]/g, ''), 10);
     return Number.isNaN(total) ? 0 : total;
+  }
+
+  function inferContextPath() {
+    const path = window.location.pathname || '';
+    const parts = path.split('/').filter(Boolean);
+    if (parts.length > 0) {
+      return `/${parts[0]}`;
+    }
+    return '';
   }
 
   function friendlyError(error) {

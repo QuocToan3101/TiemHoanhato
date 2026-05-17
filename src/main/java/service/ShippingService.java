@@ -13,7 +13,7 @@ import model.DeliveryZone;
 import model.ShippingFeeRule;
 import util.AppConfig;
 import util.GeoUtils;
-import util.GhtkClient;
+import util.GhnClient;
 import util.NominatimClient;
 import util.RedisCache;
 
@@ -32,12 +32,12 @@ import java.util.concurrent.TimeUnit;
  * Production-oriented shipping service:
  * - validates address with Nominatim
  * - caches route result by place_id
- * - estimates GHTK fee server-side
+ * - estimates GHN fee server-side
  * - falls back to internal free-shipping-friendly fee rules
  */
 public class ShippingService {
     private final AppConfig config = AppConfig.getInstance();
-     private final GhtkClient ghtkClient;
+     private final GhnClient ghnClient;
     private final NominatimClient nominatimClient;
     private final RedisCache redisCache;
     private final Gson gson = new Gson();
@@ -47,38 +47,29 @@ public class ShippingService {
     private final double maxRadiusKm;
     private final double avgSpeedKmh;
     private final boolean freeShippingEnabled;
+    private final boolean requireCarrierFee;
     private final BigDecimal defaultBaseFee;
     private final BigDecimal defaultPerKmFee;
     private final BigDecimal defaultFreeThreshold;
     private final BigDecimal defaultPeakSurcharge;
     private final BigDecimal defaultHolidaySurcharge;
     private final Set<String> holidayDates;
-    private final String pickProvince;
-    private final String pickDistrict;
-    private final String pickAddress;
-    private final BigDecimal shipmentWeightGrams;
-    private final BigDecimal shipmentValueVnd;
-
-    public ShippingService(String storeLatStr, String storeLngStr, GhtkClient ghtkClient, NominatimClient nominatimClient, RedisCache redisCache) {
+    public ShippingService(String storeLatStr, String storeLngStr, GhnClient ghnClient, NominatimClient nominatimClient, RedisCache redisCache) {
         this.storeLat = parseDouble(storeLatStr, 0d);
         this.storeLng = parseDouble(storeLngStr, 0d);
-        this.ghtkClient = ghtkClient;
+        this.ghnClient = ghnClient;
         this.nominatimClient = nominatimClient;
         this.redisCache = redisCache;
         this.maxRadiusKm = config.getDoubleProperty("shipping.max_radius_km", 25d);
         this.avgSpeedKmh = config.getDoubleProperty("shipping.avg_speed_kmh", 28d);
         this.freeShippingEnabled = config.getBooleanProperty("shipping.free_enabled", true);
+        this.requireCarrierFee = config.getBooleanProperty("shipping.require_carrier_fee", true);
         this.defaultBaseFee = new BigDecimal(config.getProperty("shipping.base_fee_vnd", "0"));
         this.defaultPerKmFee = new BigDecimal(config.getProperty("shipping.per_km_fee_vnd", "0"));
         this.defaultFreeThreshold = new BigDecimal(config.getProperty("shipping.free_threshold_vnd", "0"));
         this.defaultPeakSurcharge = new BigDecimal(config.getProperty("shipping.peak_surcharge_vnd", "0"));
         this.defaultHolidaySurcharge = new BigDecimal(config.getProperty("shipping.holiday_surcharge_vnd", "0"));
         this.holidayDates = parseHolidayDates(config.getProperty("shipping.holiday_dates", "01-01,04-30,05-01,09-02,12-25"));
-        this.pickProvince = config.getProperty("ghtk.pick_province", "Hồ Chí Minh");
-        this.pickDistrict = config.getProperty("ghtk.pick_district", "Quận 1");
-        this.pickAddress = config.getProperty("ghtk.pick_address", "Tiệm hoa nhà tớ");
-        this.shipmentWeightGrams = new BigDecimal(config.getProperty("ghtk.shipment_weight_grams", "1000"));
-        this.shipmentValueVnd = new BigDecimal(config.getProperty("ghtk.shipment_value_vnd", "100000"));
         this.localCache = Caffeine.newBuilder()
                 .maximumSize(config.getIntProperty("shipping.cache.max_size", 2000))
                 .expireAfterWrite(config.getIntProperty("shipping.cache.ttl_minutes", 30), TimeUnit.MINUTES)
@@ -133,7 +124,7 @@ public class ShippingService {
         String cacheKey = "shipping:quote:" + placeId;
         ShippingQuoteResponse cached = loadCache(cacheKey);
         if (cached != null) {
-            cached.setDisplayFee(resolveDisplayFee(cached.getEstimatedFee()));
+            cached.setDisplayFee(resolveDisplayFee(cached.getGhtkFee(), cached.getEstimatedFee()));
             return cached;
         }
 
@@ -170,38 +161,51 @@ public class ShippingService {
 
         ShippingFeeRule rule = loadActiveRule();
         BigDecimal estimatedFee = calculateInternalFee(rule, distanceKm, orderAmount);
-        BigDecimal ghtkFee = estimateGhtkFee(validation.getSuggestion(), displayName).orElse(null);
+        BigDecimal ghnFee = estimateGhnFee(validation.getSuggestion(), displayName).orElse(null);
+        String carrierError = ghnClient != null ? ghnClient.getLastErrorMessage() : null;
+        boolean invalidCarrierFee = ghnFee == null || ghnFee.compareTo(BigDecimal.ZERO) <= 0;
+        boolean hasCarrierError = carrierError != null && !carrierError.isBlank();
+
+        if (!freeShippingEnabled && invalidCarrierFee && (requireCarrierFee || hasCarrierError)) {
+            quote.setDeliverable(false);
+            quote.setEtaMinutes(Math.max(10, GeoUtils.estimateMinutes(distanceKm, avgSpeedKmh)));
+            quote.setFreeShipping(false);
+            quote.setDisplayFee(BigDecimal.ZERO);
+            quote.setEstimatedFee(estimatedFee);
+            quote.setGhtkFee(null);
+            quote.setMessage(hasCarrierError
+                ? "GHN: " + carrierError
+                : "Không lấy được phí GHN. Vui lòng thử lại sau hoặc kiểm tra cấu hình GHN.");
+            return quote;
+        }
 
         quote.setEstimatedFee(estimatedFee);
-        quote.setGhtkFee(ghtkFee);
+        quote.setGhtkFee(ghnFee);
         quote.setFreeShipping(freeShippingEnabled);
-        quote.setDisplayFee(resolveDisplayFee(estimatedFee));
+        quote.setDisplayFee(resolveDisplayFee(ghnFee, estimatedFee));
         quote.setEtaMinutes(Math.max(10, GeoUtils.estimateMinutes(distanceKm, avgSpeedKmh)));
         quote.setDeliverable(true);
-        quote.setMessage(freeShippingEnabled ? "Miễn phí giao hàng." : "Đã tính phí giao hàng.");
+        if (freeShippingEnabled) {
+            quote.setMessage("Miễn phí giao hàng.");
+        } else if (ghnFee != null) {
+            quote.setMessage("Đã tính phí giao hàng GHN.");
+        } else if (carrierError != null && !carrierError.isBlank()) {
+            quote.setMessage("GHN: " + carrierError);
+        } else {
+            quote.setMessage("Đã tính phí giao hàng.");
+        }
 
         saveCache(cacheKey, quote);
         saveHistory(placeId, displayName, lat, lng, quote, validation.isVietnam() ? "vn" : "non_vn", quote.getMessage());
         return quote;
     }
 
-    private Optional<BigDecimal> estimateGhtkFee(AddressSuggestion suggestion, String fallbackAddress) {
+    private Optional<BigDecimal> estimateGhnFee(AddressSuggestion suggestion, String fallbackAddress) {
         try {
-            if (ghtkClient == null || suggestion == null) {
+            if (ghnClient == null || suggestion == null) {
                 return Optional.empty();
             }
-            String query = GhtkClient.buildQuery(
-                    pickProvince,
-                    pickDistrict,
-                    pickAddress,
-                    firstNonBlank(suggestion.getProvince(), suggestion.getDisplayName()),
-                    firstNonBlank(suggestion.getDistrict(), suggestion.getProvince(), suggestion.getDisplayName()),
-                    suggestion.getWard(),
-                    firstNonBlank(fallbackAddress, suggestion.getDisplayName()),
-                    shipmentWeightGrams,
-                    shipmentValueVnd
-            );
-            return ghtkClient.calculateFee(query);
+            return ghnClient.calculateFee(suggestion, fallbackAddress);
         } catch (Exception e) {
             return Optional.empty();
         }
@@ -294,8 +298,15 @@ public class ShippingService {
         }
     }
 
-    private BigDecimal resolveDisplayFee(BigDecimal estimatedFee) {
-        return freeShippingEnabled ? BigDecimal.ZERO : firstNonNull(estimatedFee, BigDecimal.ZERO);
+    private BigDecimal resolveDisplayFee(BigDecimal ghnFee, BigDecimal estimatedFee) {
+        if (freeShippingEnabled) {
+            return BigDecimal.ZERO;
+        }
+        if (requireCarrierFee && ghnFee == null) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal fallbackFee = firstNonNull(estimatedFee, BigDecimal.ZERO);
+        return firstNonNull(ghnFee, fallbackFee);
     }
 
     private ShippingQuoteResponse loadCache(String key) {
