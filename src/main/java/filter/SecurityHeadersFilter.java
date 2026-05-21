@@ -38,18 +38,15 @@ public class SecurityHeadersFilter implements Filter {
         // X-XSS-Protection: Bật bộ lọc XSS của trình duyệt
         httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
         
-        // Content-Security-Policy: DISABLED for debugging CSS issues
-        // TODO: Re-enable after fixing CSS loading
-        /*
+        // Content-Security-Policy: enable a safe policy allowing known CDNs and inline styles/scripts
         String csp = "default-src 'self'; " +
-                     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://code.jquery.com https://stackpath.bootstrapcdn.com; " +
-                     "style-src 'self' 'unsafe-inline' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://stackpath.bootstrapcdn.com; " +
-                     "img-src 'self' data: https: http: blob:; " +
-                     "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
-                     "connect-src 'self' https:; " +
-                     "frame-ancestors 'none';";
+                 "script-src 'self' 'unsafe-inline' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://www.google-analytics.com; " +
+                 "style-src 'self' 'unsafe-inline' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://stackpath.bootstrapcdn.com; " +
+                 "img-src 'self' data: https: http: blob:; " +
+                 "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+                 "connect-src 'self' https: wss:; " +
+                 "frame-ancestors 'none';";
         httpResponse.setHeader("Content-Security-Policy", csp);
-        */
         
         // Referrer-Policy: Kiểm soát thông tin referrer
         httpResponse.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");

@@ -1685,7 +1685,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             <div class="coupon-section" style="padding:12px 18px;">
               <div class="coupon-input" style="display:flex; gap:8px;">
                 <input type="text" name="discountCode" id="discountCode" placeholder="Nhập mã giảm giá" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee;">
-                <button type="button" class="coupon-btn" onclick="applyDiscount()">Áp dụng</button>
+                <button type="button" class="coupon-btn" onclick="window.CartUI && window.CartUI.applyDiscount && window.CartUI.applyDiscount()">Áp dụng</button>
               </div>
               <div id="appliedCouponInfo" style="display: none; margin-top:10px; padding: 10px; background: #e8f5e9; border-radius: 8px; border-left: 3px solid #27ae60;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1696,31 +1696,29 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             </div>
 
             <!-- Totals -->
-            <div class="summary-totals" style="padding:12px 18px;">
-              <div class="total-row">
-                <span>Tạm tính</span>
-                <span id="subtotal">0₫</span>
-              </div>
-              <div class="total-row">
-                <span>Phí vận chuyển</span>
-                <span id="shipping">0₫</span>
-              </div>
-              <div class="total-row discount" id="discountRow" style="display: none;">
-                <span>Giảm giá</span>
-                <span id="discount">-0₫</span>
-              </div>
-              <div class="total-row grand-total" style="margin-top:8px; font-weight:700;">
-                <span>Tổng cộng</span>
-                <span class="amount" id="total">0₫</span>
-              </div>
-            </div>
+                    <div class="summary-totals" style="padding:12px 18px;">
+                      <div class="total-row">
+                        <span>Tạm tính</span>
+                        <span id="subtotal">0₫</span>
+                      </div>
+                      <div class="total-note" style="color:var(--muted); font-size:13px; margin-top:8px;">
+                        Phí vận chuyển sẽ được tính ở bước thanh toán
+                      </div>
+                      <div class="total-row discount" id="discountRow" style="display: none;">
+                        <span>Giảm giá</span>
+                        <span id="discount">-0₫</span>
+                      </div>
+                      <div class="total-row grand-total" style="margin-top:8px; font-weight:700;">
+                        <span>Tổng cộng</span>
+                        <span class="amount" id="total">0₫</span>
+                      </div>
+                    </div>
 
-            <!-- Hidden fields used by checkout flow -->
-            <input type="hidden" name="subtotal" value="0">
-            <input type="hidden" name="shippingFee" id="shippingFeeInput" value="0">
-            <input type="hidden" name="discount" id="discountInput" value="0">
-            <input type="hidden" name="total" id="totalInput" value="0">
-            <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
+                    <!-- Hidden fields used by checkout flow -->
+                    <input type="hidden" name="subtotal" value="0">
+                    <input type="hidden" name="discount" id="discountInput" value="0">
+                    <input type="hidden" name="total" id="totalInput" value="0">
+                    <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
 
             <!-- Actions -->
             <div style="padding:12px 18px; display:flex; gap:8px; flex-direction:column;">
@@ -1923,44 +1921,17 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <%@ include file="partials/footer.jsp" %>
 
     <script>
-      // Cart data from API
+      // Cart UI is implemented in js/cart-components.js for modularity and better UX
       let cartItems = [];
       let discountAmount = 0;
       let appliedCouponCode = null;
-      const shippingFee = 0;
       const contextPath = '${pageContext.request.contextPath}';
 
-      // Load cart from API on page load
       document.addEventListener('DOMContentLoaded', function() {
-        loadCartFromAPI();
+        if (window.CartUI && typeof window.CartUI.init === 'function') {
+          window.CartUI.init(contextPath);
+        }
       });
-
-      function loadCartFromAPI() {
-        fetch(contextPath + '/api/cart')
-          .then(response => response.json())
-          .then(data => {
-            if (data.success && data.items) {
-              cartItems = data.items.map(item => ({
-                id: item.productId || item.id,
-                name: item.name || (item.product ? item.product.name : 'Sản phẩm'),
-                meta: item.product && item.product.category ? item.product.category.name : 'Hoa tươi',
-                price: item.price ? parseFloat(item.price) : (item.product ? parseFloat(item.product.salePrice || item.product.price) : 0),
-                quantity: Number(item.quantity || 0),
-                image: item.image || (item.product && item.product.image ? item.product.image : 'https://via.placeholder.com/100x100?text=No+Image')
-              })).filter(item => item.id && item.quantity > 0);
-              updateCartBadge(data.itemCount || data.cartCount || 0);
-            } else {
-              cartItems = [];
-              updateCartBadge(0);
-            }
-            renderCart();
-          })
-          .catch(error => {
-            console.error('Error loading cart:', error);
-            cartItems = [];
-            renderCart();
-          });
-      }
 
       function formatPrice(price) {
         return new Intl.NumberFormat("vi-VN", {
@@ -2055,32 +2026,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         updateSummary();
       }
 
-      function updateSummary() {
-        const subtotal = cartItems.reduce(
-          (sum, item) => sum + item.price * item.quantity,
-          0
-        );
-
-        const total = subtotal + shippingFee - discountAmount;
-
-        const subtotalEl = document.getElementById("subtotal");
-        const shippingEl = document.getElementById("shipping");
-        const discountEl = document.getElementById("discount");
-        const totalEl = document.getElementById("total");
-
-        if (subtotalEl) {
-          subtotalEl.textContent = formatPrice(subtotal);
-        }
-        if (shippingEl) {
-          shippingEl.textContent = formatPrice(shippingFee);
-        }
-        if (discountEl) {
-          discountEl.textContent = "-" + formatPrice(discountAmount);
-        }
-        if (totalEl) {
-          totalEl.textContent = formatPrice(total);
-        }
-      }
+      // Summary updates are handled by the modular CartUI in js/cart-components.js
+      // to ensure debounced updates, optimistic UI and no shipping calculation on cart.
 
       function removeItem(id) {
         // Call API to remove item
@@ -2206,7 +2153,8 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           return;
         }
 
-        const subtotal = cartItems.reduce(
+        const _source = (window.cartItems && Array.isArray(window.cartItems)) ? window.cartItems : (typeof cartItems !== 'undefined' ? cartItems : []);
+        const subtotal = _source.reduce(
           (sum, item) => sum + item.price * item.quantity,
           0
         );
@@ -2301,7 +2249,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           0
         );
 
-        const total = subtotal + shippingFee - discountAmount;
+        const total = subtotal - discountAmount; // shipping excluded on cart invoice
 
         const invoiceHTML = `
 
@@ -2417,12 +2365,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
           </div>
 
-          <div class="invoice-total-row">
-
+          <div class="invoice-total-row" style="color:var(--muted); font-size:13px;">
             <span>Phí giao hàng</span>
-
-            <span>${dollar}{formatPrice(shippingFee)}</span>
-
+            <span>Được tính ở bước thanh toán</span>
           </div>
 
           ${dollar}{
@@ -2470,16 +2415,20 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         document.getElementById("invoiceModal").classList.remove("active");
 
         // Reset cart after closing invoice
-
-        cartItems = [];
-
-        discountAmount = 0;
+        if (window.cartItems && Array.isArray(window.cartItems)) {
+          window.cartItems.length = 0;
+        }
+        window.discountAmount = 0;
 
         document.getElementById("giftNote").value = "";
 
         document.getElementById("discountCode").value = "";
 
-        renderCart();
+        if (window.CartUI && typeof window.CartUI.renderCart === 'function') {
+          window.CartUI.renderCart();
+        } else if (typeof renderCart === 'function') {
+          renderCart();
+        }
       }
 
       function printInvoice() {
@@ -2519,10 +2468,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       }
 
       function getCartSummary() {
-        const names = cartItems.map((item) => item.name);
-
-        const count = cartItems.length;
-
+        const source = (window.cartItems && Array.isArray(window.cartItems)) ? window.cartItems : (typeof cartItems !== 'undefined' ? cartItems : []);
+        const names = source.map((item) => item.name);
+        const count = source.length;
         return { names, count };
       }
 
@@ -3118,6 +3066,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       renderCart();
     </script>
-    <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
+    <script src="${pageContext.request.contextPath}/js/cart-components.js"></script>
   </body>
 </html>

@@ -76,18 +76,23 @@ public class ImageUploadServlet extends HttpServlet {
                 return;
             }
             
-            // Resolve upload directory: prefer configured env/property -> absolute -> fallback to user home
+            // Resolve upload directory: store uploads inside webapp `uploads` folder by default
             AppConfig appConfig = AppConfig.getInstance();
             String configured = appConfig.getUploadDirectory();
             if (configured == null || configured.trim().isEmpty()) configured = DEFAULT_UPLOAD_DIR;
 
+            // Prefer storing inside the application deployment directory to avoid leaking filesystem paths
+            String applicationPath = request.getServletContext().getRealPath("");
+            if (applicationPath == null) applicationPath = System.getProperty("user.dir");
+
             String resolvedBase;
             File baseDirCandidate = new File(configured);
-            if (baseDirCandidate.isAbsolute()) {
+            if (baseDirCandidate.isAbsolute() && baseDirCandidate.getAbsolutePath().startsWith(applicationPath)) {
+                // Allow absolute configured path only if it's inside the application directory
                 resolvedBase = baseDirCandidate.getAbsolutePath();
             } else {
-                // Place relative uploads under user's home directory to avoid being wiped on redeploy
-                resolvedBase = System.getProperty("user.home") + File.separator + configured;
+                // Default to webapp uploads folder
+                resolvedBase = applicationPath + File.separator + DEFAULT_UPLOAD_DIR;
             }
 
             String uploadPath = resolvedBase + File.separator + uploadType;
@@ -124,14 +129,8 @@ public class ImageUploadServlet extends HttpServlet {
                     Path filePath = Paths.get(uploadPath, uniqueFileName);
                     Files.copy(part.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-                    // Determine returned path: if stored inside webapp, return context URL, else return absolute filesystem path
-                    String applicationPath = request.getServletContext().getRealPath("");
-                    String relativePath;
-                    if (filePath.toAbsolutePath().toString().startsWith(applicationPath)) {
-                        relativePath = request.getContextPath() + "/" + DEFAULT_UPLOAD_DIR + "/" + uploadType + "/" + uniqueFileName;
-                    } else {
-                        relativePath = filePath.toAbsolutePath().toString();
-                    }
+                    // Always return a web-accessible URL under the application context
+                    String relativePath = request.getContextPath() + "/" + DEFAULT_UPLOAD_DIR + "/" + uploadType + "/" + uniqueFileName;
                     uploadedFiles.add(relativePath);
                 }
             }
@@ -165,12 +164,26 @@ public class ImageUploadServlet extends HttpServlet {
      * Extract file name from HTTP header
      */
     private String extractFileName(Part part) {
+        // Prefer Servlet API provided filename when available
+        try {
+            String submitted = part.getSubmittedFileName();
+            if (submitted != null && !submitted.isEmpty()) {
+                return submitted;
+            }
+        } catch (NoSuchMethodError | UnsupportedOperationException e) {
+            // Fall back to parsing header for older containers
+        }
         String contentDisp = part.getHeader("content-disposition");
+        if (contentDisp == null) return null;
         String[] items = contentDisp.split(";");
         
         for (String item : items) {
             if (item.trim().startsWith("filename")) {
-                return item.substring(item.indexOf("=") + 2, item.length() - 1);
+                String val = item.substring(item.indexOf("=") + 1).trim();
+                if (val.startsWith("\"") && val.endsWith("\"")) {
+                    val = val.substring(1, val.length() - 1);
+                }
+                return val;
             }
         }
         return null;

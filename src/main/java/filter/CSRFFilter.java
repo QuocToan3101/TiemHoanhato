@@ -105,13 +105,12 @@ public class CSRFFilter implements Filter {
             uri = uri.substring(context.length());
         }
 
-        return uri.equals("/login") ||
-               uri.equals("/register") ||
-               uri.equals("/verify-email") ||
-               uri.startsWith("/oauth/") ||
-               uri.equals("/reset-password") ||
-             uri.equals("/forgot-password") ||
-             uri.startsWith("/api/shipping/") ||
-             uri.equals("/api/upload-image");
+                return uri.equals("/login") ||
+                             uri.equals("/register") ||
+                             uri.equals("/verify-email") ||
+                             uri.startsWith("/oauth/") ||
+                             uri.equals("/reset-password") ||
+                         uri.equals("/forgot-password") ||
+                         uri.startsWith("/api/shipping/");
     }
 }
