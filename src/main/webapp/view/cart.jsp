@@ -1926,6 +1926,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <script>
       // Cart UI is implemented in js/cart-components.js for modularity and better UX
       let cartItems = [];
+      window.cartItems = cartItems;
       let discountAmount = 0;
       let appliedCouponCode = null;
       const contextPath = '${pageContext.request.contextPath}';
@@ -2043,7 +2044,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            cartItems = cartItems.filter((item) => item.id !== id);
+            const remainingItems = cartItems.filter((item) => item.id !== id);
+            cartItems.length = 0;
+            remainingItems.forEach((item) => cartItems.push(item));
             renderCart();
             updateCartBadge(data.cartCount || data.itemCount || 0);
             showSuccess('Đã xóa sản phẩm khỏi giỏ hàng');
@@ -2054,7 +2057,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         .catch(error => {
           console.error('Error:', error);
           // Fallback to local removal
-          cartItems = cartItems.filter((item) => item.id !== id);
+          const remainingItems = cartItems.filter((item) => item.id !== id);
+          cartItems.length = 0;
+          remainingItems.forEach((item) => cartItems.push(item));
           renderCart();
         });
       }
@@ -2114,7 +2119,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             }
 
             if (newQuantity === 0) {
-              cartItems = cartItems.filter((cartItem) => cartItem.id !== id);
+              const remainingItems = cartItems.filter((cartItem) => cartItem.id !== id);
+              cartItems.length = 0;
+              remainingItems.forEach((cartItem) => cartItems.push(cartItem));
             } else {
               item.quantity = newQuantity;
             }

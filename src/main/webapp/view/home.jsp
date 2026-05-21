@@ -198,9 +198,10 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         align-items: center;
 
         background: linear-gradient(
-            135deg,
-            rgba(250, 245, 239, 0.95) 0%,
-            rgba(255, 243, 235, 0.9) 100%
+            132deg,
+            rgba(250, 245, 239, 0.93) 0%,
+            rgba(255, 246, 237, 0.86) 45%,
+            rgba(249, 240, 230, 0.92) 100%
           ),
           url("https://images.unsplash.com/photo-1487070183336-b863922373d4?w=1600")
             center/cover;
@@ -213,23 +214,44 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         position: absolute;
 
-        top: -50%;
+        top: -38%;
 
-        right: -20%;
+        right: -10%;
 
-        width: 800px;
+        width: 760px;
 
-        height: 800px;
+        height: 760px;
 
         background: radial-gradient(
           circle,
-          rgba(201, 147, 102, 0.1) 0%,
-          transparent 70%
+          rgba(201, 147, 102, 0.16) 0%,
+          rgba(201, 147, 102, 0.06) 38%,
+          transparent 72%
         );
 
         border-radius: 50%;
 
-        animation: float 20s infinite ease-in-out;
+        animation: float 18s infinite ease-in-out;
+      }
+
+      .hero::after {
+        content: "";
+
+        position: absolute;
+
+        inset: auto auto -180px -120px;
+
+        width: 420px;
+
+        height: 420px;
+
+        background: radial-gradient(
+          circle,
+          rgba(170, 106, 63, 0.16) 0%,
+          transparent 68%
+        );
+
+        filter: blur(8px);
       }
 
       @keyframes float {
@@ -239,7 +261,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         }
 
         50% {
-          transform: translate(-30px, -30px) rotate(180deg);
+          transform: translate(-24px, -36px) rotate(10deg);
         }
       }
 
@@ -260,24 +282,24 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       .hero-content {
         display: grid;
 
-        grid-template-columns: 1.2fr 1fr;
+        grid-template-columns: minmax(0, 1.24fr) minmax(320px, 0.8fr);
 
-        gap: 4rem;
+        gap: 3.5rem;
 
         align-items: center;
       }
 
       .hero-text h1 {
-        font-size: 5rem;
+        font-size: clamp(3rem, 6.2vw, 5.3rem);
 
         font-weight: 800;
 
-        line-height: 1.1;
+        line-height: 1.03;
 
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.05rem;
 
         background: linear-gradient(
-          135deg,
+          132deg,
           var(--brown-main),
           var(--primary-dark)
         );
@@ -290,196 +312,379 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       }
 
       .hero-text p {
-        font-size: 1.5rem;
+        max-width: 680px;
+
+        font-size: clamp(1.08rem, 2.2vw, 1.4rem);
 
         color: var(--brown-soft);
 
-        margin-bottom: 2.5rem;
+        margin-bottom: 1.8rem;
 
         font-style: italic;
       }
 
-      .hero-search {
-        background: white;
+      .hero-ai-search {
+        max-width: 730px;
+      }
 
-        border-radius: 60px;
+      .hero-ai-dropzone {
+        min-height: 248px;
 
-        padding: 0.5rem;
+        border: none;
+
+        border-radius: 34px;
+
+        padding: 2.3rem 2rem;
+
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.74) 0%,
+          rgba(255, 250, 245, 0.68) 100%
+        );
+
+        box-shadow:
+          0 22px 45px rgba(60, 41, 34, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+        backdrop-filter: blur(12px);
+
+        -webkit-backdrop-filter: blur(12px);
 
         display: flex;
 
         align-items: center;
 
-        box-shadow: var(--shadow-lg);
+        justify-content: center;
 
-        margin-bottom: 2rem;
-
-        max-width: 600px;
-      }
-
-      .hero-search input {
-        flex: 1;
-
-        border: none;
-
-        outline: none;
-
-        padding: 1rem 1.5rem;
-
-        font-size: 1rem;
-
-        background: transparent;
-      }
-
-      .hero-search button {
-        background: linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary-dark)
-        );
-
-        color: white;
-
-        border: none;
-
-        padding: 1rem 2.5rem;
-
-        border-radius: 50px;
-
-        font-weight: 600;
+        position: relative;
 
         cursor: pointer;
 
-        transition: all 0.3s ease;
-
-        box-shadow: 0 4px 15px rgba(201, 147, 102, 0.3);
+        transition: transform 0.35s ease, box-shadow 0.35s ease,
+          background 0.35s ease;
       }
 
-      .hero-search button:hover {
+      .hero-ai-dropzone:hover {
         transform: translateY(-2px);
 
-        box-shadow: 0 6px 20px rgba(201, 147, 102, 0.4);
+        box-shadow:
+          0 28px 58px rgba(60, 41, 34, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.78);
       }
 
-      .hero-buttons {
-        display: flex;
-
-        gap: 1.5rem;
-
-        flex-wrap: wrap;
-      }
-
-      .btn {
-        padding: 1rem 2.5rem;
-
-        border-radius: 50px;
-
-        font-weight: 600;
-
-        font-size: 1.1rem;
-
-        cursor: pointer;
-
-        transition: all 0.3s ease;
-
-        text-decoration: none;
-
-        display: inline-flex;
-
-        align-items: center;
-
-        gap: 0.75rem;
-
-        border: none;
-      }
-
-      .btn-primary {
+      .hero-ai-dropzone.dragover {
         background: linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary-dark)
+          145deg,
+          rgba(255, 255, 255, 0.82) 0%,
+          rgba(245, 227, 210, 0.6) 100%
         );
 
-        color: white;
-
-        box-shadow: 0 8px 20px rgba(201, 147, 102, 0.3);
+        transform: scale(1.01);
       }
 
-      .btn-primary:hover {
-        transform: translateY(-3px);
+      .hero-ai-dropzone:focus-visible {
+        outline: 2px solid rgba(170, 106, 63, 0.45);
 
-        box-shadow: 0 12px 30px rgba(201, 147, 102, 0.4);
+        outline-offset: 3px;
       }
 
-      .btn-secondary {
-        background: white;
+      .hero-ai-default {
+        text-align: center;
+
+        color: var(--brown-soft);
+      }
+
+      .hero-ai-icon {
+        width: 54px;
+
+        height: 54px;
+
+        margin: 0 auto 1rem;
+
+        color: var(--primary-dark);
+
+        opacity: 0.85;
+      }
+
+      .hero-ai-main {
+        display: block;
+
+        font-size: 1.4rem;
 
         color: var(--brown-main);
 
-        border: 2px solid var(--primary);
+        margin-bottom: 0.35rem;
+
+        letter-spacing: 0.2px;
       }
 
-      .btn-secondary:hover {
-        background: var(--primary);
+      .hero-ai-sub {
+        font-size: 1.02rem;
 
-        color: white;
-
-        transform: translateY(-3px);
+        color: rgba(108, 88, 69, 0.9);
       }
 
-      .hero-image {
-        position: relative;
+      .hero-ai-preview {
+        position: absolute;
 
-        perspective: 1000px;
-      }
+        inset: 1.1rem;
 
-      .hero-card {
-        position: relative;
-
-        background: white;
-
-        border-radius: 30px;
+        border-radius: 26px;
 
         overflow: hidden;
 
-        box-shadow: var(--shadow-lg);
+        background: rgba(255, 255, 255, 0.64);
 
-        transition: transform 0.6s ease;
+        display: none;
+
+        opacity: 0;
+
+        transform: scale(0.98);
       }
 
-      .hero-badge {
+      .hero-ai-preview.active {
+        display: flex;
+
+        align-items: flex-end;
+
+        justify-content: flex-start;
+
+        animation: previewReveal 0.45s ease forwards;
+      }
+
+      @keyframes previewReveal {
+        from {
+          opacity: 0;
+
+          transform: scale(0.97);
+        }
+
+        to {
+          opacity: 1;
+
+          transform: scale(1);
+        }
+      }
+
+      .hero-ai-preview img {
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+      }
+
+      .hero-ai-processing {
         position: absolute;
 
-        top: 1.5rem;
+        left: 1rem;
 
-        left: 1.5rem;
+        right: 1rem;
 
-        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        bottom: 1rem;
 
-        color: white;
+        background: rgba(255, 255, 255, 0.86);
 
-        padding: 0.5rem 1.25rem;
+        border-radius: 16px;
 
-        border-radius: 50px;
+        padding: 0.7rem 1rem;
+
+        display: none;
+
+        align-items: center;
+
+        gap: 0.7rem;
+
+        box-shadow: 0 10px 20px rgba(60, 41, 34, 0.1);
+      }
+
+      .hero-ai-processing.active {
+        display: flex;
+
+        animation: fadeInUp 0.35s ease;
+      }
+
+      .hero-ai-dot {
+        width: 12px;
+
+        height: 12px;
+
+        border-radius: 999px;
+
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+
+        box-shadow: 0 0 0 0 rgba(170, 106, 63, 0.45);
+
+        animation: aiPulse 1.35s infinite;
+      }
+
+      @keyframes aiPulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(170, 106, 63, 0.4);
+        }
+
+        80%,
+        100% {
+          box-shadow: 0 0 0 13px rgba(170, 106, 63, 0);
+        }
+      }
+
+      .hero-ai-processing p {
+        margin: 0;
+
+        font-size: 1.02rem;
+
+        color: var(--brown-main);
+
+        font-style: italic;
+      }
+
+      .hero-ai-cta {
+        width: 100%;
+
+        margin-top: 1.2rem;
+
+        min-height: 64px;
+
+        border-radius: 999px;
+
+        border: none;
+
+        font-size: 1.22rem;
 
         font-weight: 700;
 
-        font-size: 0.9rem;
+        letter-spacing: 0.2px;
 
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        cursor: pointer;
 
-        animation: pulse 2s infinite;
+        color: #fff;
+
+        background: linear-gradient(
+          135deg,
+          #b7845f 0%,
+          #aa6a3f 56%,
+          #966042 100%
+        );
+
+        box-shadow: 0 18px 32px rgba(170, 106, 63, 0.35);
+
+        transition: transform 0.25s ease, box-shadow 0.35s ease,
+          filter 0.35s ease;
       }
 
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
+      .hero-ai-cta:hover {
+        transform: translateY(-2px) scale(1.005);
 
-        50% {
-          transform: scale(1.05);
-        }
+        box-shadow:
+          0 22px 40px rgba(170, 106, 63, 0.44),
+          0 0 0 10px rgba(201, 147, 102, 0.16);
+
+        filter: saturate(1.04);
+      }
+
+      .hero-ai-cta:disabled {
+        cursor: not-allowed;
+
+        opacity: 0.72;
+
+        transform: none;
+
+        box-shadow: 0 12px 22px rgba(170, 106, 63, 0.22);
+      }
+
+      .hero-ai-cta span {
+        margin-right: 0.45rem;
+      }
+
+      .hero-recommend {
+        background: rgba(255, 255, 255, 0.78);
+
+        border-radius: 30px;
+
+        padding: 1.7rem;
+
+        box-shadow:
+          0 14px 30px rgba(60, 41, 34, 0.09),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+        backdrop-filter: blur(8px);
+
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      .hero-recommend h3 {
+        font-size: 1.7rem;
+
+        margin: 0 0 1.15rem;
+
+        color: var(--brown-main);
+      }
+
+      .hero-recommend-list {
+        display: grid;
+
+        gap: 1.2rem;
+      }
+
+      .hero-recommend-card {
+        display: grid;
+
+        grid-template-columns: 112px 1fr;
+
+        gap: 0.95rem;
+
+        align-items: center;
+
+        background: #fff;
+
+        border-radius: 22px;
+
+        padding: 0.7rem;
+
+        text-decoration: none;
+
+        color: inherit;
+
+        box-shadow: 0 8px 18px rgba(60, 41, 34, 0.07);
+
+        transition: transform 0.25s ease, box-shadow 0.3s ease;
+      }
+
+      .hero-recommend-card:hover {
+        transform: translateY(-3px) scale(1.01);
+
+        box-shadow: 0 16px 26px rgba(60, 41, 34, 0.11);
+      }
+
+      .hero-recommend-card img {
+        width: 112px;
+
+        height: 112px;
+
+        object-fit: cover;
+
+        border-radius: 16px;
+      }
+
+      .hero-recommend-name {
+        font-size: 1.25rem;
+
+        font-weight: 700;
+
+        color: var(--brown-main);
+
+        margin-bottom: 0.25rem;
+
+        line-height: 1.3;
+      }
+
+      .hero-recommend-price {
+        font-size: 1.08rem;
+
+        color: var(--primary-dark);
+
+        font-weight: 700;
       }
 
       /* Categories Section */
@@ -1051,31 +1256,81 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         .hero-content {
           grid-template-columns: 1fr;
 
-          gap: 3rem;
+          gap: 2.4rem;
         }
 
-        .hero-text h1 {
-          font-size: 3.5rem;
+        .hero-text {
+          order: 1;
         }
 
-        .hero-card {
-          max-width: 500px;
+        .hero-recommend {
+          order: 2;
+
+          max-width: 760px;
 
           margin: 0 auto;
         }
       }
 
       @media (max-width: 768px) {
-        .hero-text h1 {
-          font-size: 2.5rem;
+        .hero {
+          min-height: auto;
+
+          padding: 3.4rem 0 3rem;
         }
 
-        .hero-text p {
+        .hero-container {
+          padding: 0 1.2rem;
+        }
+
+        .hero-ai-dropzone {
+          min-height: 214px;
+
+          padding: 1.65rem 1.25rem;
+        }
+
+        .hero-ai-main {
           font-size: 1.2rem;
         }
 
-        .hero-buttons {
-          flex-direction: column;
+        .hero-ai-sub {
+          font-size: 0.95rem;
+        }
+
+        .hero-ai-cta {
+          min-height: 58px;
+
+          font-size: 1.1rem;
+        }
+
+        .hero-recommend {
+          padding: 1.2rem;
+        }
+
+        .hero-recommend h3 {
+          font-size: 1.42rem;
+        }
+
+        .hero-recommend-card {
+          grid-template-columns: 92px 1fr;
+
+          border-radius: 18px;
+
+          padding: 0.55rem;
+        }
+
+        .hero-recommend-card img {
+          width: 92px;
+
+          height: 92px;
+        }
+
+        .hero-recommend-name {
+          font-size: 1.08rem;
+        }
+
+        .hero-recommend-price {
+          font-size: 0.98rem;
         }
 
         .btn {
@@ -1549,50 +1804,119 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
             <div class="hero-text animate">
               <h1>Tiệm Hoa Nhà Tớ</h1>
 
-              <p>Hoa tươi mỗi ngày – Gửi yêu thương trọn vẹn</p>
+              <div class="hero-ai-search">
+                <input type="file" id="hero-image-input" accept="image/*" hidden />
 
-              <div class="hero-search">
-                <input
-                  type="text"
-                  placeholder="Tìm bó hoa, giỏ hoa, lan hồ điệp..."
-                  id="hero-search-input"
-                />
-                <button type="button" id="hero-search-btn">Tìm kiếm</button>
-              </div>
+                <div
+                  id="hero-ai-dropzone"
+                  class="hero-ai-dropzone"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Tải ảnh để AI gợi ý hoa"
+                >
+                  <div class="hero-ai-default" id="hero-ai-default">
+                    <svg
+                      class="hero-ai-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 16V8M12 8L8.5 11.5M12 8L15.5 11.5"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M4 15.5V16.2C4 18.3 5.7 20 7.8 20H16.2C18.3 20 20 18.3 20 16.2V15.5"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M8.2 5.3C8.8 4.1 10.1 3.3 11.5 3.3C13.4 3.3 15 4.8 15.2 6.7C16.8 6.7 18.1 8 18.1 9.6"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
 
-              <div class="hero-buttons">
-                <a href="#products" class="btn btn-primary">
-                  Mua ngay
+                    <span class="hero-ai-main">Thả ảnh hoa vào đây</span>
+                    <span class="hero-ai-sub">Chúng tôi sẽ gợi ý nhưng bó hoa hợp nhất dành cho bạn</span>
+                  </div>
 
-                  <span>→</span>
-                </a>
+                  <div class="hero-ai-preview" id="hero-ai-preview">
+                    <img id="hero-ai-preview-image" alt="Ảnh hoa vừa chọn" />
+                    <div class="hero-ai-processing" id="hero-ai-processing">
+                      <span class="hero-ai-dot"></span>
+                      <p>Đang phân tích tone màu và kiểu hoa...</p>
+                    </div>
+                  </div>
+                </div>
 
-                <a href="#categories" class="btn btn-secondary">
-                  Khám phá bộ sưu tập
-                </a>
+                <button type="button" id="hero-ai-search-btn" class="hero-ai-cta">
+                  <span>✦</span>Phân tích & gợi ý
+                </button>
               </div>
             </div>
 
-            <div class="hero-image animate">
-              <div class="hero-card">
-                <span class="hero-badge">New</span>
-                <model-viewer
-                  src="${pageContext.request.contextPath}/view/bouquet.glb"
-                  alt="Bó hoa 3D"
-                  camera-controls
-                  auto-rotate
-                  style="
-                    width: 349px;
-                    height: 384px;
-                    background: #fff;
-                    border-radius: 20px;
-                    margin-left: 100px;
-                  "
-                  ar
-                  shadow-intensity="1"
-                  exposure="1"
-                >
-                </model-viewer>
+            <div class="hero-recommend animate">
+              <h3>Gợi ý cho bạn</h3>
+
+              <div class="hero-recommend-list">
+                <c:forEach var="product" items="${bestSellerProducts}" begin="0" end="2">
+                  <a
+                    href="${pageContext.request.contextPath}/products/${product.slug}"
+                    class="hero-recommend-card"
+                  >
+                    <img
+                      src="${product.image != null ? product.image : 'https://via.placeholder.com/240x240?text=Flower'}"
+                      alt="<c:out value='${product.name}'/>"
+                      onerror="this.src='https://via.placeholder.com/240x240?text=Flower'"
+                    />
+
+                    <div>
+                      <div class="hero-recommend-name"><c:out value="${product.name}" /></div>
+                      <div class="hero-recommend-price">
+                        <c:choose>
+                          <c:when test="${product.salePrice != null && product.salePrice > 0}">
+                            <fmt:formatNumber value="${product.salePrice}" type="number" /> VND
+                          </c:when>
+                          <c:otherwise>
+                            <fmt:formatNumber value="${product.price}" type="number" /> VND
+                          </c:otherwise>
+                        </c:choose>
+                      </div>
+                    </div>
+                  </a>
+                </c:forEach>
+
+                <c:if test="${empty bestSellerProducts}">
+                  <a href="#products" class="hero-recommend-card">
+                    <img
+                      src="https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?w=600"
+                      alt="Hoa kem pastel"
+                    />
+                    <div>
+                      <div class="hero-recommend-name">Cream Garden</div>
+                      <div class="hero-recommend-price">1,290,000 VND</div>
+                    </div>
+                  </a>
+
+                  <a href="#products" class="hero-recommend-card">
+                    <img
+                      src="https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=600"
+                      alt="Hoa nâu pastel"
+                    />
+                    <div>
+                      <div class="hero-recommend-name">Soft Mocha Bloom</div>
+                      <div class="hero-recommend-price">1,490,000 VND</div>
+                    </div>
+                  </a>
+                </c:if>
               </div>
             </div>
           </div>
@@ -2302,27 +2626,280 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         });
       }
 
-      // Search functionality
-      const searchButton = document.querySelector(".hero-search button");
-      const searchInput = document.querySelector(".hero-search input");
+      // AI Image Search functionality
+      const heroDropzone = document.getElementById("hero-ai-dropzone");
+      const heroImageInput = document.getElementById("hero-image-input");
+      const heroPreview = document.getElementById("hero-ai-preview");
+      const heroPreviewImage = document.getElementById("hero-ai-preview-image");
+      const heroProcessing = document.getElementById("hero-ai-processing");
+      const heroSearchBtn = document.getElementById("hero-ai-search-btn");
+      const heroRecommendList = document.querySelector(".hero-recommend-list");
 
-      if (searchButton && searchInput) {
-        searchButton.addEventListener("click", function() {
-          const searchTerm = searchInput.value.trim();
+      let heroSelectedSource = "";
+      let heroSelectedFile = null;
+      let heroSelectedImageUrl = "";
+      let heroPreviewObjectUrl = "";
+      let heroSuggestedQuery = "";
+      let heroIsAnalyzing = false;
 
-          if (searchTerm) {
-            // Redirect to search page with query parameter
-            const contextPath = '${pageContext.request.contextPath}';
-            window.location.href = contextPath + '/search?q=' + encodeURIComponent(searchTerm);
-          } else {
-            showNotification('Điền từ khóa tìm kiếm');
+      function looksLikeImageUrl(value) {
+        if (!value) return false;
+        try {
+          const url = new URL(value.trim());
+          if (!["http:", "https:"].includes(url.protocol)) return false;
+          return /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(url.pathname + url.search) || true;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function setHeroProcessingState(isProcessing) {
+        heroIsAnalyzing = isProcessing;
+        if (heroProcessing) {
+          heroProcessing.classList.toggle("active", isProcessing);
+        }
+        if (heroSearchBtn) {
+          heroSearchBtn.disabled = isProcessing;
+        }
+      }
+
+      function showHeroPreview(source) {
+        if (!heroPreview || !heroPreviewImage) return;
+        heroPreviewImage.src = source;
+        heroPreview.classList.add("active");
+      }
+
+      async function analyzeHeroImageAndSuggest(source) {
+        if (!source) return;
+        setHeroProcessingState(true);
+        showHeroPreview(source);
+        await new Promise((resolve) => setTimeout(resolve, 900));
+        setHeroProcessingState(false);
+      }
+
+      async function handleHeroFile(file) {
+        if (!file || !file.type || !file.type.startsWith("image/")) {
+          showNotification("Vui lòng chọn file ảnh hợp lệ");
+          return;
+        }
+
+        if (heroPreviewObjectUrl) {
+          URL.revokeObjectURL(heroPreviewObjectUrl);
+          heroPreviewObjectUrl = "";
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        heroPreviewObjectUrl = previewUrl;
+        heroSelectedSource = previewUrl;
+        heroSelectedFile = file;
+        heroSelectedImageUrl = "";
+        await analyzeHeroImageAndSuggest(previewUrl);
+      }
+
+      async function handleHeroUrl(url) {
+        if (!looksLikeImageUrl(url)) {
+          showNotification("Link ảnh chưa hợp lệ");
+          return;
+        }
+
+        if (heroPreviewObjectUrl) {
+          URL.revokeObjectURL(heroPreviewObjectUrl);
+          heroPreviewObjectUrl = "";
+        }
+
+        heroSelectedSource = url.trim();
+        heroSelectedFile = null;
+        heroSelectedImageUrl = heroSelectedSource;
+        await analyzeHeroImageAndSuggest(heroSelectedSource);
+      }
+
+      function renderHeroRecommendations(products) {
+        if (!heroRecommendList || !products || !products.length) {
+          return;
+        }
+
+        const contextPath = "${pageContext.request.contextPath}";
+        const topProducts = products.slice(0, 3);
+        const escapeHtml = (value) =>
+          String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+
+        heroRecommendList.innerHTML = topProducts
+          .map((product) => {
+            const image = product.image || "https://via.placeholder.com/240x240?text=Flower";
+            const slug = product.slug || "#products";
+            const name = product.name || "Flower";
+            const priceValue = product.salePrice && product.salePrice > 0
+              ? product.salePrice
+              : product.price;
+            const price = Number(priceValue || 0).toLocaleString("vi-VN") + " VND";
+            const safeImage = escapeHtml(image);
+            const safeSlug = escapeHtml(slug);
+            const safeName = escapeHtml(name);
+            const safePrice = escapeHtml(price);
+
+            return `
+              <a href="${contextPath}/products/${safeSlug}" class="hero-recommend-card">
+                <img src="${safeImage}" alt="${safeName}" onerror="this.src='https://via.placeholder.com/240x240?text=Flower'" />
+                <div>
+                  <div class="hero-recommend-name">${safeName}</div>
+                  <div class="hero-recommend-price">${safePrice}</div>
+                </div>
+              </a>
+            `;
+          })
+          .join("");
+      }
+
+      async function fileFromImageUrl(url) {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Không tải được ảnh từ link đã dán");
+        }
+        const blob = await response.blob();
+        const extension = blob.type.includes("png") ? "png" : "jpg";
+        return new File([blob], `pasted-image.${extension}`, { type: blob.type || "image/jpeg" });
+      }
+
+      async function callImageSearchApi() {
+        let fileToSearch = heroSelectedFile;
+
+        if (!fileToSearch && heroSelectedImageUrl) {
+          fileToSearch = await fileFromImageUrl(heroSelectedImageUrl);
+        }
+
+        if (!fileToSearch) {
+          throw new Error("Không có ảnh để phân tích");
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileToSearch, fileToSearch.name || "upload.jpg");
+
+        const contextPath = "${pageContext.request.contextPath}";
+        const response = await fetch(`${contextPath}/api/image-search`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "AI chưa phân tích được ảnh này");
+        }
+
+        return result;
+      }
+
+      if (heroDropzone && heroImageInput) {
+        heroDropzone.addEventListener("click", () => heroImageInput.click());
+
+        heroDropzone.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            heroImageInput.click();
           }
         });
 
-        searchInput.addEventListener("keypress", function(e) {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            searchButton.click();
+        heroImageInput.addEventListener("change", async (event) => {
+          const file = event.target.files && event.target.files[0];
+          if (file) {
+            await handleHeroFile(file);
+          }
+        });
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          heroDropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            heroDropzone.classList.add("dragover");
+          });
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          heroDropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            heroDropzone.classList.remove("dragover");
+          });
+        });
+
+        heroDropzone.addEventListener("drop", async (event) => {
+          const file = event.dataTransfer && event.dataTransfer.files
+            ? event.dataTransfer.files[0]
+            : null;
+          if (file) {
+            await handleHeroFile(file);
+          }
+        });
+
+        heroDropzone.addEventListener("paste", async (event) => {
+          const clipboard = event.clipboardData;
+          if (!clipboard) return;
+
+          const fileItem = Array.from(clipboard.items || []).find(
+            (item) => item.type && item.type.startsWith("image/")
+          );
+          if (fileItem) {
+            const file = fileItem.getAsFile();
+            if (file) {
+              event.preventDefault();
+              await handleHeroFile(file);
+              return;
+            }
+          }
+
+          const pastedText = clipboard.getData("text");
+          if (looksLikeImageUrl(pastedText)) {
+            event.preventDefault();
+            await handleHeroUrl(pastedText);
+          }
+        });
+      }
+
+      document.addEventListener("paste", async (event) => {
+        const active = document.activeElement;
+        if (!heroDropzone || active !== heroDropzone) return;
+
+        const pastedText = event.clipboardData
+          ? event.clipboardData.getData("text")
+          : "";
+        if (looksLikeImageUrl(pastedText)) {
+          event.preventDefault();
+          await handleHeroUrl(pastedText);
+        }
+      });
+
+      if (heroSearchBtn) {
+        heroSearchBtn.addEventListener("click", async () => {
+          if (heroIsAnalyzing) {
+            return;
+          }
+
+          if (!heroSelectedSource) {
+            showNotification("Thêm ảnh hoa để AI bắt đầu phân tích");
+            return;
+          }
+
+          try {
+            setHeroProcessingState(true);
+            const result = await callImageSearchApi();
+
+            heroSuggestedQuery = result.query || result.prediction || "hoa tươi";
+            if (Array.isArray(result.products) && result.products.length > 0) {
+              renderHeroRecommendations(result.products);
+            }
+
+            const contextPath = "${pageContext.request.contextPath}";
+            window.location.href =
+              contextPath +
+              "/search?q=" +
+              encodeURIComponent(heroSuggestedQuery) +
+              "&source=ai-image";
+          } catch (error) {
+            showNotification(error.message || "Không thể phân tích ảnh lúc này");
+          } finally {
+            setHeroProcessingState(false);
           }
         });
       }
@@ -2576,20 +3153,6 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         });
       }
 
-      // Add floating animation to hero badge
-
-      const heroBadge = document.querySelector(".hero-badge");
-
-      if (heroBadge) {
-        setInterval(() => {
-          heroBadge.style.transform = "scale(1.05) rotate(5deg)";
-
-          setTimeout(() => {
-            heroBadge.style.transform = "scale(1) rotate(0deg)";
-          }, 200);
-        }, 2000);
-      }
-
       // Instagram items click
 
       const instagramItems = document.querySelectorAll(".instagram-item");
@@ -2689,11 +3252,6 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
           });
       }
     </script>
-
-    <script
-      type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
-    ></script>
 
     <script
       type="text/javascript"

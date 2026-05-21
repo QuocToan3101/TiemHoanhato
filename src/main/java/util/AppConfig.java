@@ -296,4 +296,81 @@ public class AppConfig {
             return 500;
         }
     }
+
+    // ML Image Search Configuration
+    public boolean isMlImageSearchEnabled() {
+        String env = firstNonBlank(
+                System.getenv("ML_IMAGE_SEARCH_ENABLED"),
+                System.getProperty("ML_IMAGE_SEARCH_ENABLED")
+        );
+        if (env != null) {
+            return Boolean.parseBoolean(env);
+        }
+        return getBooleanProperty("ml.image_search.enabled", true);
+    }
+
+    public String getMlImageSearchBaseUrl() {
+        return firstNonBlank(
+                System.getenv("ML_IMAGE_SEARCH_URL"),
+                System.getProperty("ML_IMAGE_SEARCH_URL"),
+                getProperty("ml.image_search.url", "http://127.0.0.1:5000")
+        );
+    }
+
+    public int getMlImageSearchTimeoutMs() {
+        String env = firstNonBlank(
+                System.getenv("ML_IMAGE_SEARCH_TIMEOUT_MS"),
+                System.getProperty("ML_IMAGE_SEARCH_TIMEOUT_MS")
+        );
+        if (env != null) {
+            try {
+                return Integer.parseInt(env);
+            } catch (NumberFormatException ignored) {
+                // Fallback to property/default below.
+            }
+        }
+        return getIntProperty("ml.image_search.timeout_ms", 20000);
+    }
+
+    public boolean isMlImageSearchAutoStartEnabled() {
+        String env = firstNonBlank(
+                System.getenv("ML_IMAGE_SEARCH_AUTOSTART"),
+                System.getProperty("ML_IMAGE_SEARCH_AUTOSTART")
+        );
+        if (env != null) {
+            return Boolean.parseBoolean(env);
+        }
+        return getBooleanProperty("ml.image_search.autostart", true);
+    }
+
+    public String getMlImageSearchPythonCommand() {
+        return firstNonBlank(
+                System.getenv("ML_IMAGE_SEARCH_PYTHON"),
+                System.getProperty("ML_IMAGE_SEARCH_PYTHON"),
+                getProperty("ml.image_search.python_command", "python")
+        );
+    }
+
+    public String getMlImageSearchWorkingDir() {
+        return firstNonBlank(
+                System.getenv("ML_IMAGE_SEARCH_WORKING_DIR"),
+                System.getProperty("ML_IMAGE_SEARCH_WORKING_DIR"),
+                getProperty("ml.image_search.working_dir", "ml-service")
+        );
+    }
+
+    public int getMlImageSearchStartupTimeoutMs() {
+        String env = firstNonBlank(
+                System.getenv("ML_IMAGE_SEARCH_STARTUP_TIMEOUT_MS"),
+                System.getProperty("ML_IMAGE_SEARCH_STARTUP_TIMEOUT_MS")
+        );
+        if (env != null) {
+            try {
+                return Integer.parseInt(env);
+            } catch (NumberFormatException ignored) {
+                // Fallback to property/default below.
+            }
+        }
+        return getIntProperty("ml.image_search.startup_timeout_ms", 40000);
+    }
 }
