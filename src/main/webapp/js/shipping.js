@@ -159,11 +159,6 @@
     osmTypeInput.value = selectedAddress.osmType || '';
     osmIdInput.value = String(selectedAddress.osmId || '');
 
-    const addressDetail = document.getElementById('addressDetail');
-    if (addressDetail) {
-      addressDetail.value = selectedAddress.displayName;
-    }
-
     hideSuggestions();
     showConfirmModal(selectedAddress);
     renderMap(selectedAddress.lat, selectedAddress.lng, selectedAddress.displayName);

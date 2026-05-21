@@ -22,7 +22,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * GHN client for shipping fee estimation via the preview-order endpoint.
+ * GHN client for shipping fee estimation via /v2/shipping-order/fee endpoint.
+ * Flow:
+ * 1. Get shop info to retrieve from_district_id
+ * 2. Resolve destination (to_district_id and to_ward_code)
+ * 3. Get available services for route
+ * 4. Calculate fee using first available service
  */
 public class GhnClient {
     private static final Logger logger = LoggerFactory.getLogger(GhnClient.class);
@@ -82,64 +87,222 @@ public class GhnClient {
             return Optional.empty();
         }
 
-        for (int attempt = 1; attempt <= 2; attempt++) {
-            HttpURLConnection conn = null;
-            try {
-                ResolvedLocation destination = resolveDestination(suggestion, fallbackAddress, attempt == 1);
-                if (destination == null) {
-                    lastErrorMessage = "Không ánh xạ được địa chỉ sang mã tỉnh/quận/phường GHN";
-                    logger.warn("Unable to resolve GHN destination for {}", suggestion.getDisplayName());
-                    return Optional.empty();
-                }
-
-                JsonObject payload = buildPreviewPayload(suggestion, fallbackAddress, destination);
-                String urlString = joinUrl(baseUrl, "/shiip/public-api/v2/shipping-order/preview");
-
-                URL url = new URL(urlString);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(8000);
-                conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
-                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                conn.setRequestProperty("Token", token);
-                conn.setRequestProperty("ShopId", shopId);
-                if (clientSource != null && !clientSource.isBlank()) {
-                    conn.setRequestProperty("X-Client-Source", clientSource);
-                }
-
-                byte[] body = payload.toString().getBytes(StandardCharsets.UTF_8);
-                conn.getOutputStream().write(body);
-
-                int status = conn.getResponseCode();
-                String responseBody = readBody(conn, status);
-
-                if (status >= 200 && status < 300) {
-                    BigDecimal fee = extractFee(responseBody);
-                    if (fee != null) {
-                        return Optional.of(fee);
-                    }
-                    lastErrorMessage = extractErrorMessage(responseBody);
-                    logger.warn("GHN preview response did not contain total fee: {}", responseBody);
-                } else {
-                    lastErrorMessage = extractErrorMessage(responseBody);
-                    logger.warn("GHN fee call failed status={} response={}", status, responseBody);
-                }
-            } catch (Exception e) {
-                lastErrorMessage = e.getMessage();
-                logger.warn("GHN fee request failed on attempt {}", attempt, e);
-            } finally {
-                if (conn != null) {
-                    conn.disconnect();
-                }
+        try {
+            // Step 1: Get shop info to retrieve from_district_id
+            Integer fromDistrictId = getShopDistrict();
+            if (fromDistrictId == null) {
+                lastErrorMessage = "Không lấy được thông tin shop GHN (from_district)";
+                logger.warn("Unable to get GHN shop info");
+                return Optional.empty();
             }
-        }
 
-        return Optional.empty();
+            // Step 2: Resolve destination (to_district_id and to_ward_code)
+            ResolvedLocation destination = resolveDestination(suggestion, fallbackAddress, true);
+            if (destination == null) {
+                lastErrorMessage = "Không ánh xạ được địa chỉ sang mã tỉnh/quận/phường GHN";
+                logger.warn("Unable to resolve GHN destination for {}", suggestion.getDisplayName());
+                return Optional.empty();
+            }
+
+            // Step 3: Get available services
+            List<ServiceEntry> services = getAvailableServices(fromDistrictId, destination.districtId());
+            if (services == null || services.isEmpty()) {
+                lastErrorMessage = "Không có dịch vụ GHN khả dụng cho tuyến đường này";
+                logger.warn("No GHN services available from {} to {}", fromDistrictId, destination.districtId());
+                return Optional.empty();
+            }
+
+            // Step 4: Calculate fee using first available service
+            ServiceEntry service = services.get(0);
+            Optional<BigDecimal> fee = calculateFeeWithService(
+                fromDistrictId,
+                destination.districtId(),
+                destination.wardCode(),
+                service.serviceId()
+            );
+
+            if (fee.isPresent()) {
+                return fee;
+            }
+
+            lastErrorMessage = "Không lấy được phí GHN";
+            logger.warn("GHN fee calculation returned empty for service {}", service.serviceId());
+            return Optional.empty();
+
+        } catch (Exception e) {
+            lastErrorMessage = e.getMessage();
+            logger.warn("GHN fee request failed", e);
+            return Optional.empty();
+        }
     }
 
     public String getLastErrorMessage() {
         return lastErrorMessage;
+    }
+
+    // Step 1: Get shop info to retrieve from_district_id
+    private Integer getShopDistrict() {
+        HttpURLConnection conn = null;
+        try {
+            String urlString = joinUrl(baseUrl, "/shiip/public-api/v2/shop/all");
+            URL url = new URL(urlString);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(8000);
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Token", token);
+            if (clientSource != null && !clientSource.isBlank()) {
+                conn.setRequestProperty("X-Client-Source", clientSource);
+            }
+
+            int status = conn.getResponseCode();
+            String responseBody = readBody(conn, status);
+
+            if (status >= 200 && status < 300) {
+                JsonObject response = gson.fromJson(responseBody, JsonObject.class);
+                if (response != null && response.has("data") && !response.get("data").isJsonNull()) {
+                    JsonObject data = response.getAsJsonObject("data");
+                    if (data.has("shops") && data.get("shops").isJsonArray()) {
+                        JsonArray shops = data.getAsJsonArray("shops");
+                        if (shops.size() > 0) {
+                            JsonObject shop = shops.get(0).getAsJsonObject();
+                            if (shop.has("district_id")) {
+                                return shop.get("district_id").getAsInt();
+                            }
+                        }
+                    }
+                }
+            }
+            lastErrorMessage = "GHN shop info not found";
+            logger.warn("Failed to get GHN shop district: status={} response={}", status, responseBody);
+        } catch (Exception e) {
+            lastErrorMessage = e.getMessage();
+            logger.warn("GHN shop info request failed", e);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return null;
+    }
+
+    // Step 3: Get available services between two districts
+    private List<ServiceEntry> getAvailableServices(int fromDistrictId, int toDistrictId) {
+        HttpURLConnection conn = null;
+        try {
+            String urlString = joinUrl(baseUrl, "/shiip/public-api/v2/shipping-order/available-services");
+            URL url = new URL(urlString);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(8000);
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setRequestProperty("Token", token);
+            conn.setRequestProperty("ShopId", shopId);
+            if (clientSource != null && !clientSource.isBlank()) {
+                conn.setRequestProperty("X-Client-Source", clientSource);
+            }
+
+            JsonObject payload = new JsonObject();
+            payload.addProperty("shop_id", Long.parseLong(shopId));
+            payload.addProperty("from_district", fromDistrictId);
+            payload.addProperty("to_district", toDistrictId);
+
+            byte[] body = payload.toString().getBytes(StandardCharsets.UTF_8);
+            conn.getOutputStream().write(body);
+
+            int status = conn.getResponseCode();
+            String responseBody = readBody(conn, status);
+
+            if (status >= 200 && status < 300) {
+                JsonObject response = gson.fromJson(responseBody, JsonObject.class);
+                if (response != null && response.has("data") && response.get("data").isJsonArray()) {
+                    JsonArray dataArray = response.getAsJsonArray("data");
+                    List<ServiceEntry> services = new ArrayList<>();
+                    for (JsonElement element : dataArray) {
+                        JsonObject service = element.getAsJsonObject();
+                        if (service.has("service_id") && service.has("short_name")) {
+                            services.add(new ServiceEntry(
+                                service.get("service_id").getAsInt(),
+                                service.get("short_name").getAsString()
+                            ));
+                        }
+                    }
+                    return services;
+                }
+            }
+            lastErrorMessage = extractErrorMessage(responseBody);
+            logger.warn("Failed to get GHN available services: status={} response={}", status, responseBody);
+        } catch (Exception e) {
+            lastErrorMessage = e.getMessage();
+            logger.warn("GHN available services request failed", e);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return null;
+    }
+
+    // Step 4: Calculate fee using v2/shipping-order/fee endpoint
+    private Optional<BigDecimal> calculateFeeWithService(int fromDistrictId, int toDistrictId, String toWardCode, int serviceId) {
+        HttpURLConnection conn = null;
+        try {
+            String urlString = joinUrl(baseUrl, "/shiip/public-api/v2/shipping-order/fee");
+            URL url = new URL(urlString);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(8000);
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            conn.setRequestProperty("Token", token);
+            conn.setRequestProperty("ShopId", shopId);
+            if (clientSource != null && !clientSource.isBlank()) {
+                conn.setRequestProperty("X-Client-Source", clientSource);
+            }
+
+            JsonObject payload = new JsonObject();
+            payload.addProperty("service_id", serviceId);
+            payload.addProperty("from_district_id", fromDistrictId);
+            payload.addProperty("to_district_id", toDistrictId);
+            payload.addProperty("to_ward_code", toWardCode);
+            payload.addProperty("weight", shipmentWeightGrams);
+            payload.addProperty("length", shipmentLengthCm);
+            payload.addProperty("width", shipmentWidthCm);
+            payload.addProperty("height", shipmentHeightCm);
+            payload.addProperty("insurance_value", shipmentValueVnd);
+            payload.addProperty("cod_value", 0);
+            payload.addProperty("cod_failed_amount", 0);
+            payload.addProperty("coupon", "");
+
+            byte[] body = payload.toString().getBytes(StandardCharsets.UTF_8);
+            conn.getOutputStream().write(body);
+
+            int status = conn.getResponseCode();
+            String responseBody = readBody(conn, status);
+
+            if (status >= 200 && status < 300) {
+                JsonObject response = gson.fromJson(responseBody, JsonObject.class);
+                if (response != null && response.has("data") && !response.get("data").isJsonNull()) {
+                    JsonObject data = response.getAsJsonObject("data");
+                    if (data.has("total") && !data.get("total").isJsonNull()) {
+                        return Optional.of(new BigDecimal(data.get("total").getAsString()));
+                    }
+                }
+            }
+            lastErrorMessage = extractErrorMessage(responseBody);
+            logger.warn("Failed to calculate GHN fee: status={} response={}", status, responseBody);
+        } catch (Exception e) {
+            lastErrorMessage = e.getMessage();
+            logger.warn("GHN fee calculation request failed", e);
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return Optional.empty();
     }
 
     private JsonObject buildPreviewPayload(AddressSuggestion suggestion, String fallbackAddress, ResolvedLocation destination) {
@@ -445,4 +608,5 @@ public class GhnClient {
     private record ProvinceEntry(int provinceId, String provinceName) {}
     private record DistrictEntry(int districtId, String districtName) {}
     private record WardEntry(String wardCode, String wardName) {}
+    private record ServiceEntry(int serviceId, String shortName) {}
 }

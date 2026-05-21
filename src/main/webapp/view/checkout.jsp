@@ -93,7 +93,6 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
-            margin-top: calc(var(--height-head) + 20px);
         }
         
         /* Page Header */
@@ -1059,9 +1058,6 @@
                                             <input type="hidden" id="shipping_place_id" name="shippingPlaceId">
                                             <input type="hidden" id="shipping_osm_type" name="shippingOsmType">
                                             <input type="hidden" id="shipping_osm_id" name="shippingOsmId">
-                                            <textarea name="addressDetail" id="addressDetail" class="form-control" rows="3"
-                                                      placeholder="Địa chỉ đã chọn sẽ tự động điền ở đây" readonly required style="margin-top:12px;"></textarea>
-                                            <div class="error-message">Vui lòng chọn địa chỉ từ gợi ý</div>
                                         </div>
                                         
                                         <!-- Hidden fields for backward compatibility -->
