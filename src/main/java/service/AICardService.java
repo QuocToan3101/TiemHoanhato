@@ -25,7 +25,6 @@ public class AICardService {
     private AICardService() {
         config = AppConfig.getInstance();
         gson = new Gson();
-        
         // Tạo HTTP client với timeout
         httpClient = new OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
