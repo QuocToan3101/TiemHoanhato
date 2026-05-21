@@ -20,7 +20,6 @@ import model.User;
  */
 @WebServlet(urlPatterns = {"/contact", "/api/contact"})
 public class ContactServlet extends HttpServlet {
-    
     private ContactDAO contactDAO;
     private Gson gson;
     
