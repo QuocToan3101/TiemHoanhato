@@ -16,7 +16,6 @@ import util.AppConfig;
  * Service để tạo lời chúc thiệp tự động bằng Google Gemini AI
  */
 public class AICardService {
-    
     private static AICardService instance;
     private AppConfig config;
     private Gson gson;
