@@ -1,5 +1,4 @@
 package service;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +12,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import util.AppConfig;
-
 /**
  * Service để tạo lời chúc thiệp tự động bằng Google Gemini AI
  */
