@@ -17,23 +17,49 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import dto.AICardState;
+import service.AIContentService;
+import service.AIImageService;
+import service.CardRenderService;
 import service.AICardService;
 import service.CardImageGenerator;
+
 /**
- * Servlet API endpoint để tạo thiệp tự động bằng AI và generate ảnh PNG
+ * Refactored AI Card Servlet - Modern architecture
+ * Endpoints:
+ * - POST /api/ai-card-generate : Generate greeting text
+ * - POST /api/generate-card-image : Generate card image
+ * - GET /api/download-card : Download card as PNG
+ * - POST /api/ai-card-background : Generate background
+ * - POST /api/ai-card-complete : One-step complete generation
  */
-@WebServlet({"/api/ai-card-generate", "/api/generate-card-image", "/api/download-card"})
+@WebServlet({"/api/ai-card-generate", "/api/generate-card-image", "/api/download-card",
+             "/api/ai-card-background", "/api/ai-card-complete"})
 public class AICardServlet extends HttpServlet {
     
+    // New services
+    private AIContentService contentService;
+    private AIImageService imageService;
+    private CardRenderService renderService;
+    
+    // Legacy services (kept for backward compatibility)
     private AICardService aiCardService;
     private CardImageGenerator imageGenerator;
+    
     private Gson gson;
     
     @Override
     public void init() throws ServletException {
         super.init();
+        // Initialize new services
+        contentService = AIContentService.getInstance();
+        imageService = AIImageService.getInstance();
+        renderService = CardRenderService.getInstance();
+        
+        // Legacy services
         aiCardService = AICardService.getInstance();
         imageGenerator = new CardImageGenerator();
+        
         gson = new Gson();
     }
     
@@ -43,175 +69,275 @@ public class AICardServlet extends HttpServlet {
         
         String servletPath = request.getServletPath();
         
-        if ("/api/ai-card-generate".equals(servletPath)) {
-            handleGenerateText(request, response);
-        } else if ("/api/generate-card-image".equals(servletPath)) {
-            handleGenerateImage(request, response);
+        try {
+            if (!ensureAuthenticated(request, response)) {
+                return;
+            }
+            
+            setCorsForSameOrigin(request, response);
+            
+            switch (servletPath) {
+                case "/api/ai-card-generate":
+                    handleGenerateText(request, response);
+                    break;
+                case "/api/generate-card-image":
+                    handleGenerateImage(request, response);
+                    break;
+                case "/api/ai-card-background":
+                    handleGenerateBackground(request, response);
+                    break;
+                case "/api/ai-card-complete":
+                    handleCompleteGeneration(request, response);
+                    break;
+                default:
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            System.err.println("❌ AICardServlet error: " + e.getMessage());
+            e.printStackTrace();
+            sendJsonError(response, "Server error: " + e.getMessage(), 
+                         HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
     
     /**
-     * Generate text message bằng Gemini AI
+     * Generate greeting text bằng AI
+     * New implementation sử dụng AIContentService
      */
     private void handleGenerateText(HttpServletRequest request, HttpServletResponse response) 
             throws IOException {
         
-        // Set response type
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        if (!ensureAuthenticated(request, response)) {
-            return;
-        }
-        setCorsForSameOrigin(request, response);
-        
+        response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        JsonObject result = new JsonObject();
         
         try {
-            // Đọc request body
-            StringBuilder sb = new StringBuilder();
-            BufferedReader reader = request.getReader();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
+            // Parse request
+            JsonObject requestJson = parseJsonRequest(request);
             
-            String requestBody = sb.toString();
-            if (requestBody.isEmpty()) {
-                result.addProperty("success", false);
-                result.addProperty("error", "Request body is empty");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(gson.toJson(result));
-                return;
-            }
-            
-            // Parse JSON
-            JsonObject requestJson = gson.fromJson(requestBody, JsonObject.class);
-            
-            // Extract parameters
             String recipient = requestJson.has("recipient") ? 
-                requestJson.get("recipient").getAsString() : "";
+                requestJson.get("recipient").getAsString().trim() : "";
             String occasion = requestJson.has("occasion") ? 
                 requestJson.get("occasion").getAsString() : "khac";
             String tone = requestJson.has("tone") ? 
                 requestJson.get("tone").getAsString() : "warm";
             String customMessage = requestJson.has("customMessage") ? 
-                requestJson.get("customMessage").getAsString() : "";
+                requestJson.get("customMessage").getAsString().trim() : "";
             String length = requestJson.has("length") ? 
                 requestJson.get("length").getAsString() : "trungbinh";
             
-            // Generate message
-            System.out.println("AI Card Request - Recipient: " + recipient + 
-                ", Occasion: " + occasion + ", Tone: " + tone);
+            // Generate greeting sử dụng new service
+            String generatedMessage = contentService.generateGreeting(
+                recipient, occasion, tone, customMessage, length
+            );
             
-            String message = aiCardService.generateCardMessage(
-                recipient, occasion, tone, customMessage, length);
-            
-            if (message != null && !message.isEmpty()) {
-                // Lưu vào session để dùng sau
-                HttpSession session = request.getSession();
-                session.setAttribute("lastCardMessage", message);
-                session.setAttribute("lastCardOccasion", occasion);
-                
-                result.addProperty("success", true);
-                result.addProperty("message", message);
-                result.addProperty("source", "gemini-ai");
-                response.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                result.addProperty("success", false);
-                result.addProperty("error", "Failed to generate message");
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            if (generatedMessage == null || generatedMessage.isEmpty()) {
+                throw new Exception("Failed to generate message");
             }
             
-        } catch (Exception e) {
-            System.err.println("Error in AICardServlet (generate text): " + e.getMessage());
+            // Save to session
+            HttpSession session = request.getSession();
+            session.setAttribute("lastCardMessage", generatedMessage);
+            session.setAttribute("lastCardOccasion", occasion);
+            session.setAttribute("lastCardTone", tone);
+            session.setAttribute("lastCardRecipient", recipient);
             
-            result.addProperty("success", false);
-            result.addProperty("error", "Server error: " + e.getMessage());
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            // Response
+            JsonObject result = new JsonObject();
+            result.addProperty("success", true);
+            result.addProperty("message", generatedMessage);
+            result.addProperty("source", "ai-service");
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(gson.toJson(result));
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error generating text: " + e.getMessage());
+            sendJsonError(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
-        out.print(gson.toJson(result));
         out.flush();
     }
     
     /**
-     * Generate ảnh PNG từ text message
+     * Generate card image PNG từ message
+     * New implementation sử dụng CardRenderService + AICardState
      */
     private void handleGenerateImage(HttpServletRequest request, HttpServletResponse response) 
             throws IOException {
         
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        if (!ensureAuthenticated(request, response)) {
-            return;
-        }
-        setCorsForSameOrigin(request, response);
-        
+        response.setContentType("application/json;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        JsonObject result = new JsonObject();
         
         try {
-            // Đọc request body
-            StringBuilder sb = new StringBuilder();
-            BufferedReader reader = request.getReader();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            
-            JsonObject requestJson = gson.fromJson(sb.toString(), JsonObject.class);
+            // Parse request
+            JsonObject requestJson = parseJsonRequest(request);
             
             String message = requestJson.has("message") ? 
                 requestJson.get("message").getAsString() : "";
             String occasion = requestJson.has("occasion") ? 
                 requestJson.get("occasion").getAsString() : "khac";
+            String tone = requestJson.has("tone") ? 
+                requestJson.get("tone").getAsString() : "warm";
+            String recipient = requestJson.has("recipient") ? 
+                requestJson.get("recipient").getAsString() : "";
             
             if (message.isEmpty()) {
-                result.addProperty("success", false);
-                result.addProperty("error", "Message is empty");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print(gson.toJson(result));
-                return;
+                throw new IllegalArgumentException("Message is required");
             }
             
-            // Tạo ảnh thiệp
-            BufferedImage cardImage = imageGenerator.generateCardImage(message, occasion);
+            // Build AICardState
+            AICardState cardState = new AICardState.Builder()
+                .recipient(recipient)
+                .occasion(occasion)
+                .tone(tone)
+                .generatedMessage(message)
+                .source("render-service")
+                .build();
             
-            // Convert sang byte array
-            byte[] imageBytes = imageGenerator.imageToBytes(cardImage);
+            // Render card
+            BufferedImage cardImage = renderService.renderCard(cardState);
+            String base64Image = renderService.imageToBase64(cardImage);
             
-            // Lưu vào session để dùng khi checkout
+            // Save to session for later use
+            byte[] imageBytes = renderService.imageToBytes(cardImage);
             HttpSession session = request.getSession();
             session.setAttribute("greetingCardImage", imageBytes);
             session.setAttribute("greetingCardMessage", message);
             session.setAttribute("greetingCardOccasion", occasion);
             
-            // Encode base64 để gửi về frontend
-            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-            
+            // Response
+            JsonObject result = new JsonObject();
             result.addProperty("success", true);
-            result.addProperty("imageData", "data:image/png;base64," + base64Image);
-            result.addProperty("message", "Card image generated successfully");
+            result.addProperty("imageData", base64Image);
+            result.addProperty("width", cardImage.getWidth());
+            result.addProperty("height", cardImage.getHeight());
+            
             response.setStatus(HttpServletResponse.SC_OK);
+            out.print(gson.toJson(result));
             
         } catch (Exception e) {
-            System.err.println("Error in AICardServlet (generate image): " + e.getMessage());
-            
-            result.addProperty("success", false);
-            result.addProperty("error", "Server error: " + e.getMessage());
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            System.err.println("❌ Error generating image: " + e.getMessage());
+            sendJsonError(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
-        out.print(gson.toJson(result));
         out.flush();
     }
     
     /**
-     * Download ảnh thiệp dưới dạng PNG file
+     * Generate background image URL
      */
+    private void handleGenerateBackground(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        
+        try {
+            JsonObject requestJson = parseJsonRequest(request);
+            
+            String occasion = requestJson.has("occasion") ? 
+                requestJson.get("occasion").getAsString() : "khac";
+            String tone = requestJson.has("tone") ? 
+                requestJson.get("tone").getAsString() : "warm";
+            String message = requestJson.has("message") ? 
+                requestJson.get("message").getAsString() : "";
+            
+            // Generate background (Pollinations AI or gradient fallback)
+            String backgroundImageUrl = imageService.generateBackgroundImage(
+                occasion, tone, message
+            );
+            
+            JsonObject result = new JsonObject();
+            result.addProperty("success", true);
+            result.addProperty("backgroundImageUrl", backgroundImageUrl);
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(gson.toJson(result));
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error generating background: " + e.getMessage());
+            sendJsonError(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        
+        out.flush();
+    }
+    
+    /**
+     * Complete one-step generation: text + image + background
+     * Optimized endpoint para sa frontend
+     */
+    private void handleCompleteGeneration(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
+        response.setContentType("application/json;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        
+        try {
+            JsonObject requestJson = parseJsonRequest(request);
+            
+            // Parse parameters
+            String recipient = requestJson.has("recipient") ? 
+                requestJson.get("recipient").getAsString().trim() : "";
+            String occasion = requestJson.has("occasion") ? 
+                requestJson.get("occasion").getAsString() : "khac";
+            String tone = requestJson.has("tone") ? 
+                requestJson.get("tone").getAsString() : "warm";
+            String customMessage = requestJson.has("customMessage") ? 
+                requestJson.get("customMessage").getAsString().trim() : "";
+            String length = requestJson.has("length") ? 
+                requestJson.get("length").getAsString() : "trungbinh";
+            
+            // Step 1: Generate text
+            String generatedMessage = contentService.generateGreeting(
+                recipient, occasion, tone, customMessage, length
+            );
+            
+            // Step 2: Build card state
+            AICardState cardState = new AICardState.Builder()
+                .recipient(recipient)
+                .occasion(occasion)
+                .tone(tone)
+                .customMessage(customMessage)
+                .length(length)
+                .generatedMessage(generatedMessage)
+                .source("ai-service")
+                .build();
+            
+            // Step 3: Render image
+            BufferedImage cardImage = renderService.renderCard(cardState);
+            String base64Image = renderService.imageToBase64(cardImage);
+            
+            // Step 4: Generate background (non-blocking, fallback to gradient)
+            String backgroundUrl = imageService.generateBackgroundImage(
+                occasion, tone, generatedMessage
+            );
+            
+            // Save to session
+            byte[] imageBytes = renderService.imageToBytes(cardImage);
+            HttpSession session = request.getSession();
+            session.setAttribute("greetingCardImage", imageBytes);
+            session.setAttribute("aiCardState", cardState);
+            
+            // Response
+            JsonObject result = new JsonObject();
+            result.addProperty("success", true);
+            result.addProperty("message", generatedMessage);
+            result.addProperty("imageData", base64Image);
+            result.addProperty("backgroundImageUrl", backgroundUrl);
+            result.addProperty("width", cardImage.getWidth());
+            result.addProperty("height", cardImage.getHeight());
+            
+            response.setStatus(HttpServletResponse.SC_OK);
+            out.print(gson.toJson(result));
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error in complete generation: " + e.getMessage());
+            sendJsonError(response, e.getMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        
+        out.flush();
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -220,51 +346,120 @@ public class AICardServlet extends HttpServlet {
             return;
         }
 
+        String servletPath = request.getServletPath();
+        
+        if ("/api/download-card".equals(servletPath)) {
+            handleDownloadCard(request, response);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+    
+    /**
+     * Download card image as PNG file
+     */
+    private void handleDownloadCard(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
         HttpSession session = request.getSession();
         byte[] imageBytes = (byte[]) session.getAttribute("greetingCardImage");
         
-        if (imageBytes == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No card image found in session");
+        if (imageBytes == null || imageBytes.length == 0) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No card image found");
             return;
         }
         
-        // Set headers cho download
+        // Set download headers
         response.setContentType("image/png");
-        response.setHeader("Content-Disposition", "attachment; filename=\"greeting-card.png\"");
+        response.setHeader("Content-Disposition", 
+            "attachment; filename=\"thiep-" + System.currentTimeMillis() + ".png\"");
         response.setContentLength(imageBytes.length);
         
-        // Ghi image bytes ra response
+        // Write image to response
         OutputStream os = response.getOutputStream();
         os.write(imageBytes);
         os.flush();
         os.close();
+        
+        System.out.println("✓ Card image downloaded");
+    }
+    
+    /**
+     * Helper: Parse JSON from request body
+     */
+    private JsonObject parseJsonRequest(HttpServletRequest request) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = request.getReader();
+        String line;
+        
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        
+        String requestBody = sb.toString();
+        if (requestBody.isEmpty()) {
+            throw new IllegalArgumentException("Request body is empty");
+        }
+        
+        return gson.fromJson(requestBody, JsonObject.class);
+    }
+    
+    /**
+     * Helper: Send JSON error response
+     */
+    private void sendJsonError(HttpServletResponse response, String errorMessage, int statusCode) 
+            throws IOException {
+        
+        response.setStatus(statusCode);
+        response.setContentType("application/json;charset=UTF-8");
+        
+        JsonObject errorJson = new JsonObject();
+        errorJson.addProperty("success", false);
+        errorJson.addProperty("error", errorMessage);
+        
+        response.getWriter().print(gson.toJson(errorJson));
+        response.getWriter().flush();
     }
     
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // Handle CORS preflight
         setCorsForSameOrigin(request, response);
-        response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Token");
         response.setStatus(HttpServletResponse.SC_OK);
     }
-
-    private boolean ensureAuthenticated(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    
+    /**
+     * Ensure user is authenticated
+     */
+    private boolean ensureAuthenticated(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"success\":false,\"error\":\"Unauthorized\"}");
+            response.setContentType("application/json;charset=UTF-8");
+            
+            JsonObject errorJson = new JsonObject();
+            errorJson.addProperty("success", false);
+            errorJson.addProperty("error", "Authentication required");
+            
+            response.getWriter().write(gson.toJson(errorJson));
             return false;
         }
         return true;
     }
-
+    
+    /**
+     * Set CORS headers for same-origin requests
+     */
     private void setCorsForSameOrigin(HttpServletRequest request, HttpServletResponse response) {
         String origin = request.getHeader("Origin");
-        if (origin != null && origin.contains(request.getServerName())) {
+        if (origin != null && (origin.contains(request.getServerName()) || 
+            origin.contains("localhost") || origin.contains("127.0.0.1"))) {
             response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
         }
     }
 }
