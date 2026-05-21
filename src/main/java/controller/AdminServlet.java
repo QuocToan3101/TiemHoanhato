@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
+import util.XSSProtection;
 
 import dao.CategoryDAO;
 import dao.ContactDAO;
@@ -205,15 +206,19 @@ public class AdminServlet extends HttpServlet {
             if (pathInfo.equals("/api/users")) {
                 String search = request.getParameter("search");
                 String statusFilter = request.getParameter("status");
+                // Sanitize input to mitigate XSS/unsafe input
+                if (search != null) search = XSSProtection.sanitize(search).trim();
+                if (statusFilter != null) statusFilter = XSSProtection.sanitize(statusFilter).trim();
                 List<User> users;
                 if (search != null && !search.trim().isEmpty()) {
                     users = userDAO.search(search); // Gọi method mới
                 } else {
                     users = userDAO.findAll();
                 }
-                if (statusFilter != null && !statusFilter.trim().isEmpty()) {
+                if (statusFilter != null && !statusFilter.isEmpty()) {
+                    final String statusSanitized = statusFilter;
                     users = users.stream()
-                        .filter(u -> statusFilter.equalsIgnoreCase(u.getStatus()))
+                        .filter(u -> statusSanitized.equalsIgnoreCase(u.getStatus()))
                         .collect(java.util.stream.Collectors.toList());
                 }
                 result.put("success", true);

@@ -37,7 +37,9 @@ public class AuthFilter implements Filter {
     // Các URL chỉ admin mới truy cập được
     private static final List<String> ADMIN_URLS = Arrays.asList(
         "/view/admin_1.jsp",
-        "/admin"
+        "/admin",
+        "/admin/",
+        "/api/admin/"
     );
     
     // Các URL không cần kiểm tra (static resources, login, register)
@@ -160,33 +162,37 @@ public class AuthFilter implements Filter {
             return true;
         }
 
-        // Static assets should always be publicly accessible.
-        if (path.startsWith("/css/") || path.startsWith("/js/") || path.startsWith("/fileJS/") ||
-            path.startsWith("/uploads/") || path.startsWith("/images/") || path.startsWith("/assets/")) {
-            return true;
-        }
+        // Remove query string for static asset checks
+        String pathNoQuery = path.split("\\?")[0];
 
-        String lowerPath = path.toLowerCase();
-        String[] staticExts = {
-            ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".ico",
-            ".woff", ".woff2", ".ttf", ".svg", ".eot", ".map", ".webp"
-        };
-        for (String ext : staticExts) {
-            if (lowerPath.endsWith(ext)) {
-                return true;
+        // Static assets should always be publicly accessible.
+        if (pathNoQuery.startsWith("/css/") || pathNoQuery.startsWith("/js/") || pathNoQuery.startsWith("/fileJS/") ||
+            pathNoQuery.startsWith("/uploads/") || pathNoQuery.startsWith("/images/") || pathNoQuery.startsWith("/assets/") ||
+            pathNoQuery.startsWith("/view/") ) {
+            // allow known static paths under /view/ when they reference asset files
+            String lowerPath = pathNoQuery.toLowerCase();
+            String[] staticExts = {
+                ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".ico",
+                ".woff", ".woff2", ".ttf", ".svg", ".eot", ".map", ".webp", ".scss"
+            };
+            for (String ext : staticExts) {
+                if (lowerPath.endsWith(ext)) {
+                    return true;
+                }
             }
         }
 
+        String lowerPath = pathNoQuery.toLowerCase();
         for (String publicUrl : PUBLIC_URLS) {
             if (publicUrl.endsWith("/")) {
-                if (path.startsWith(publicUrl)) {
+                if (pathNoQuery.startsWith(publicUrl)) {
                     return true;
                 }
             } else if (publicUrl.startsWith(".")) {
                 if (lowerPath.endsWith(publicUrl)) {
                     return true;
                 }
-            } else if (path.equals(publicUrl) || path.startsWith(publicUrl + "/")) {
+            } else if (pathNoQuery.equals(publicUrl) || pathNoQuery.startsWith(publicUrl + "/")) {
                 return true;
             }
         }

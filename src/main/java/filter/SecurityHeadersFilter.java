@@ -40,9 +40,9 @@ public class SecurityHeadersFilter implements Filter {
         
         // Content-Security-Policy: enable a safe policy allowing known CDNs and inline styles/scripts
         String csp = "default-src 'self'; " +
-                 "script-src 'self' 'unsafe-inline' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://www.google-analytics.com; " +
-                 "style-src 'self' 'unsafe-inline' https://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://stackpath.bootstrapcdn.com; " +
-                 "img-src 'self' data: https: http: blob:; " +
+                 "script-src 'self' 'unsafe-inline' https://cdn.hstatic.net http://cdn.hstatic.net https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://www.google-analytics.com; " +
+                 "style-src 'self' 'unsafe-inline' https://cdn.hstatic.net http://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://stackpath.bootstrapcdn.com; " +
+                 "img-src 'self' data: https: http: blob: https://file.hstatic.net http://file.hstatic.net; " +
                  "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
                  "connect-src 'self' https: wss:; " +
                  "frame-ancestors 'none';";
