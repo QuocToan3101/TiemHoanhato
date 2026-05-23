@@ -20,6 +20,15 @@ public class SessionCartItem implements Serializable {
     public SessionCartItem() {
     }
 
+    // Backward-compatible constructor
+    public SessionCartItem(int productId, String name, java.math.BigDecimal price, int quantity, String image) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.image = image;
+    }
+
     // Toàn bộ tham số constructor (được tối ưu hóa bằng Builder)
     private SessionCartItem(Builder builder) {
         this.productId = builder.productId;
