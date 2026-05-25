@@ -884,7 +884,6 @@
         @media (max-width: 768px) {
             .checkout-container {
                 padding: 1rem;
-                margin-top: calc(var(--height-head) + 10px);
             }
             
             .checkout-header h1 {
@@ -926,11 +925,6 @@
     </div>
     
     <div class="checkout-container">
-        <!-- Back Link -->
-        <a href="cart.jsp" class="back-to-cart">
-            <i class="fas fa-arrow-left"></i>
-            Quay lại giỏ hàng
-        </a>
         
         <!-- Page Header -->
         <div class="checkout-header">

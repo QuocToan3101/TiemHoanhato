@@ -198,10 +198,9 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         align-items: center;
 
         background: linear-gradient(
-            132deg,
-            rgba(250, 245, 239, 0.93) 0%,
-            rgba(255, 246, 237, 0.86) 45%,
-            rgba(249, 240, 230, 0.92) 100%
+            135deg,
+            rgba(250, 245, 239, 0.95) 0%,
+            rgba(255, 243, 235, 0.9) 100%
           ),
           url("https://images.unsplash.com/photo-1487070183336-b863922373d4?w=1600")
             center/cover;
@@ -214,44 +213,23 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         position: absolute;
 
-        top: -38%;
+        top: -50%;
 
-        right: -10%;
+        right: -20%;
 
-        width: 760px;
+        width: 800px;
 
-        height: 760px;
+        height: 800px;
 
         background: radial-gradient(
           circle,
-          rgba(201, 147, 102, 0.16) 0%,
-          rgba(201, 147, 102, 0.06) 38%,
-          transparent 72%
+          rgba(201, 147, 102, 0.1) 0%,
+          transparent 70%
         );
 
         border-radius: 50%;
 
-        animation: float 18s infinite ease-in-out;
-      }
-
-      .hero::after {
-        content: "";
-
-        position: absolute;
-
-        inset: auto auto -180px -120px;
-
-        width: 420px;
-
-        height: 420px;
-
-        background: radial-gradient(
-          circle,
-          rgba(170, 106, 63, 0.16) 0%,
-          transparent 68%
-        );
-
-        filter: blur(8px);
+        animation: float 20s infinite ease-in-out;
       }
 
       @keyframes float {
@@ -261,7 +239,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         }
 
         50% {
-          transform: translate(-24px, -36px) rotate(10deg);
+          transform: translate(-30px, -30px) rotate(180deg);
         }
       }
 
@@ -282,24 +260,24 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       .hero-content {
         display: grid;
 
-        grid-template-columns: minmax(0, 1.24fr) minmax(320px, 0.8fr);
+        grid-template-columns: 1.2fr 1fr;
 
-        gap: 3.5rem;
+        gap: 4rem;
 
         align-items: center;
       }
 
       .hero-text h1 {
-        font-size: clamp(3rem, 6.2vw, 5.3rem);
+        font-size: 5rem;
 
         font-weight: 800;
 
-        line-height: 1.03;
+        line-height: 1.1;
 
-        margin-bottom: 1.05rem;
+        margin-bottom: 1.5rem;
 
         background: linear-gradient(
-          132deg,
+          135deg,
           var(--brown-main),
           var(--primary-dark)
         );
@@ -312,254 +290,404 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       }
 
       .hero-text p {
-        max-width: 680px;
-
-        font-size: clamp(1.08rem, 2.2vw, 1.4rem);
+        font-size: 1.5rem;
 
         color: var(--brown-soft);
 
-        margin-bottom: 1.8rem;
+        margin-bottom: 2.5rem;
 
         font-style: italic;
       }
 
-      .hero-custom-card {
+      .hero-search {
+        background: white;
+
+        border-radius: 60px;
+
+        padding: 0.5rem;
+
+        display: flex;
+
+        align-items: center;
+
+        box-shadow: var(--shadow-lg);
+
+        margin-bottom: 2rem;
+
+        max-width: 600px;
+      }
+
+      .hero-search input {
+        flex: 1;
+
+        border: none;
+
+        outline: none;
+
+        padding: 1rem 1.5rem;
+
+        font-size: 1rem;
+
+        background: transparent;
+      }
+
+      .hero-search button {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+
+        color: white;
+
+        border: none;
+
+        padding: 1rem 2.5rem;
+
+        border-radius: 50px;
+
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: all 0.3s ease;
+
+        box-shadow: 0 4px 15px rgba(201, 147, 102, 0.3);
+      }
+
+      .hero-search button:hover {
+        transform: translateY(-2px);
+
+        box-shadow: 0 6px 20px rgba(201, 147, 102, 0.4);
+      }
+
+      .hero-buttons {
+        display: flex;
+
+        gap: 1.5rem;
+
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 1rem 2.5rem;
+
+        border-radius: 50px;
+
+        font-weight: 600;
+
+        font-size: 1.1rem;
+
+        cursor: pointer;
+
+        transition: all 0.3s ease;
+
+        text-decoration: none;
+
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 0.75rem;
+
+        border: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+
+        color: white;
+
+        box-shadow: 0 8px 20px rgba(201, 147, 102, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+
+        box-shadow: 0 12px 30px rgba(201, 147, 102, 0.4);
+      }
+
+      .btn-secondary {
+        background: white;
+
+        color: var(--brown-main);
+
+        border: 2px solid var(--primary);
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary);
+
+        color: white;
+
+        transform: translateY(-3px);
+      }
+
+      .hero-image {
         position: relative;
 
-        min-height: 320px;
+        perspective: 1000px;
+      }
 
-        border-radius: 34px;
+      .hero-card {
+        position: relative;
 
-        padding: 2rem;
+        background: white;
 
-        background:
-          linear-gradient(140deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 246, 238, 0.88) 100%),
-          radial-gradient(circle at top right, rgba(185, 129, 97, 0.2), transparent 34%),
-          radial-gradient(circle at bottom left, rgba(232, 196, 175, 0.22), transparent 28%);
+        border-radius: 30px;
 
-        box-shadow:
-          0 24px 48px rgba(60, 41, 34, 0.12),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        overflow: hidden;
 
-        backdrop-filter: blur(16px);
+        box-shadow: var(--shadow-lg);
 
-        -webkit-backdrop-filter: blur(16px);
+        transition: transform 0.6s ease;
+      }
+
+      .hero-badge {
+        position: absolute;
+
+        top: 1.5rem;
+
+        left: 1.5rem;
+
+        background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+
+        color: white;
+
+        padding: 0.5rem 1.25rem;
+
+        border-radius: 50px;
+
+        font-weight: 700;
+
+        font-size: 0.9rem;
+
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* Categories Section */
+
+      .categories {
+        padding: 5rem 0;
+
+        background: white;
+      }
+
+      .container {
+        max-width: 1400px;
+
+        margin: 0 auto;
+
+        padding: 0 2rem;
+      }
+
+      .section-header {
+        text-align: center;
+
+        margin-bottom: 4rem;
+      }
+
+      .section-title {
+        font-size: 3rem;
+
+        font-weight: 800;
+
+        margin-bottom: 1rem;
+
+        color: var(--brown-main);
+      }
+
+      .section-subtitle {
+        font-size: 1.2rem;
+
+        color: var(--brown-soft);
+      }
+
+      .categories-grid {
+        display: grid;
+
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+        gap: 2rem;
+      }
+
+      .category-card {
+        position: relative;
+
+        border-radius: 20px;
+
+        overflow: hidden;
+
+        cursor: pointer;
+
+        transition: all 0.4s ease;
+
+        aspect-ratio: 1;
+      }
+
+      .category-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .category-card img {
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+
+        transition: transform 0.6s ease;
+      }
+
+      .category-card:hover img {
+        transform: scale(1.1);
+      }
+
+      .category-overlay {
+        position: absolute;
+
+        bottom: 0;
+
+        left: 0;
+
+        right: 0;
+
+        background: linear-gradient(
+          180deg,
+          transparent 0%,
+          rgba(0, 0, 0, 0.8) 100%
+        );
+
+        padding: 2rem 1.5rem;
+
+        color: white;
+
+        transition: all 0.4s ease;
+      }
+
+      .category-card:hover .category-overlay {
+        background: linear-gradient(
+          180deg,
+          rgba(201, 147, 102, 0.9) 0%,
+          rgba(170, 106, 63, 0.95) 100%
+        );
+      }
+
+      .category-name {
+        font-size: 1.5rem;
+
+        font-weight: 700;
+
+        margin: 0;
+      }
+
+      /* Products Section */
+
+      .products {
+        padding: 5rem 0;
+
+        background: var(--bg-light);
+      }
+
+      .products-grid {
+        display: grid;
+
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+
+        gap: 2rem;
+      }
+
+      .product-card {
+        background: white;
+
+        border-radius: 20px;
+
+        overflow: hidden;
+
+        transition: all 0.4s ease;
+
+        box-shadow: var(--shadow-sm);
+      }
+
+      .product-card:hover {
+        transform: translateY(-10px);
+
+        box-shadow: var(--shadow-lg);
+      }
+
+      .product-image {
+        position: relative;
+
+        width: 100%;
+
+        height: 300px;
 
         overflow: hidden;
       }
 
-      .hero-custom-card::after {
-        content: "";
+      .product-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #e74c3c;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 2;
+      }
 
+      .product-image img {
+        width: 100%;
+
+        height: 100%;
+
+        object-fit: cover;
+
+        transition: transform 0.6s ease;
+      }
+
+      .product-card:hover .product-image img {
+        transform: scale(1.1);
+      }
+
+      .product-actions {
         position: absolute;
 
-        inset: auto -8% -18% auto;
+        top: 1rem;
 
-        width: 220px;
+        right: 1rem;
 
-        height: 220px;
-
-        background: radial-gradient(circle, rgba(171, 107, 63, 0.16), transparent 65%);
-
-        filter: blur(2px);
-        pointer-events: none;
-      }
-
-      .hero-custom-badge {
-        display: inline-flex;
-
-        align-items: center;
-
-        gap: 0.5rem;
-
-        padding: 0.55rem 0.9rem;
-
-        border-radius: 999px;
-
-        background: rgba(170, 106, 63, 0.08);
-
-        color: var(--primary-dark);
-
-        font-size: 0.92rem;
-
-        font-weight: 700;
-
-        letter-spacing: 0.3px;
-      }
-
-      .hero-custom-title {
-        margin: 1rem 0 0.75rem;
-
-        font-size: clamp(2.4rem, 4.6vw, 4.1rem);
-
-        line-height: 1.02;
-
-        color: var(--brown-main);
-      }
-
-      .hero-custom-copy {
-        max-width: 720px;
-
-        margin: 0 0 1.25rem;
-
-        font-size: 1.06rem;
-
-        line-height: 1.75;
-
-        color: rgba(97, 72, 58, 0.92);
-      }
-
-      .hero-custom-points {
         display: flex;
 
-        flex-wrap: wrap;
-
-        gap: 0.7rem;
-
-        margin-bottom: 1.4rem;
-      }
-
-      .hero-custom-point {
-        display: inline-flex;
-
-        align-items: center;
-
-        gap: 0.45rem;
-
-        padding: 0.7rem 0.95rem;
-
-        border-radius: 999px;
-
-        background: rgba(255, 255, 255, 0.78);
-
-        color: var(--brown-main);
-
-        box-shadow: 0 10px 22px rgba(60, 41, 34, 0.08);
-
-        font-size: 0.96rem;
-
-        font-weight: 600;
-      }
-
-      .hero-custom-actions {
-        display: flex;
-
-        flex-wrap: wrap;
-
-        gap: 0.9rem;
-
-      }
-
-      .hero-custom-cta,
-      .hero-custom-secondary {
-        display: inline-flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        min-height: 58px;
-
-        padding: 0 1.35rem;
-
-        border-radius: 999px;
-
-        text-decoration: none;
-
-        font-weight: 700;
-
-        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-      }
-
-      .hero-custom-cta {
-        background: linear-gradient(135deg, #b88461 0%, #aa6a3f 56%, #915d43 100%);
-
-        color: #fff;
-
-        box-shadow: 0 18px 34px rgba(170, 106, 63, 0.28);
-      }
-
-      .hero-custom-secondary {
-        color: var(--brown-main);
-
-        background: rgba(255, 255, 255, 0.84);
-
-        border: 1px solid rgba(170, 106, 63, 0.16);
-      }
-
-      .hero-custom-cta:hover,
-      .hero-custom-secondary:hover {
-        transform: translateY(-2px);
-      }
-
-      .hero-custom-panel {
-        margin-left: auto;
-
-        max-width: 360px;
-
-        padding: 1.3rem;
-
-        border-radius: 26px;
-
-        background: rgba(255, 255, 255, 0.72);
-
-        border: 1px solid rgba(170, 106, 63, 0.12);
-
-        box-shadow: 0 14px 28px rgba(60, 41, 34, 0.08);
-      }
-
-      .hero-custom-panel-title {
-        margin: 0 0 0.85rem;
-
-        font-size: 1.1rem;
-
-        color: var(--brown-main);
-      }
-
-      .hero-custom-preview {
-        display: grid;
+        flex-direction: column;
 
         gap: 0.75rem;
+
+        opacity: 0;
+
+        transform: translateX(20px);
+
+        transition: all 0.3s ease;
       }
-
-      .hero-custom-preview-item {
-        display: flex;
-
-        align-items: center;
-
-        gap: 0.85rem;
-
-        padding: 0.75rem 0.85rem;
-
-        border-radius: 18px;
-
-        background: #fff;
-        box-shadow: 0 8px 16px rgba(60, 41, 34, 0.06);
-      }
-
-      .hero-custom-preview-dot {
-        width: 12px;
-
-        height: 12px;
-
-        border-radius: 999px;
-
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      }
-
-      .hero-custom-preview-item strong {
-        display: block;
-
-        color: var(--brown-main);
-      }
-
-      .hero-custom-preview-item span {
-        color: rgba(97, 72, 58, 0.78);
-
-        font-size: 0.92rem;
-      }
-
-      .hero-recommend {
 
       .product-card:hover .product-actions {
         opacity: 1;
@@ -590,30 +718,7 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
 
         box-shadow: var(--shadow-md);
       }
-      /*
-      .product-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: #e74c3c;
-        color: #fff;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        z-index: 2;
-      }
 
-      .product-image img {
-        width: 100%;
-
-        height: 100%;
-
-        object-fit: cover;
-
-        transition: transform 0.6s ease;
-      }
-      */
       .action-btn:hover {
         background: var(--primary);
 
@@ -784,29 +889,6 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         outline: none;
       }
       
-      .product-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: #e74c3c;
-        color: #fff;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        z-index: 2;
-      }
-
-      .product-image img {
-        width: 100%;
-
-        height: 100%;
-
-        object-fit: cover;
-
-        transition: transform 0.6s ease;
-      }
-      
       .newsletter-form input::placeholder {
         color: #999;
       }
@@ -923,81 +1005,31 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         .hero-content {
           grid-template-columns: 1fr;
 
-          gap: 2.4rem;
+          gap: 3rem;
         }
 
-        .hero-text {
-          order: 1;
+        .hero-text h1 {
+          font-size: 3.5rem;
         }
 
-        .hero-recommend {
-          order: 2;
-
-          max-width: 760px;
+        .hero-card {
+          max-width: 500px;
 
           margin: 0 auto;
         }
       }
 
       @media (max-width: 768px) {
-        .hero {
-          min-height: auto;
-
-          padding: 3.4rem 0 3rem;
+        .hero-text h1 {
+          font-size: 2.5rem;
         }
 
-        .hero-container {
-          padding: 0 1.2rem;
-        }
-
-        .hero-ai-dropzone {
-          min-height: 214px;
-
-          padding: 1.65rem 1.25rem;
-        }
-
-        .hero-ai-main {
+        .hero-text p {
           font-size: 1.2rem;
         }
 
-        .hero-ai-sub {
-          font-size: 0.95rem;
-        }
-
-        .hero-ai-cta {
-          min-height: 58px;
-
-          font-size: 1.1rem;
-        }
-
-        .hero-recommend {
-          padding: 1.2rem;
-        }
-
-        .hero-recommend h3 {
-          font-size: 1.42rem;
-        }
-
-        .hero-recommend-card {
-          grid-template-columns: 92px 1fr;
-
-          border-radius: 18px;
-
-          padding: 0.55rem;
-        }
-
-        .hero-recommend-card img {
-          width: 92px;
-
-          height: 92px;
-        }
-
-        .hero-recommend-name {
-          font-size: 1.08rem;
-        }
-
-        .hero-recommend-price {
-          font-size: 0.98rem;
+        .hero-buttons {
+          flex-direction: column;
         }
 
         .btn {
@@ -1356,13 +1388,6 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
-    <!-- SweetAlert2 CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
-
-    <!-- Notification System Utility -->
-    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -1468,109 +1493,53 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       <section class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <div class="hero-custom-card animate">
-              <div class="hero-custom-badge">
-                <span>✦</span>
-                <span>Thiết kế riêng theo ý bạn</span>
+            <div class="hero-text animate">
+              <h1>Tiệm Hoa Nhà Tớ</h1>
+
+              <p>Hoa tươi mỗi ngày – Gửi yêu thương trọn vẹn</p>
+
+              <div class="hero-search">
+                <input
+                  type="text"
+                  placeholder="Tìm bó hoa, giỏ hoa, lan hồ điệp..."
+                  id="hero-search-input"
+                />
+                <button type="button" id="hero-search-btn">Tìm kiếm</button>
               </div>
 
-              <h1 class="hero-custom-title">Hãy tạo những bó hoa của riêng bạn</h1>
+              <div class="hero-buttons">
+                <a href="#products" class="btn btn-primary">
+                  Mua ngay
 
-              <p class="hero-custom-copy">
-                Chọn từng chi tiết cho bó hoa bạn muốn tặng: loại hoa, hoa chính, hoa phụ, số lượng, giấy gói và phụ kiện đi kèm.
-                Tất cả được trình bày trên một giao diện hiện đại, tinh tế và dễ dùng như các website ecommerce cao cấp.
-              </p>
-
-              <div class="hero-custom-points">
-                <span class="hero-custom-point">Chọn hoa theo phong cách</span>
-                <span class="hero-custom-point">Gợi ý phối màu hài hòa</span>
-                <span class="hero-custom-point">Tối ưu cho quà tặng & sự kiện</span>
-              </div>
-
-              <div class="hero-custom-actions">
-                <a href="${pageContext.request.contextPath}/custom-bouquet" class="hero-custom-cta">
-                  Bắt đầu custom ngay
+                  <span>→</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/san-pham?category=bo-hoa" class="hero-custom-secondary">
-                  Xem mẫu bó hoa sẵn
-                </a>
-              </div>
 
-              <div class="hero-custom-panel">
-                <h3 class="hero-custom-panel-title">Tùy chỉnh nhanh</h3>
-                <div class="hero-custom-preview">
-                  <div class="hero-custom-preview-item">
-                    <span class="hero-custom-preview-dot"></span>
-                    <div>
-                      <strong>Hoa chính & hoa phụ</strong>
-                      <span>Rose, tulip, baby, cúc, mẫu đơn...</span>
-                    </div>
-                  </div>
-                  <div class="hero-custom-preview-item">
-                    <span class="hero-custom-preview-dot"></span>
-                    <div>
-                      <strong>Giấy gói & phụ kiện</strong>
-                      <span>Ribbon, nơ, thiệp, phụ kiện tặng kèm</span>
-                    </div>
-                  </div>
-                </div>
+                <a href="#categories" class="btn btn-secondary">
+                  Khám phá bộ sưu tập
+                </a>
               </div>
             </div>
 
-            <div class="hero-recommend animate">
-              <h3>Gợi ý cho bạn</h3>
-
-              <div class="hero-recommend-list">
-                <c:forEach var="product" items="${bestSellerProducts}" begin="0" end="2">
-                  <a
-                    href="${pageContext.request.contextPath}/products/${product.slug}"
-                    class="hero-recommend-card"
-                  >
-                    <img
-                      src="${product.image != null ? product.image : 'https://via.placeholder.com/240x240?text=Flower'}"
-                      alt="<c:out value='${product.name}'/>"
-                      onerror="this.src='https://via.placeholder.com/240x240?text=Flower'"
-                    />
-
-                    <div>
-                      <div class="hero-recommend-name"><c:out value="${product.name}" /></div>
-                      <div class="hero-recommend-price">
-                        <c:choose>
-                          <c:when test="${product.salePrice != null && product.salePrice > 0}">
-                            <fmt:formatNumber value="${product.salePrice}" type="number" /> VND
-                          </c:when>
-                          <c:otherwise>
-                            <fmt:formatNumber value="${product.price}" type="number" /> VND
-                          </c:otherwise>
-                        </c:choose>
-                      </div>
-                    </div>
-                  </a>
-                </c:forEach>
-
-                <c:if test="${empty bestSellerProducts}">
-                  <a href="#products" class="hero-recommend-card">
-                    <img
-                      src="https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?w=600"
-                      alt="Hoa kem pastel"
-                    />
-                    <div>
-                      <div class="hero-recommend-name">Cream Garden</div>
-                      <div class="hero-recommend-price">1,290,000 VND</div>
-                    </div>
-                  </a>
-
-                  <a href="#products" class="hero-recommend-card">
-                    <img
-                      src="https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=600"
-                      alt="Hoa nâu pastel"
-                    />
-                    <div>
-                      <div class="hero-recommend-name">Soft Mocha Bloom</div>
-                      <div class="hero-recommend-price">1,490,000 VND</div>
-                    </div>
-                  </a>
-                </c:if>
+            <div class="hero-image animate">
+              <div class="hero-card">
+                <span class="hero-badge">New</span>
+                <model-viewer
+                  src="/flowerstore/view/bouquet.glb"
+                  alt="Bó hoa 3D"
+                  camera-controls
+                  auto-rotate
+                  style="
+                    width: 349px;
+                    height: 384px;
+                    background: #fff;
+                    border-radius: 20px;
+                    margin-left: 100px;
+                  "
+                  ar
+                  shadow-intensity="1"
+                  exposure="1"
+                >
+                </model-viewer>
               </div>
             </div>
           </div>
@@ -2280,280 +2249,27 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         });
       }
 
-      // AI Image Search functionality
-      const heroDropzone = document.getElementById("hero-ai-dropzone");
-      const heroImageInput = document.getElementById("hero-image-input");
-      const heroPreview = document.getElementById("hero-ai-preview");
-      const heroPreviewImage = document.getElementById("hero-ai-preview-image");
-      const heroProcessing = document.getElementById("hero-ai-processing");
-      const heroSearchBtn = document.getElementById("hero-ai-search-btn");
-      const heroRecommendList = document.querySelector(".hero-recommend-list");
+      // Search functionality
+      const searchButton = document.querySelector(".hero-search button");
+      const searchInput = document.querySelector(".hero-search input");
 
-      let heroSelectedSource = "";
-      let heroSelectedFile = null;
-      let heroSelectedImageUrl = "";
-      let heroPreviewObjectUrl = "";
-      let heroSuggestedQuery = "";
-      let heroIsAnalyzing = false;
+      if (searchButton && searchInput) {
+        searchButton.addEventListener("click", function() {
+          const searchTerm = searchInput.value.trim();
 
-      function looksLikeImageUrl(value) {
-        if (!value) return false;
-        try {
-          const url = new URL(value.trim());
-          if (!["http:", "https:"].includes(url.protocol)) return false;
-          return /\.(jpg|jpeg|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(url.pathname + url.search) || true;
-        } catch (error) {
-          return false;
-        }
-      }
-
-      function setHeroProcessingState(isProcessing) {
-        heroIsAnalyzing = isProcessing;
-        if (heroProcessing) {
-          heroProcessing.classList.toggle("active", isProcessing);
-        }
-        if (heroSearchBtn) {
-          heroSearchBtn.disabled = isProcessing;
-        }
-      }
-
-      function showHeroPreview(source) {
-        if (!heroPreview || !heroPreviewImage) return;
-        heroPreviewImage.src = source;
-        heroPreview.classList.add("active");
-      }
-
-      async function analyzeHeroImageAndSuggest(source) {
-        if (!source) return;
-        setHeroProcessingState(true);
-        showHeroPreview(source);
-        await new Promise((resolve) => setTimeout(resolve, 900));
-        setHeroProcessingState(false);
-      }
-
-      async function handleHeroFile(file) {
-        if (!file || !file.type || !file.type.startsWith("image/")) {
-          showNotification("Vui lòng chọn file ảnh hợp lệ");
-          return;
-        }
-
-        if (heroPreviewObjectUrl) {
-          URL.revokeObjectURL(heroPreviewObjectUrl);
-          heroPreviewObjectUrl = "";
-        }
-
-        const previewUrl = URL.createObjectURL(file);
-        heroPreviewObjectUrl = previewUrl;
-        heroSelectedSource = previewUrl;
-        heroSelectedFile = file;
-        heroSelectedImageUrl = "";
-        await analyzeHeroImageAndSuggest(previewUrl);
-      }
-
-      async function handleHeroUrl(url) {
-        if (!looksLikeImageUrl(url)) {
-          showNotification("Link ảnh chưa hợp lệ");
-          return;
-        }
-
-        if (heroPreviewObjectUrl) {
-          URL.revokeObjectURL(heroPreviewObjectUrl);
-          heroPreviewObjectUrl = "";
-        }
-
-        heroSelectedSource = url.trim();
-        heroSelectedFile = null;
-        heroSelectedImageUrl = heroSelectedSource;
-        await analyzeHeroImageAndSuggest(heroSelectedSource);
-      }
-
-      function renderHeroRecommendations(products) {
-        if (!heroRecommendList || !products || !products.length) {
-          return;
-        }
-
-        const contextPath = "${pageContext.request.contextPath}";
-        const topProducts = products.slice(0, 3);
-        const escapeHtml = (value) =>
-          String(value || "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/\"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-
-        heroRecommendList.innerHTML = topProducts
-          .map((product) => {
-            const image = product.image || "https://via.placeholder.com/240x240?text=Flower";
-            const slug = product.slug || "#products";
-            const name = product.name || "Flower";
-            const priceValue = product.salePrice && product.salePrice > 0
-              ? product.salePrice
-              : product.price;
-            const price = Number(priceValue || 0).toLocaleString("vi-VN") + " VND";
-            const safeImage = escapeHtml(image);
-            const safeSlug = escapeHtml(slug);
-            const safeName = escapeHtml(name);
-            const safePrice = escapeHtml(price);
-
-            return `
-              <a href="${contextPath}/products/${safeSlug}" class="hero-recommend-card">
-                <img src="${safeImage}" alt="${safeName}" onerror="this.src='https://via.placeholder.com/240x240?text=Flower'" />
-                <div>
-                  <div class="hero-recommend-name">${safeName}</div>
-                  <div class="hero-recommend-price">${safePrice}</div>
-                </div>
-              </a>
-            `;
-          })
-          .join("");
-      }
-
-      async function fileFromImageUrl(url) {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Không tải được ảnh từ link đã dán");
-        }
-        const blob = await response.blob();
-        const extension = blob.type.includes("png") ? "png" : "jpg";
-        return new File([blob], `pasted-image.${extension}`, { type: blob.type || "image/jpeg" });
-      }
-
-      async function callImageSearchApi() {
-        let fileToSearch = heroSelectedFile;
-
-        if (!fileToSearch && heroSelectedImageUrl) {
-          fileToSearch = await fileFromImageUrl(heroSelectedImageUrl);
-        }
-
-        if (!fileToSearch) {
-          throw new Error("Không có ảnh để phân tích");
-        }
-
-        const formData = new FormData();
-        formData.append("file", fileToSearch, fileToSearch.name || "upload.jpg");
-
-        const contextPath = "${pageContext.request.contextPath}";
-        const response = await fetch(`${contextPath}/api/image-search`, {
-          method: "POST",
-          body: formData,
-        });
-
-        const result = await response.json();
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "AI chưa phân tích được ảnh này");
-        }
-
-        return result;
-      }
-
-      if (heroDropzone && heroImageInput) {
-        heroDropzone.addEventListener("click", () => heroImageInput.click());
-
-        heroDropzone.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            heroImageInput.click();
+          if (searchTerm) {
+            // Redirect to search page with query parameter
+            const contextPath = '${pageContext.request.contextPath}';
+            window.location.href = contextPath + '/search?q=' + encodeURIComponent(searchTerm);
+          } else {
+            showNotification('Điền từ khóa tìm kiếm');
           }
         });
 
-        heroImageInput.addEventListener("change", async (event) => {
-          const file = event.target.files && event.target.files[0];
-          if (file) {
-            await handleHeroFile(file);
-          }
-        });
-
-        ["dragenter", "dragover"].forEach((eventName) => {
-          heroDropzone.addEventListener(eventName, (event) => {
-            event.preventDefault();
-            heroDropzone.classList.add("dragover");
-          });
-        });
-
-        ["dragleave", "drop"].forEach((eventName) => {
-          heroDropzone.addEventListener(eventName, (event) => {
-            event.preventDefault();
-            heroDropzone.classList.remove("dragover");
-          });
-        });
-
-        heroDropzone.addEventListener("drop", async (event) => {
-          const file = event.dataTransfer && event.dataTransfer.files
-            ? event.dataTransfer.files[0]
-            : null;
-          if (file) {
-            await handleHeroFile(file);
-          }
-        });
-
-        heroDropzone.addEventListener("paste", async (event) => {
-          const clipboard = event.clipboardData;
-          if (!clipboard) return;
-
-          const fileItem = Array.from(clipboard.items || []).find(
-            (item) => item.type && item.type.startsWith("image/")
-          );
-          if (fileItem) {
-            const file = fileItem.getAsFile();
-            if (file) {
-              event.preventDefault();
-              await handleHeroFile(file);
-              return;
-            }
-          }
-
-          const pastedText = clipboard.getData("text");
-          if (looksLikeImageUrl(pastedText)) {
-            event.preventDefault();
-            await handleHeroUrl(pastedText);
-          }
-        });
-      }
-
-      document.addEventListener("paste", async (event) => {
-        const active = document.activeElement;
-        if (!heroDropzone || active !== heroDropzone) return;
-
-        const pastedText = event.clipboardData
-          ? event.clipboardData.getData("text")
-          : "";
-        if (looksLikeImageUrl(pastedText)) {
-          event.preventDefault();
-          await handleHeroUrl(pastedText);
-        }
-      });
-
-      if (heroSearchBtn) {
-        heroSearchBtn.addEventListener("click", async () => {
-          if (heroIsAnalyzing) {
-            return;
-          }
-
-          if (!heroSelectedSource) {
-            showNotification("Thêm ảnh hoa để AI bắt đầu phân tích");
-            return;
-          }
-
-          try {
-            setHeroProcessingState(true);
-            const result = await callImageSearchApi();
-
-            heroSuggestedQuery = result.query || result.prediction || "hoa tươi";
-            if (Array.isArray(result.products) && result.products.length > 0) {
-              renderHeroRecommendations(result.products);
-            }
-
-            const contextPath = "${pageContext.request.contextPath}";
-            window.location.href =
-              contextPath +
-              "/search?q=" +
-              encodeURIComponent(heroSuggestedQuery) +
-              "&source=ai-image";
-          } catch (error) {
-            showNotification(error.message || "Không thể phân tích ảnh lúc này");
-          } finally {
-            setHeroProcessingState(false);
+        searchInput.addEventListener("keypress", function(e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            searchButton.click();
           }
         });
       }
@@ -2807,6 +2523,20 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         });
       }
 
+      // Add floating animation to hero badge
+
+      const heroBadge = document.querySelector(".hero-badge");
+
+      if (heroBadge) {
+        setInterval(() => {
+          heroBadge.style.transform = "scale(1.05) rotate(5deg)";
+
+          setTimeout(() => {
+            heroBadge.style.transform = "scale(1) rotate(0deg)";
+          }, 200);
+        }, 2000);
+      }
+
       // Instagram items click
 
       const instagramItems = document.querySelectorAll(".instagram-item");
@@ -2884,28 +2614,38 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       function addToCartHome(productId) {
         fetch("${pageContext.request.contextPath}/api/cart/add", {
           method: "POST",
-          headers: withCsrfHeaders({
-            "Content-Type": "application/x-www-form-urlencoded",
-          }),
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: "productId=" + productId + "&quantity=1",
         })
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
-              showSuccess("Đã thêm vào giỏ hàng!");
-              if (typeof updateCartCount === "function") {
-                updateCartCount(data.cartCount || data.itemCount || 0);
+              alert("Đã thêm vào giỏ hàng!");
+              // Update cart count if exists
+              const cartCount = document.querySelector(".number-cart");
+              if (cartCount && data.cartCount) {
+                cartCount.textContent = data.cartCount;
               }
             } else {
-              showError(data.message || "Có lỗi xảy ra");
+              if (data.message && data.message.includes("đăng nhập")) {
+                window.location.href =
+                  "${pageContext.request.contextPath}/login";
+              } else {
+                alert(data.message || "Có lỗi xảy ra");
+              }
             }
           })
           .catch((error) => {
             console.error("Error:", error);
-            showError("Có lỗi xảy ra khi thêm vào giỏ hàng");
+            alert("Có lỗi xảy ra khi thêm vào giỏ hàng");
           });
       }
     </script>
+
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
 
     <script
       type="text/javascript"

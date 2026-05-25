@@ -508,6 +508,91 @@
             text-decoration: none;
             font-weight: 600;
         }
+
+        .custom-bouquet-fab {
+            position: fixed;
+            right: 24px;
+            bottom: 28px;
+            z-index: 9998;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px 12px 14px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #c99366 0%, #aa6a3f 100%);
+            color: #fff;
+            text-decoration: none;
+            box-shadow: 0 18px 40px rgba(170, 106, 63, 0.35);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+            animation: fabPulse 2.8s ease-in-out infinite;
+        }
+
+        .custom-bouquet-fab:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 22px 48px rgba(170, 106, 63, 0.45);
+            filter: brightness(1.03);
+        }
+
+        .custom-bouquet-fab__icon {
+            width: 44px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.22);
+            font-size: 22px;
+            flex: 0 0 auto;
+        }
+
+        .custom-bouquet-fab__text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .custom-bouquet-fab__text strong {
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+        }
+
+        .custom-bouquet-fab__text span {
+            font-size: 0.78rem;
+            opacity: 0.92;
+        }
+
+        .custom-bouquet-fab__badge {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff2c6;
+            box-shadow: 0 0 0 0 rgba(255, 242, 198, 0.65);
+            animation: fabGlow 1.8s ease-out infinite;
+        }
+
+        @keyframes fabPulse {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @keyframes fabGlow {
+            0% { box-shadow: 0 0 0 0 rgba(255, 242, 198, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 242, 198, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 242, 198, 0); }
+        }
+
+        @media (max-width: 768px) {
+            .custom-bouquet-fab {
+                right: 16px;
+                bottom: 18px;
+                padding: 10px 12px 10px 10px;
+            }
+
+            .custom-bouquet-fab__text span {
+                display: none;
+            }
+        }
         
         /* PAGINATION */
         .pagination-container {
@@ -758,6 +843,20 @@
     <%@ include file="partials/header.jsp" %>
     
     <main>
+
+    <a
+        class="custom-bouquet-fab"
+        href="${pageContext.request.contextPath}/custom-bouquet"
+        aria-label="Tạo bó hoa riêng"
+        title="Tạo bó hoa riêng"
+    >
+        <span class="custom-bouquet-fab__icon">🌷</span>
+        <span class="custom-bouquet-fab__text">
+            <strong>Custom hoa</strong>
+            <span>Tạo bó hoa riêng</span>
+        </span>
+        <span class="custom-bouquet-fab__badge" aria-hidden="true"></span>
+    </a>
         <!-- HERO -->
         <section class="product-hero">
             <div class="product-hero-inner">

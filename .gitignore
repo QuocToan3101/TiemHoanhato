@@ -18,10 +18,6 @@ WEB-INF/classes/
 *.log
 *.tmp
 
-# ML service runtime artifacts
-ml-service/.venv/
-ml-service/static/uploads/
-
 # Executables
 *.swf
 *.air
