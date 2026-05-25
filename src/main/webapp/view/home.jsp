@@ -323,188 +323,221 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         font-style: italic;
       }
 
-      .hero-ai-search {
-        max-width: 730px;
-      }
+      .hero-custom-card {
+        position: relative;
 
-      .hero-ai-dropzone {
-        min-height: 248px;
-
-        border: none;
+        min-height: 320px;
 
         border-radius: 34px;
 
-        padding: 2.3rem 2rem;
+        padding: 2rem;
 
-        background: linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.74) 0%,
-          rgba(255, 250, 245, 0.68) 100%
-        );
+        background:
+          linear-gradient(140deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 246, 238, 0.88) 100%),
+          radial-gradient(circle at top right, rgba(185, 129, 97, 0.2), transparent 34%),
+          radial-gradient(circle at bottom left, rgba(232, 196, 175, 0.22), transparent 28%);
 
         box-shadow:
-          0 22px 45px rgba(60, 41, 34, 0.1),
-          inset 0 1px 0 rgba(255, 255, 255, 0.7);
+          0 24px 48px rgba(60, 41, 34, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(16px);
 
-        -webkit-backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(16px);
 
+        overflow: hidden;
+      }
+
+      .hero-custom-card::after {
+        content: "";
+
+        position: absolute;
+
+        inset: auto -8% -18% auto;
+
+        width: 220px;
+
+        height: 220px;
+
+        background: radial-gradient(circle, rgba(171, 107, 63, 0.16), transparent 65%);
+
+        filter: blur(2px);
+        pointer-events: none;
+      }
+
+      .hero-custom-badge {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 0.5rem;
+
+        padding: 0.55rem 0.9rem;
+
+        border-radius: 999px;
+
+        background: rgba(170, 106, 63, 0.08);
+
+        color: var(--primary-dark);
+
+        font-size: 0.92rem;
+
+        font-weight: 700;
+
+        letter-spacing: 0.3px;
+      }
+
+      .hero-custom-title {
+        margin: 1rem 0 0.75rem;
+
+        font-size: clamp(2.4rem, 4.6vw, 4.1rem);
+
+        line-height: 1.02;
+
+        color: var(--brown-main);
+      }
+
+      .hero-custom-copy {
+        max-width: 720px;
+
+        margin: 0 0 1.25rem;
+
+        font-size: 1.06rem;
+
+        line-height: 1.75;
+
+        color: rgba(97, 72, 58, 0.92);
+      }
+
+      .hero-custom-points {
         display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 0.7rem;
+
+        margin-bottom: 1.4rem;
+      }
+
+      .hero-custom-point {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 0.45rem;
+
+        padding: 0.7rem 0.95rem;
+
+        border-radius: 999px;
+
+        background: rgba(255, 255, 255, 0.78);
+
+        color: var(--brown-main);
+
+        box-shadow: 0 10px 22px rgba(60, 41, 34, 0.08);
+
+        font-size: 0.96rem;
+
+        font-weight: 600;
+      }
+
+      .hero-custom-actions {
+        display: flex;
+
+        flex-wrap: wrap;
+
+        gap: 0.9rem;
+
+      }
+
+      .hero-custom-cta,
+      .hero-custom-secondary {
+        display: inline-flex;
 
         align-items: center;
 
         justify-content: center;
 
-        position: relative;
+        min-height: 58px;
 
-        cursor: pointer;
+        padding: 0 1.35rem;
 
-        transition: transform 0.35s ease, box-shadow 0.35s ease,
-          background 0.35s ease;
+        border-radius: 999px;
+
+        text-decoration: none;
+
+        font-weight: 700;
+
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
       }
 
-      .hero-ai-dropzone:hover {
-        transform: translateY(-2px);
+      .hero-custom-cta {
+        background: linear-gradient(135deg, #b88461 0%, #aa6a3f 56%, #915d43 100%);
 
-        box-shadow:
-          0 28px 58px rgba(60, 41, 34, 0.12),
-          inset 0 1px 0 rgba(255, 255, 255, 0.78);
+        color: #fff;
+
+        box-shadow: 0 18px 34px rgba(170, 106, 63, 0.28);
       }
 
-      .hero-ai-dropzone.dragover {
-        background: linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.82) 0%,
-          rgba(245, 227, 210, 0.6) 100%
-        );
-
-        transform: scale(1.01);
-      }
-
-      .hero-ai-dropzone:focus-visible {
-        outline: 2px solid rgba(170, 106, 63, 0.45);
-
-        outline-offset: 3px;
-      }
-
-      .hero-ai-default {
-        text-align: center;
-
-        color: var(--brown-soft);
-      }
-
-      .hero-ai-icon {
-        width: 54px;
-
-        height: 54px;
-
-        margin: 0 auto 1rem;
-
-        color: var(--primary-dark);
-
-        opacity: 0.85;
-      }
-
-      .hero-ai-main {
-        display: block;
-
-        font-size: 1.4rem;
-
+      .hero-custom-secondary {
         color: var(--brown-main);
 
-        margin-bottom: 0.35rem;
+        background: rgba(255, 255, 255, 0.84);
 
-        letter-spacing: 0.2px;
+        border: 1px solid rgba(170, 106, 63, 0.16);
       }
 
-      .hero-ai-sub {
-        font-size: 1.02rem;
-
-        color: rgba(108, 88, 69, 0.9);
+      .hero-custom-cta:hover,
+      .hero-custom-secondary:hover {
+        transform: translateY(-2px);
       }
 
-      .hero-ai-preview {
-        position: absolute;
+      .hero-custom-panel {
+        margin-left: auto;
 
-        inset: 1.1rem;
+        max-width: 360px;
+
+        padding: 1.3rem;
 
         border-radius: 26px;
 
-        overflow: hidden;
+        background: rgba(255, 255, 255, 0.72);
 
-        background: rgba(255, 255, 255, 0.64);
+        border: 1px solid rgba(170, 106, 63, 0.12);
 
-        display: none;
-
-        opacity: 0;
-
-        transform: scale(0.98);
+        box-shadow: 0 14px 28px rgba(60, 41, 34, 0.08);
       }
 
-      .hero-ai-preview.active {
+      .hero-custom-panel-title {
+        margin: 0 0 0.85rem;
+
+        font-size: 1.1rem;
+
+        color: var(--brown-main);
+      }
+
+      .hero-custom-preview {
+        display: grid;
+
+        gap: 0.75rem;
+      }
+
+      .hero-custom-preview-item {
         display: flex;
-
-        align-items: flex-end;
-
-        justify-content: flex-start;
-
-        animation: previewReveal 0.45s ease forwards;
-      }
-
-      @keyframes previewReveal {
-        from {
-          opacity: 0;
-
-          transform: scale(0.97);
-        }
-
-        to {
-          opacity: 1;
-
-          transform: scale(1);
-        }
-      }
-
-      .hero-ai-preview img {
-        width: 100%;
-
-        height: 100%;
-
-        object-fit: cover;
-      }
-
-      .hero-ai-processing {
-        position: absolute;
-
-        left: 1rem;
-
-        right: 1rem;
-
-        bottom: 1rem;
-
-        background: rgba(255, 255, 255, 0.86);
-
-        border-radius: 16px;
-
-        padding: 0.7rem 1rem;
-
-        display: none;
 
         align-items: center;
 
-        gap: 0.7rem;
+        gap: 0.85rem;
 
-        box-shadow: 0 10px 20px rgba(60, 41, 34, 0.1);
+        padding: 0.75rem 0.85rem;
+
+        border-radius: 18px;
+
+        background: #fff;
+        box-shadow: 0 8px 16px rgba(60, 41, 34, 0.06);
       }
 
-      .hero-ai-processing.active {
-        display: flex;
-
-        animation: fadeInUp 0.35s ease;
-      }
-
-      .hero-ai-dot {
+      .hero-custom-preview-dot {
         width: 12px;
 
         height: 12px;
@@ -512,387 +545,21 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
         border-radius: 999px;
 
         background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-
-        box-shadow: 0 0 0 0 rgba(170, 106, 63, 0.45);
-
-        animation: aiPulse 1.35s infinite;
       }
 
-      @keyframes aiPulse {
-        0% {
-          box-shadow: 0 0 0 0 rgba(170, 106, 63, 0.4);
-        }
-
-        80%,
-        100% {
-          box-shadow: 0 0 0 13px rgba(170, 106, 63, 0);
-        }
-      }
-
-      .hero-ai-processing p {
-        margin: 0;
-
-        font-size: 1.02rem;
+      .hero-custom-preview-item strong {
+        display: block;
 
         color: var(--brown-main);
-
-        font-style: italic;
       }
 
-      .hero-ai-cta {
-        width: 100%;
+      .hero-custom-preview-item span {
+        color: rgba(97, 72, 58, 0.78);
 
-        margin-top: 1.2rem;
-
-        min-height: 64px;
-
-        border-radius: 999px;
-
-        border: none;
-
-        font-size: 1.22rem;
-
-        font-weight: 700;
-
-        letter-spacing: 0.2px;
-
-        cursor: pointer;
-
-        color: #fff;
-
-        background: linear-gradient(
-          135deg,
-          #b7845f 0%,
-          #aa6a3f 56%,
-          #966042 100%
-        );
-
-        box-shadow: 0 18px 32px rgba(170, 106, 63, 0.35);
-
-        transition: transform 0.25s ease, box-shadow 0.35s ease,
-          filter 0.35s ease;
-      }
-
-      .hero-ai-cta:hover {
-        transform: translateY(-2px) scale(1.005);
-
-        box-shadow:
-          0 22px 40px rgba(170, 106, 63, 0.44),
-          0 0 0 10px rgba(201, 147, 102, 0.16);
-
-        filter: saturate(1.04);
-      }
-
-      .hero-ai-cta:disabled {
-        cursor: not-allowed;
-
-        opacity: 0.72;
-
-        transform: none;
-
-        box-shadow: 0 12px 22px rgba(170, 106, 63, 0.22);
-      }
-
-      .hero-ai-cta span {
-        margin-right: 0.45rem;
+        font-size: 0.92rem;
       }
 
       .hero-recommend {
-        background: rgba(255, 255, 255, 0.78);
-
-        border-radius: 30px;
-
-        padding: 1.7rem;
-
-        box-shadow:
-          0 14px 30px rgba(60, 41, 34, 0.09),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8);
-
-        backdrop-filter: blur(8px);
-
-        -webkit-backdrop-filter: blur(8px);
-      }
-
-      .hero-recommend h3 {
-        font-size: 1.7rem;
-
-        margin: 0 0 1.15rem;
-
-        color: var(--brown-main);
-      }
-
-      .hero-recommend-list {
-        display: grid;
-
-        gap: 1.2rem;
-      }
-
-      .hero-recommend-card {
-        display: grid;
-
-        grid-template-columns: 112px 1fr;
-
-        gap: 0.95rem;
-
-        align-items: center;
-
-        background: #fff;
-
-        border-radius: 22px;
-
-        padding: 0.7rem;
-
-        text-decoration: none;
-
-        color: inherit;
-
-        box-shadow: 0 8px 18px rgba(60, 41, 34, 0.07);
-
-        transition: transform 0.25s ease, box-shadow 0.3s ease;
-      }
-
-      .hero-recommend-card:hover {
-        transform: translateY(-3px) scale(1.01);
-
-        box-shadow: 0 16px 26px rgba(60, 41, 34, 0.11);
-      }
-
-      .hero-recommend-card img {
-        width: 112px;
-
-        height: 112px;
-
-        object-fit: cover;
-
-        border-radius: 16px;
-      }
-
-      .hero-recommend-name {
-        font-size: 1.25rem;
-
-        font-weight: 700;
-
-        color: var(--brown-main);
-
-        margin-bottom: 0.25rem;
-
-        line-height: 1.3;
-      }
-
-      .hero-recommend-price {
-        font-size: 1.08rem;
-
-        color: var(--primary-dark);
-
-        font-weight: 700;
-      }
-
-      /* Categories Section */
-
-      .categories {
-        padding: 5rem 0;
-
-        background: white;
-      }
-
-      .container {
-        max-width: 1400px !important;
-
-        margin: 0 auto !important;
-
-        padding: 0 2rem !important;
-      }
-
-      .section-header {
-        text-align: center;
-
-        margin-bottom: 4rem;
-      }
-
-      .section-title {
-        font-size: 3rem;
-
-        font-weight: 800;
-
-        margin-bottom: 1rem;
-
-        color: var(--brown-main);
-      }
-
-      .section-subtitle {
-        font-size: 1.2rem;
-
-        color: var(--brown-soft);
-      }
-
-      .categories-grid {
-        display: grid;
-
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-
-        gap: 2rem;
-      }
-
-      .category-card {
-        position: relative;
-
-        border-radius: 20px;
-
-        overflow: hidden;
-
-        cursor: pointer;
-
-        transition: all 0.4s ease;
-
-        aspect-ratio: 1;
-      }
-
-      .category-card:hover {
-        transform: translateY(-10px);
-      }
-
-      .category-card img {
-        width: 100%;
-
-        height: 100%;
-
-        object-fit: cover;
-
-        transition: transform 0.6s ease;
-      }
-
-      .category-card:hover img {
-        transform: scale(1.1);
-      }
-
-      .category-overlay {
-        position: absolute;
-
-        bottom: 0;
-
-        left: 0;
-
-        right: 0;
-
-        background: linear-gradient(
-          180deg,
-          transparent 0%,
-          rgba(0, 0, 0, 0.8) 100%
-        );
-
-        padding: 2rem 1.5rem;
-
-        color: white;
-
-        transition: all 0.4s ease;
-      }
-
-      .category-card:hover .category-overlay {
-        background: linear-gradient(
-          180deg,
-          rgba(201, 147, 102, 0.9) 0%,
-          rgba(170, 106, 63, 0.95) 100%
-        );
-      }
-
-      .category-name {
-        font-size: 1.5rem;
-
-        font-weight: 700;
-
-        margin: 0;
-      }
-
-      /* Products Section */
-
-      .products {
-        padding: 5rem 0;
-
-        background: var(--bg-light);
-      }
-
-      .products-grid {
-        display: grid;
-
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-
-        gap: 2rem;
-      }
-
-      .product-card {
-        background: white;
-
-        border-radius: 20px;
-
-        overflow: hidden;
-
-        transition: all 0.4s ease;
-
-        box-shadow: var(--shadow-sm);
-      }
-
-      .product-card:hover {
-        transform: translateY(-10px);
-
-        box-shadow: var(--shadow-lg);
-      }
-
-      .product-image {
-        position: relative;
-
-        width: 100%;
-
-        height: 300px;
-
-        overflow: hidden;
-      }
-
-      .product-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: #e74c3c;
-        color: #fff;
-        padding: 4px 10px;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        z-index: 2;
-      }
-
-      .product-image img {
-        width: 100%;
-
-        height: 100%;
-
-        object-fit: cover;
-
-        transition: transform 0.6s ease;
-      }
-
-      .product-card:hover .product-image img {
-        transform: scale(1.1);
-      }
-
-      .product-actions {
-        position: absolute;
-
-        top: 1rem;
-
-        right: 1rem;
-
-        display: flex;
-
-        flex-direction: column;
-
-        gap: 0.75rem;
-
-        opacity: 0;
-
-        transform: translateX(20px);
-
-        transition: all 0.3s ease;
-      }
 
       .product-card:hover .product-actions {
         opacity: 1;
@@ -1801,65 +1468,52 @@ uri="http://java.sun.com/jsp/jstl/fmt"%>
       <section class="hero">
         <div class="hero-container">
           <div class="hero-content">
-            <div class="hero-text animate">
-              <h1>Tiệm Hoa Nhà Tớ</h1>
+            <div class="hero-custom-card animate">
+              <div class="hero-custom-badge">
+                <span>✦</span>
+                <span>Thiết kế riêng theo ý bạn</span>
+              </div>
 
-              <div class="hero-ai-search">
-                <input type="file" id="hero-image-input" accept="image/*" hidden />
+              <h1 class="hero-custom-title">Hãy tạo những bó hoa của riêng bạn</h1>
 
-                <div
-                  id="hero-ai-dropzone"
-                  class="hero-ai-dropzone"
-                  role="button"
-                  tabindex="0"
-                  aria-label="Tải ảnh để AI gợi ý hoa"
-                >
-                  <div class="hero-ai-default" id="hero-ai-default">
-                    <svg
-                      class="hero-ai-icon"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M12 16V8M12 8L8.5 11.5M12 8L15.5 11.5"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M4 15.5V16.2C4 18.3 5.7 20 7.8 20H16.2C18.3 20 20 18.3 20 16.2V15.5"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                      />
-                      <path
-                        d="M8.2 5.3C8.8 4.1 10.1 3.3 11.5 3.3C13.4 3.3 15 4.8 15.2 6.7C16.8 6.7 18.1 8 18.1 9.6"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
+              <p class="hero-custom-copy">
+                Chọn từng chi tiết cho bó hoa bạn muốn tặng: loại hoa, hoa chính, hoa phụ, số lượng, giấy gói và phụ kiện đi kèm.
+                Tất cả được trình bày trên một giao diện hiện đại, tinh tế và dễ dùng như các website ecommerce cao cấp.
+              </p>
 
-                    <span class="hero-ai-main">Thả ảnh hoa vào đây</span>
-                    <span class="hero-ai-sub">Chúng tôi sẽ gợi ý nhưng bó hoa hợp nhất dành cho bạn</span>
+              <div class="hero-custom-points">
+                <span class="hero-custom-point">Chọn hoa theo phong cách</span>
+                <span class="hero-custom-point">Gợi ý phối màu hài hòa</span>
+                <span class="hero-custom-point">Tối ưu cho quà tặng & sự kiện</span>
+              </div>
+
+              <div class="hero-custom-actions">
+                <a href="${pageContext.request.contextPath}/custom-bouquet" class="hero-custom-cta">
+                  Bắt đầu custom ngay
+                </a>
+                <a href="${pageContext.request.contextPath}/san-pham?category=bo-hoa" class="hero-custom-secondary">
+                  Xem mẫu bó hoa sẵn
+                </a>
+              </div>
+
+              <div class="hero-custom-panel">
+                <h3 class="hero-custom-panel-title">Tùy chỉnh nhanh</h3>
+                <div class="hero-custom-preview">
+                  <div class="hero-custom-preview-item">
+                    <span class="hero-custom-preview-dot"></span>
+                    <div>
+                      <strong>Hoa chính & hoa phụ</strong>
+                      <span>Rose, tulip, baby, cúc, mẫu đơn...</span>
+                    </div>
                   </div>
-
-                  <div class="hero-ai-preview" id="hero-ai-preview">
-                    <img id="hero-ai-preview-image" alt="Ảnh hoa vừa chọn" />
-                    <div class="hero-ai-processing" id="hero-ai-processing">
-                      <span class="hero-ai-dot"></span>
-                      <p>Đang phân tích tone màu và kiểu hoa...</p>
+                  <div class="hero-custom-preview-item">
+                    <span class="hero-custom-preview-dot"></span>
+                    <div>
+                      <strong>Giấy gói & phụ kiện</strong>
+                      <span>Ribbon, nơ, thiệp, phụ kiện tặng kèm</span>
                     </div>
                   </div>
                 </div>
-
-                <button type="button" id="hero-ai-search-btn" class="hero-ai-cta">
-                  <span>✦</span>Phân tích & gợi ý
-                </button>
               </div>
             </div>
 

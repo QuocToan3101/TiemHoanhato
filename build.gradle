@@ -46,8 +46,7 @@ dependencies {
     implementation 'org.apache.commons:commons-dbcp2:2.9.0'
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'net.coobird:thumbnailator:0.4.20'
-    // TensorFlow Java for model inference (adjust version if needed)
-    implementation 'org.tensorflow:tensorflow-core-platform:0.4.0'
+    // TensorFlow Java removed from packaging. Use external inference service instead.
     
     // Caching (REFACTOR - Phase 3)
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'

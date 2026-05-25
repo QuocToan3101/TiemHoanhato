@@ -1,140 +1,130 @@
 package service;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.FloatBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import javax.imageio.ImageIO;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-import org.tensorflow.SavedModelBundle;
-import org.tensorflow.Session;
-import org.tensorflow.Tensor;
+import util.AppConfig;
 
 /**
- * ImageSearchService
- * - Loads embedding SavedModel at startup
- * - Provides method to compute embedding from image and search a precomputed index
- *
- * Note: you should generate an embeddings JSON or binary file for the product catalog
- * and place it under `src/main/resources/models/<model>/embeddings.json`.
+ * ImageSearchService (remote)
+ * - Replaces in-process TF model with a lightweight HTTP client that calls an external
+ *   image-search / embedding service. This keeps the WAR small and avoids native TF libs.
  */
 public class ImageSearchService {
 
-    private SavedModelBundle embeddingModel;
-    private Session session;
+    private final OkHttpClient http = new OkHttpClient();
+    private final Gson gson = new Gson();
+    private final String baseUrl;
+    private String initializationError;
 
-    // simple in-memory index: id -> vector
-    private final Map<Integer, float[]> index = new HashMap<>();
-
-    public ImageSearchService(String modelPath) {
-        init(modelPath);
+    public ImageSearchService(String ignored) {
+        AppConfig cfg = AppConfig.getInstance();
+        this.baseUrl = cfg.getMlImageSearchBaseUrl();
+        init();
     }
 
-    private void init(String modelPath) {
+    private void init() {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            initializationError = "ML service base URL not configured";
+            return;
+        }
+        // Optional: perform a quick health check
         try {
-            // modelPath can be like "classpath:models/flower_model/saved_embedding"
-            String p = modelPath;
-            if (p.startsWith("classpath:")) {
-                p = p.substring("classpath:".length());
-                // resource extraction not implemented here; assume file path for now
-            }
-
-            Path modelDir = Paths.get(p);
-            if (!Files.exists(modelDir)) {
-                System.err.println("Embedding model not found: " + modelDir);
-                return;
-            }
-
-            System.out.println("Loading embedding model from " + modelDir);
-            embeddingModel = SavedModelBundle.load(modelDir.toString(), "serve");
-            session = embeddingModel.session();
-
-            // try loading embeddings from resources
-            try (InputStream is = getClass().getClassLoader().getResourceAsStream("models/flower_model/embeddings.json")) {
-                if (is != null) {
-                    loadIndexFromJson(is);
-                } else {
-                    System.out.println("No embeddings.json found in classpath; index remains empty");
+            Request req = new Request.Builder().url(baseUrl.endsWith("/") ? baseUrl + "health" : baseUrl + "/health").get().build();
+            try (Response r = http.newCall(req).execute()) {
+                if (!r.isSuccessful()) {
+                    initializationError = "ML service not healthy: " + r.code();
                 }
             }
-
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception e) {
+            initializationError = "ML service health check failed: " + e.getMessage();
         }
     }
 
-    private void loadIndexFromJson(InputStream is) throws IOException {
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(is))) {
-            String json = r.lines().collect(Collectors.joining());
-            Gson gson = new Gson();
-            JsonObject obj = gson.fromJson(json, JsonObject.class);
-            for (Map.Entry<String, JsonElement> e : obj.entrySet()) {
-                String idStr = e.getKey();
-                JsonArray arr = e.getValue().getAsJsonArray();
-                float[] vec = new float[arr.size()];
-                for (int i = 0; i < arr.size(); i++) vec[i] = arr.get(i).getAsFloat();
-                index.put(Integer.parseInt(idStr), vec);
+    public String getInitializationError() {
+        return initializationError;
+    }
+
+    public boolean isReady() {
+        return initializationError == null;
+    }
+
+    /**
+     * Request an embedding for the provided image from the external service.
+     * Endpoint expected: POST {baseUrl}/embedding (multipart, field 'image') -> returns JSON array of floats
+     */
+    public float[] extractEmbedding(BufferedImage img) throws IOException {
+        if (!isReady()) throw new IllegalStateException("ML service not ready: " + initializationError);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(img, "jpg", baos);
+        byte[] bytes = baos.toByteArray();
+
+        RequestBody fileBody = RequestBody.create(bytes, MediaType.parse("image/jpeg"));
+        MultipartBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("image", "upload.jpg", fileBody)
+                .build();
+
+        Request req = new Request.Builder().url(baseUrl.endsWith("/") ? baseUrl + "embedding" : baseUrl + "/embedding")
+                .post(requestBody).build();
+
+        try (Response resp = http.newCall(req).execute()) {
+            if (!resp.isSuccessful()) throw new IOException("Embedding request failed: " + resp.code());
+            String body = resp.body().string();
+            JsonArray arr = gson.fromJson(body, JsonArray.class);
+            float[] out = new float[arr.size()];
+            for (int i = 0; i < arr.size(); i++) out[i] = arr.get(i).getAsFloat();
+            return out;
+        }
+    }
+
+    /**
+     * Search by a precomputed query vector using the external service.
+     * Endpoint expected: POST {baseUrl}/search with JSON {"vector": [...], "top_k": N}
+     * Returns list of {id,score}.
+     */
+    public List<SearchResult> search(float[] query, int topK) throws IOException {
+        if (!isReady()) throw new IllegalStateException("ML service not ready: " + initializationError);
+
+        JsonObject payload = new JsonObject();
+        JsonArray arr = new JsonArray();
+        for (float v : query) arr.add(v);
+        payload.add("vector", arr);
+        payload.addProperty("top_k", topK);
+
+        RequestBody body = RequestBody.create(gson.toJson(payload), MediaType.parse("application/json; charset=utf-8"));
+        Request req = new Request.Builder().url(baseUrl.endsWith("/") ? baseUrl + "search" : baseUrl + "/search").post(body).build();
+
+        try (Response resp = http.newCall(req).execute()) {
+            if (!resp.isSuccessful()) throw new IOException("Search request failed: " + resp.code());
+            String s = resp.body().string();
+            JsonArray results = gson.fromJson(s, JsonArray.class);
+            List<SearchResult> out = new ArrayList<>();
+            for (JsonElement e : results) {
+                JsonObject o = e.getAsJsonObject();
+                int id = o.get("id").getAsInt();
+                double score = o.get("score").getAsDouble();
+                out.add(new SearchResult(id, score));
             }
+            return out;
         }
-    }
-
-    public float[] extractEmbedding(BufferedImage img) {
-        // Preprocess image to float array matching model expectations: resize to ai.img.size, normalize
-        // For brevity this is left as a TODO. Implement using Thumbnailator or ImageIO to resize,
-        // convert to float[][][] and feed into Tensor.
-
-        // Example invocation (pseudocode):
-        // Tensor input = Tensor.create(new long[]{1, h, w, 3}, FloatBuffer.wrap(flatFloatArray));
-        // Tensor out = session.runner().feed("serving_default_input_1", input).fetch("StatefulPartitionedCall").run().get(0);
-
-        throw new UnsupportedOperationException("extractEmbedding not implemented yet");
-    }
-
-    public List<SearchResult> search(float[] query, int topK) {
-        PriorityQueue<SearchResult> pq = new PriorityQueue<>(Comparator.comparingDouble(r -> r.score));
-        for (Map.Entry<Integer, float[]> e : index.entrySet()) {
-            float[] v = e.getValue();
-            double score = cosineSimilarity(query, v);
-            if (pq.size() < topK) pq.add(new SearchResult(e.getKey(), score));
-            else if (score > pq.peek().score) {
-                pq.poll();
-                pq.add(new SearchResult(e.getKey(), score));
-            }
-        }
-        List<SearchResult> out = new ArrayList<>();
-        while (!pq.isEmpty()) out.add(pq.poll());
-        // reverse
-        out.sort(Comparator.comparingDouble((SearchResult r) -> r.score).reversed());
-        return out;
-    }
-
-    private double cosineSimilarity(float[] a, float[] b) {
-        double dot = 0, na = 0, nb = 0;
-        for (int i = 0; i < a.length; i++) {
-            dot += a[i] * b[i];
-            na += a[i] * a[i];
-            nb += b[i] * b[i];
-        }
-        if (na == 0 || nb == 0) return 0;
-        return dot / (Math.sqrt(na) * Math.sqrt(nb));
     }
 
     public static class SearchResult {

@@ -29,6 +29,9 @@
                           <li class=" ">
                             <a href="${pageContext.request.contextPath}/san-pham"> BỘ SƯU TẬP</a>
                         </li>
+                        <li class=" ">
+                            <a href="${pageContext.request.contextPath}/custom-bouquet"> CUSTOM HOA</a>
+                        </li>
                         <li class=" mega-menu">
                             <a href="${pageContext.request.contextPath}/san-pham?category=hoa-gia"> HOA GIẢ<i class="fa-chevron-down" aria-hidden="true"></i></a>
                             <div class="mega-menu-wrap">
