@@ -1488,7 +1488,7 @@
                   // Finish/Next label state
                   if (btnNext) {
                     if (currentStep === totalSteps) {
-                      btnNext.innerHTML = 'Sao chép & Đặt hàng <i class="fa fa-copy"></i>';
+                      btnNext.innerHTML = 'Đặt hàng <i class="fa fa-shopping-cart"></i>';
                     } else {
                       btnNext.innerHTML = 'Tiếp tục <i class="fa fa-arrow-right"></i>';
                     }
@@ -1516,7 +1516,7 @@
                     currentStep++;
                     updateStepVisibility();
                   } else {
-                    copyConfig();
+                    submitCustomOrder();
                   }
                 };
               }
@@ -1950,68 +1950,216 @@
                 }
               }
 
-              function copyConfig() {
+              function submitCustomOrder() {
                 try {
+                  const flowerTypeVal = document.getElementById('flowerType').value;
+                  const mainFlowerVal = document.getElementById('mainFlower').value;
+                  const supportFlowerVal = document.getElementById('supportFlower').value;
+                  const quantityVal = document.getElementById('quantity').value;
+                  const wrapVal = document.getElementById('wrap').value;
+                  const occasionVal = document.getElementById('occasion').value;
                   const colorVal = document.getElementById('color').value;
-                  const colorNames = {
-                    '#d8b1a0': 'Hồng kem',
-                    '#d9c2a2': 'Be sữa',
-                    '#c96f7c': 'Hồng đậm',
-                    '#c8d9c0': 'Xanh sage',
-                    '#d7a36a': 'Cam pastel',
-                    '#4f3a33': 'Tone trầm'
-                  };
-                  const colorName = colorNames[colorVal] || 'Hồng kem';
                   const accessories = getSelectedAccessories();
-                  const noteVal = document.getElementById('note')?.value || 'Không có';
+                  const noteVal = document.getElementById('note')?.value || '';
                   const budgetVal = budgetSlider ? budgetSlider.value : 900;
-                  const summaryPriceVal = document.getElementById('summary-final-price')?.textContent || '890.000 VND';
+                  const estimatedPriceVal = estimatePrice();
 
-                  const text = [
-                    `=== CẤU HÌNH BÓ HOA THIẾT KẾ RIÊNG ===`,
-                    `- Loại hoa: \${document.getElementById('flowerType').value}`,
-                    `- Hoa chính: \${document.getElementById('mainFlower').value}`,
-                    `- Hoa phụ: \${document.getElementById('supportFlower').value}`,
-                    `- Số lượng: \${document.getElementById('quantity').value}`,
-                    `- Giấy gói: \${document.getElementById('wrap').value}`,
-                    `- Dịp tặng: \${document.getElementById('occasion').value}`,
-                    `- Tông màu: \${colorName}`,
-                    `- Phụ kiện: \${accessories.length ? accessories.join(', ') : 'Không có'}`,
-                    `- Ngân sách mục tiêu: \${formatMoney(budgetVal)}`,
-                    `- Ước tính thực tế: \${summaryPriceVal}`,
-                    `- Ghi chú khách hàng: \${noteVal.trim() || 'Không có'}`
-                  ].join('\n');
+                  const draft = {
+                    flowerType: flowerTypeVal,
+                    mainFlower: mainFlowerVal,
+                    supportFlower: supportFlowerVal,
+                    quantity: quantityVal,
+                    wrap: wrapVal,
+                    occasion: occasionVal,
+                    color: colorVal,
+                    accessories: accessories,
+                    budget: budgetVal,
+                    estimatedPrice: estimatedPriceVal,
+                    note: noteVal,
+                    step: 3
+                  };
 
-                  if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(() => {
-                      showDialog('Sao chép thành công! 💐', 'Đã lưu thông tin bó hoa vào khay nhớ tạm. Hãy dán (Paste) vào tin nhắn gửi Shop để đặt hàng nhanh nhé!', 'success');
-                    }).catch(() => {
-                      fallbackShowText(text);
-                    });
+                  // Kiểm tra trạng thái đăng nhập qua JSTL sinh biến tĩnh
+                  const isLoggedIn = ${not empty sessionScope.user ? "true" : "false"};
+
+                  if (!isLoggedIn) {
+                    // Chưa đăng nhập: Lưu cấu hình hiện tại vào localStorage và nhảy tới trang đăng nhập
+                    localStorage.setItem('custom_bouquet_draft', JSON.stringify(draft));
+                    
+                    if (typeof Swal !== 'undefined') {
+                      Swal.fire({
+                        title: 'Đăng nhập để đặt hàng 🌸',
+                        text: 'Bạn cần đăng nhập tài khoản để gửi yêu cầu đặt hoa thiết kế. Tiệm đã tự động lưu lại cấu hình hiện tại của bạn!',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#aa6a3f',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đăng nhập ngay',
+                        cancelButtonText: 'Hủy'
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          window.location.href = '${pageContext.request.contextPath}/custom-bouquet?action=login';
+                        }
+                      });
+                    } else {
+                      if (confirm('Bạn cần đăng nhập để đặt hàng. Tiệm sẽ tự động lưu lại tùy chọn thiết kế hiện tại của bạn. Đăng nhập ngay?')) {
+                        window.location.href = '${pageContext.request.contextPath}/custom-bouquet?action=login';
+                      }
+                    }
                     return;
                   }
 
-                  fallbackShowText(text);
+                  // Đã đăng nhập: Tiến hành gửi đơn đặt hàng qua API
+                  if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                      title: 'Xác nhận đặt hoa tùy chỉnh',
+                      text: 'Bạn có chắc chắn muốn gửi yêu cầu đặt hàng bó hoa được thiết kế riêng này không?',
+                      icon: 'question',
+                      showCancelButton: true,
+                      confirmButtonColor: '#aa6a3f',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Đặt hàng ngay',
+                      cancelButtonText: 'Xem lại',
+                      showLoaderOnConfirm: true,
+                      preConfirm: () => {
+                        return fetch('${pageContext.request.contextPath}/custom-bouquet', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'X-CSRF-Token': window.csrfToken || ''
+                          },
+                          body: JSON.stringify(draft)
+                        })
+                        .then(response => {
+                          if (!response.ok) {
+                            throw new Error(response.statusText);
+                          }
+                          return response.json();
+                        })
+                        .catch(error => {
+                          Swal.showValidationMessage(`Lỗi kết nối: ${error}`);
+                        });
+                      },
+                      allowOutsideClick: () => !Swal.isLoading()
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        const res = result.value;
+                        if (res && res.success) {
+                          Swal.fire({
+                            title: 'Đặt hàng thành công! 💐',
+                            text: res.message,
+                            icon: 'success',
+                            confirmButtonColor: '#aa6a3f'
+                          }).then(() => {
+                            window.location.href = '${pageContext.request.contextPath}/home';
+                          });
+                        } else {
+                          Swal.fire({
+                            title: 'Đặt hàng thất bại 🔴',
+                            text: (res && res.message) ? res.message : 'Có lỗi xảy ra, vui lòng thử lại sau.',
+                            icon: 'error',
+                            confirmButtonColor: '#aa6a3f'
+                          });
+                        }
+                      }
+                    });
+                  } else {
+                    if (confirm('Bạn muốn gửi yêu cầu đặt hàng bó hoa này chứ?')) {
+                      fetch('${pageContext.request.contextPath}/custom-bouquet', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json; charset=UTF-8',
+                          'X-CSRF-Token': window.csrfToken || ''
+                        },
+                        body: JSON.stringify(draft)
+                      })
+                      .then(r => r.json())
+                      .then(res => {
+                        if (res.success) {
+                          alert(res.message);
+                          window.location.href = '${pageContext.request.contextPath}/home';
+                        } else {
+                          alert(res.message);
+                        }
+                      })
+                      .catch(e => alert('Lỗi kết nối: ' + e));
+                    }
+                  }
                 } catch (err) {
-                  console.error("copyConfig error:", err);
+                  console.error("submitCustomOrder error:", err);
                 }
               }
 
-              function fallbackShowText(text) {
-                if (typeof Swal !== 'undefined') {
-                  Swal.fire({
-                    title: 'Cấu hình bó hoa thiết kế',
-                    html: `<textarea style="width:100%; height:160px; font-family:monospace; padding:8px; border:1px solid #ddd; border-radius:8px;">\${text}</textarea><p style="font-size:0.9rem; margin-top:8px;">Vui lòng bôi đen và sao chép thủ công đoạn văn bản ở trên.</p>`,
-                    confirmButtonColor: '#aa6a3f'
-                  });
-                } else {
-                  prompt("Vui lòng sao chép cấu hình bó hoa dưới đây:", text);
-                }
-              }
-
-              // Initial load updates
+              // Khởi động các cập nhật ban đầu
               updateSummary();
               updateStepVisibility();
+
+              // LUỒNG TỰ PHỤC HỒI / KHÔI PHỤC THIẾT KẾ SAU ĐĂNG NHẬP
+              const draftStr = localStorage.getItem('custom_bouquet_draft');
+              if (draftStr) {
+                try {
+                  const draft = JSON.parse(draftStr);
+                  console.log("Tìm thấy bản nháp thiết kế, đang khôi phục...", draft);
+
+                  // 1. Phục hồi các input ẩn
+                  document.getElementById('flowerType').value = draft.flowerType;
+                  document.getElementById('mainFlower').value = draft.mainFlower;
+                  document.getElementById('supportFlower').value = draft.supportFlower;
+                  document.getElementById('quantity').value = draft.quantity;
+                  document.getElementById('wrap').value = draft.wrap;
+                  document.getElementById('occasion').value = draft.occasion;
+                  document.getElementById('color').value = draft.color;
+
+                  // 2. Đồng bộ class active cho các ô lựa chọn trực quan
+                  const updateGridState = (inputId, val) => {
+                    const grid = document.querySelector(`.bouquet-option-card[data-target="${inputId}"][data-value="${val}"], .bouquet-color-card[data-target="${inputId}"][data-value="${val}"], .bouquet-chip-item[data-target="${inputId}"][data-value="${val}"]`);
+                    if (grid) {
+                      const siblingsSelector = grid.classList.contains('bouquet-chip-item') ? '.bouquet-chip-item' : (grid.classList.contains('bouquet-color-card') ? '.bouquet-color-card' : '.bouquet-option-card');
+                      grid.parentNode.querySelectorAll(siblingsSelector).forEach(el => el.classList.remove('active'));
+                      grid.classList.add('active');
+                    }
+                  };
+
+                  updateGridState('flowerType', draft.flowerType);
+                  updateGridState('mainFlower', draft.mainFlower);
+                  updateGridState('supportFlower', draft.supportFlower);
+                  updateGridState('quantity', draft.quantity);
+                  updateGridState('wrap', draft.wrap);
+                  updateGridState('occasion', draft.occasion);
+                  updateGridState('color', draft.color);
+
+                  // 3. Đồng bộ các nút phụ kiện
+                  document.querySelectorAll('#accessorySelection .bouquet-chip-item').forEach(chip => {
+                    const acc = chip.getAttribute('data-accessory');
+                    chip.classList.toggle('active', draft.accessories.includes(acc));
+                  });
+
+                  // 4. Đồng bộ thanh trượt ngân sách và ghi chú
+                  if (budgetSlider && draft.budget) {
+                    budgetSlider.value = draft.budget;
+                    budgetLabel.textContent = formatMoney(draft.budget);
+                  }
+                  const noteInput = document.getElementById('note');
+                  if (noteInput && draft.note) {
+                    noteInput.value = draft.note;
+                  }
+
+                  // Xóa bản nháp khỏi localStorage ngay sau khi khôi phục xong để tránh lặp vô hạn
+                  localStorage.removeItem('custom_bouquet_draft');
+
+                  // Nhảy thẳng tới bước Hoàn tất (Step 3) để người dùng đặt hàng ngay
+                  currentStep = draft.step || 3;
+
+                  // Cập nhật lại giao diện và visualizer
+                  updateSummary();
+                  updateStepVisibility();
+
+                  // Hiển thị thông báo Premium Toast
+                  showDialog('Khôi phục thiết kế thành công! 🌸', 'Các tùy chọn tự thiết kế bó hoa trước đó của bạn đã được khôi phục nguyên vẹn.', 'success');
+                } catch (draftErr) {
+                  console.error("Lỗi khi khôi phục thiết kế bó hoa:", draftErr);
+                }
+              }
 
               console.log("Bouquet Builder loaded successfully!");
             } catch (globalErr) {

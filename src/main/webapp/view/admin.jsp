@@ -1476,6 +1476,11 @@
           <span>Đơn Hàng</span>
         </div>
 
+        <div class="menu-item" data-target="custom-orders">
+          <i class="fas fa-magic"></i>
+          <span>Đặt Hàng Tùy Chỉnh</span>
+        </div>
+
         <div class="menu-item" data-target="products">
           <i class="fas fa-box"></i>
           <span>Sản Phẩm</span>
@@ -1781,6 +1786,64 @@
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Orders Section -->
+        <div id="custom-orders" class="content-section">
+          <div class="section-header">
+            <div>
+              <h2><i class="fas fa-magic"></i> Nhận Đặt Hàng Tùy Chỉnh</h2>
+              <p class="text-muted">Quản lý và xử lý các yêu cầu thiết kế hoa riêng từ khách hàng</p>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="card">
+            <div class="card-body">
+              <div class="filters">
+                <div class="filter-group" style="max-width: 300px;">
+                  <label><i class="fas fa-filter"></i> Trạng thái lọc</label>
+                  <select id="customOrderStatusFilter" class="form-input" onchange="displayCustomOrders()">
+                    <option value="">Tất cả</option>
+                    <option value="pending">Chờ duyệt</option>
+                    <option value="confirmed">Đã xác nhận</option>
+                    <option value="processing">Đang bó hoa</option>
+                    <option value="completed">Đã giao</option>
+                    <option value="cancelled">Đã hủy</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table List -->
+          <div class="card">
+            <div class="card-body" style="padding: 0;">
+              <div class="table-container">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 60px;">ID</th>
+                      <th>Khách Hàng</th>
+                      <th>Cấu Hình Bó Hoa Tùy Chỉnh</th>
+                      <th>Ngân Sách & Dự Tính</th>
+                      <th>Ghi Chú Khách Hàng</th>
+                      <th>Ngày Đặt</th>
+                      <th>Trạng Thái</th>
+                      <th>Thao Tác Duyệt</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customOrdersTableBody">
+                    <tr>
+                      <td colspan="8" class="text-center">
+                        <div class="loading"></div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -5412,8 +5475,124 @@
         });
       }
 
+      // ============================================
+      // CUSTOM ORDERS MANAGEMENT
+      // ============================================
+      let allCustomOrders = [];
+
+      async function loadCustomOrders() {
+        try {
+          const response = await fetch(contextPath + "/admin/api/custom-orders");
+          const result = await response.json();
+
+          if (result.success) {
+            allCustomOrders = result.data;
+            displayCustomOrders();
+          }
+        } catch (error) {
+          console.error("Error loading custom orders:", error);
+        }
+      }
+
+      function displayCustomOrders() {
+        const tbody = document.getElementById("customOrdersTableBody");
+        const statusFilter = document.getElementById("customOrderStatusFilter").value;
+
+        let filtered = allCustomOrders.filter(order => 
+          !statusFilter || order.status === statusFilter
+        );
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có yêu cầu đặt hoa tùy chỉnh nào</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(order => {
+          const statusBadge = order.status === 'pending' ?
+            '<span class="badge badge-warning">Chờ duyệt</span>' :
+            order.status === 'confirmed' ?
+            '<span class="badge badge-info">Đã xác nhận</span>' :
+            order.status === 'processing' ?
+            '<span class="badge badge-primary">Đang bó hoa</span>' :
+            order.status === 'completed' ?
+            '<span class="badge badge-success">Đã giao</span>' :
+            '<span class="badge badge-danger">Đã hủy</span>';
+
+          const colorBox = '<div style="display:inline-flex; align-items:center; gap:8px;">' +
+            '<span style="display:inline-block; width:16px; height:16px; border-radius:50%; background:' + order.colorTone + '; border:1px solid #ddd;"></span>' +
+            '<span>' + order.colorTone + '</span>' +
+            '</div>';
+
+          return '<tr>' +
+            '<td><strong>' + order.id + '</strong></td>' +
+            '<td>' +
+              '<strong>' + order.userFullname + '</strong><br>' +
+              '<small class="text-muted"><i class="fas fa-envelope"></i> ' + order.userEmail + '</small><br>' +
+              '<small class="text-muted"><i class="fas fa-phone"></i> ' + (order.userPhone || 'N/A') + '</small>' +
+            '</td>' +
+            '<td>' +
+              '<ul style="margin:0; padding-left:14px; font-size:13px; color:var(--text-medium);">' +
+                '<li>Kiểu: <strong>' + order.flowerType + '</strong></li>' +
+                '<li>Chính: ' + order.mainFlower + '</li>' +
+                '<li>Phụ: ' + order.supportFlower + '</li>' +
+                '<li>Lượng: ' + order.quantity + '</li>' +
+                '<li>Giấy gói: ' + order.wrapPaper + '</li>' +
+                '<li>Tông màu: ' + colorBox + '</li>' +
+                '<li>Phụ kiện: ' + (order.accessories || 'Không') + '</li>' +
+                '<li>Dịp: ' + order.occasion + '</li>' +
+              '</ul>' +
+            '</td>' +
+            '<td>' +
+              'Dự chi: <strong>' + formatCurrency(order.budget) + '</strong><br>' +
+              'Ước tính: <strong class="text-success">' + formatCurrency(order.estimatedPrice) + '</strong>' +
+            '</td>' +
+            '<td style="max-width:200px; white-space:normal; font-size:13px;">' + (order.customerNote || '<em class="text-muted">Không có ghi chú</em>') + '</td>' +
+            '<td>' + (order.createdAt ? new Date(order.createdAt).toLocaleDateString('vi-VN') : 'N/A') + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td>' +
+              '<select class="form-control form-control-sm" style="width:130px; font-size:12px; margin-bottom:5px;" onchange="updateCustomOrderStatus(' + order.id + ', this.value)">' +
+                '<option value="pending"' + (order.status === 'pending' ? ' selected' : '') + '>Chờ duyệt</option>' +
+                '<option value="confirmed"' + (order.status === 'confirmed' ? ' selected' : '') + '>Xác nhận</option>' +
+                '<option value="processing"' + (order.status === 'processing' ? ' selected' : '') + '>Đang bó</option>' +
+                '<option value="completed"' + (order.status === 'completed' ? ' selected' : '') + '>Đã giao</option>' +
+                '<option value="cancelled"' + (order.status === 'cancelled' ? ' selected' : '') + '>Hủy</option>' +
+              '</select>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      async function updateCustomOrderStatus(orderId, status) {
+        try {
+          const params = new URLSearchParams({ id: orderId, status: status });
+          const response = await fetch(
+            contextPath + "/admin/api/custom-order/update-status?" + params.toString(),
+            { method: "POST", headers: withCsrfHeaders() }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            showNotification("Thành công", "Đã cập nhật trạng thái đặt hoa tùy chỉnh!", "success");
+            loadCustomOrders();
+          } else {
+            throw new Error(result.message);
+          }
+        } catch (error) {
+          showNotification("Lỗi", error.message || "Không thể cập nhật", "error");
+        }
+      }
+
       // Initialize section data when menu clicked
       document.addEventListener("DOMContentLoaded", function () {
+        // Custom Orders
+        const customOrdersMenuItem = document.querySelector('.menu-item[data-target="custom-orders"]');
+        if (customOrdersMenuItem) {
+          customOrdersMenuItem.addEventListener("click", () => {
+            setTimeout(() => loadCustomOrders(), 100);
+          });
+        }
+
         // Customers
         const customersMenuItem = document.querySelector('.menu-item[data-target="customers"]');
         if (customersMenuItem) {

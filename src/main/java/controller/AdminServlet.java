@@ -24,12 +24,14 @@ import dao.CouponDAO;
 import dao.OrderDAO;
 import dao.ProductDAO;
 import dao.UserDAO;
+import dao.CustomOrderDAO;
 import model.Category;
 import model.Contact;
 import model.Coupon;
 import model.Order;
 import model.Product;
 import model.User;
+import model.CustomOrder;
 
 @WebServlet("/admin/*")
 public class AdminServlet extends HttpServlet {
@@ -39,6 +41,7 @@ public class AdminServlet extends HttpServlet {
     private CategoryDAO categoryDAO;
     private CouponDAO couponDAO;
     private ContactDAO contactDAO;
+    private CustomOrderDAO customOrderDAO;
     private Gson gson;
 
     @Override
@@ -49,6 +52,7 @@ public class AdminServlet extends HttpServlet {
         categoryDAO = new CategoryDAO();
         couponDAO = new CouponDAO();
         contactDAO = new ContactDAO();
+        customOrderDAO = new CustomOrderDAO();
         gson = new Gson();
     }
 
@@ -73,6 +77,8 @@ public class AdminServlet extends HttpServlet {
             showProducts(request, response);
         } else if (pathInfo.equals("/orders")) {
             showOrders(request, response);
+        } else if (pathInfo.equals("/custom-orders")) {
+            showCustomOrders(request, response);
         } else if (pathInfo.equals("/categories")) {
             showCategories(request, response);
         } else if (pathInfo.startsWith("/api/")) {
@@ -186,6 +192,11 @@ public class AdminServlet extends HttpServlet {
     }
 
     private void showOrders(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/view/admin.jsp").forward(request, response);
+    }
+
+    private void showCustomOrders(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         request.getRequestDispatcher("/view/admin.jsp").forward(request, response);
     }
@@ -326,6 +337,10 @@ public class AdminServlet extends HttpServlet {
                 
                 result.put("success", true);
                 result.put("data", orders);
+            } else if (pathInfo.equals("/api/custom-orders")) {
+                List<CustomOrder> customOrders = customOrderDAO.findAll();
+                result.put("success", true);
+                result.put("data", customOrders);
             } else if (pathInfo.startsWith("/api/order/")) {
                 int orderId = Integer.parseInt(pathInfo.substring("/api/order/".length()));
                 Order order = orderDAO.findById(orderId);
@@ -567,6 +582,14 @@ public class AdminServlet extends HttpServlet {
                     boolean orderSuccess = orderDAO.updateStatus(orderId, orderStatus);
                     result.put("success", orderSuccess);
                     result.put("message", orderSuccess ? "Cập nhật trạng thái đơn hàng thành công" : "Cập nhật thất bại");
+                    break;
+                    
+                case "/api/custom-order/update-status":
+                    int customOrderId = Integer.parseInt(request.getParameter("id"));
+                    String customOrderStatus = request.getParameter("status");
+                    boolean customOrderSuccess = customOrderDAO.updateStatus(customOrderId, customOrderStatus);
+                    result.put("success", customOrderSuccess);
+                    result.put("message", customOrderSuccess ? "Cập nhật trạng thái đơn đặt hoa tùy chỉnh thành công" : "Cập nhật thất bại");
                     break;
                     
                 case "/api/user/update-status":
