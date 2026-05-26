@@ -291,6 +291,26 @@
       if (totalEl) totalEl.textContent = this.formatPrice(total);
       if (discountInput) discountInput.value = discount;
       if (totalInput) totalInput.value = total;
+      // Compact item list for the order summary
+      const summaryContainer = document.getElementById('summaryItems');
+      if (summaryContainer){
+        if (!window.cartItems || window.cartItems.length === 0){
+          summaryContainer.innerHTML = '<div style="color:var(--muted); font-size:13px;">Giỏ hàng trống</div>';
+        } else {
+          summaryContainer.innerHTML = window.cartItems.map(item => {
+            return `
+              <div class="item" data-id="${item.id}">
+                <img loading="lazy" src="${item.image}" alt="${this.escape(item.name)}" />
+                <div class="meta">
+                  <div class="name">${this.escape(item.name)}</div>
+                  <div class="qty">x${item.quantity} • ${this.formatPrice(item.price)}</div>
+                </div>
+                <div class="price">${this.formatPrice(item.price * item.quantity)}</div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
     },
 
     updateCartBadge(count){

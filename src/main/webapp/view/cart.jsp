@@ -1672,6 +1672,57 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         </section>
 
         <!-- RIGHT: Order summary (cart page) -->
+        <style>
+          /* Order summary improvements: compact items, sticky card, buttons */
+          .order-summary { }
+
+          .checkout-card {
+            background: var(--card);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.03);
+            position: sticky;
+            top: calc(var(--height-head) + 16px);
+          }
+
+          .checkout-card .card-header{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            padding:14px 18px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            background: linear-gradient(90deg, rgba(169,113,85,0.03), transparent);
+          }
+
+          .checkout-card .card-header h3{ margin:0; font-size:18px; }
+
+          .checkout-card .card-body{ padding:12px 18px; }
+
+          .summary-items .item{ display:flex; gap:12px; align-items:center; margin-bottom:12px; }
+          .summary-items .item img{ width:56px; height:56px; object-fit:cover; border-radius:8px; }
+          .summary-items .item .meta{ flex:1; }
+          .summary-items .item .meta .name{ font-size:14px; color:var(--ink); margin-bottom:4px; }
+          .summary-items .item .meta .qty{ color:var(--muted); font-size:13px; }
+
+          .coupon-section .coupon-input{ display:flex; gap:8px; align-items:center; }
+          .coupon-section .coupon-input input{ flex:1; padding:10px; border-radius:8px; border:1px solid #eee; }
+          .coupon-btn{ background:var(--rose); color:#fff; border:none; padding:9px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+
+          .summary-totals{ padding:12px 18px; }
+          .total-row{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #f3e9e3; }
+          .total-row.grand-total{ border-bottom:none; font-weight:700; font-size:16px; }
+
+          .btn{ padding:12px 14px; border-radius:10px; border:none; background:var(--rose); color:#fff; cursor:pointer; font-weight:600; }
+          .btn.secondary{ background:#fff; border:1px solid #e6e6e6; color:var(--ink); }
+
+          @media (max-width: 900px){
+            .grid{ grid-template-columns: 1fr; }
+            .checkout-card{ position: static; top: auto; }
+            .order-summary{ margin-top: 18px; }
+          }
+        </style>
+
         <aside class="order-summary">
           <div class="checkout-card">
             <div class="card-header">

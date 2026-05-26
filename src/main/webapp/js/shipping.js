@@ -313,7 +313,7 @@
     if (!document.querySelector('link[data-leaflet="1"]')) {
       const css = document.createElement('link');
       css.rel = 'stylesheet';
-      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      css.href = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';
       css.setAttribute('data-leaflet', '1');
       document.head.appendChild(css);
     }
@@ -331,7 +331,7 @@
     }
 
     const script = document.createElement('script');
-    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';
     script.async = true;
     script.setAttribute('data-leaflet', '1');
     script.onload = callback;

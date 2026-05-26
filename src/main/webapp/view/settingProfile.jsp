@@ -1907,6 +1907,33 @@
                     <div class="sidebar-email">${not empty sessionScope.user.email ? sessionScope.user.email : 'Chưa cập nhật'}</div>
                 </div>
                 <ul class="sidebar-menu">
+                    <script>
+                        // Quick safe wrappers so inline onclick won't throw before main script loads
+                        (function(){
+                            window._profileActionQueue = window._profileActionQueue || [];
+
+                            function makeWrapper(name){
+                                return function(){
+                                    try{
+                                        var real = window['_' + name + '_impl'];
+                                        if (typeof real === 'function') {
+                                            return real.apply(null, arguments);
+                                        }
+                                    } catch(e){}
+                                    // queue the call for later
+                                    window._profileActionQueue.push({fn: name, args: Array.from(arguments)});
+                                };
+                            }
+
+                            window.showSection = window.showSection || makeWrapper('showSection');
+                            window.openModal = window.openModal || makeWrapper('openModal');
+                            window.closeModal = window.closeModal || makeWrapper('closeModal');
+                            window.saveChanges = window.saveChanges || makeWrapper('saveChanges');
+                            window.loadAddressBook = window.loadAddressBook || makeWrapper('loadAddressBook');
+                            window.loadOrderHistory = window.loadOrderHistory || makeWrapper('loadOrderHistory');
+                            window.loadWishlist = window.loadWishlist || makeWrapper('loadWishlist');
+                        })();
+                    </script>
                     <li>
                         <a href="#" onclick="showSection('profile'); return false;" class="active" data-section="profile">
                             <i class="fas fa-user"></i> Thông tin cá nhân
@@ -2210,8 +2237,21 @@
     <div class="toast-container" id="toastContainer"></div>
     
     <script>
-        let currentField = '';
-        const contextPath = '${pageContext.request.contextPath}';
+        (function(){
+            // Defensive stubs: ensure functions exist even if main script fails to run
+            window.showSection = window.showSection || function(){ console.warn('showSection not initialized yet'); };
+            window.loadOrderHistory = window.loadOrderHistory || function(){ console.warn('loadOrderHistory not initialized yet'); };
+            window.loadAddressBook = window.loadAddressBook || function(){ console.warn('loadAddressBook not initialized yet'); };
+            window.loadWishlist = window.loadWishlist || function(){ console.warn('loadWishlist not initialized yet'); };
+            window.saveChanges = window.saveChanges || function(){ console.warn('saveChanges not initialized yet'); };
+            window.openModal = window.openModal || function(){ console.warn('openModal not initialized yet'); };
+            window.closeModal = window.closeModal || function(){ console.warn('closeModal not initialized yet'); };
+            window.saveAddress = window.saveAddress || function(){ console.warn('saveAddress not initialized yet'); };
+            window.changePassword = window.changePassword || function(){ console.warn('changePassword not initialized yet'); };
+
+            try {
+                let currentField = '';
+                const contextPath = '${pageContext.request.contextPath}';
         
         // ==================== Section Navigation ====================
         function showSection(sectionName) {
@@ -3040,6 +3080,7 @@
         function openModal(field, data) {
             currentField = field;
             const template = modalTemplates[field];
+            console.log('openModal called for', field, 'templateExists=', !!template);
             if (template) {
                 document.getElementById('modalTitle').textContent = template.title;
                 document.getElementById('modalBody').innerHTML = template.content;
@@ -3052,7 +3093,15 @@
                     saveBtn.setAttribute('onclick', 'saveChanges()');
                 }
                 
-                document.getElementById('modalOverlay').classList.add('active');
+                const overlay = document.getElementById('modalOverlay');
+                overlay && overlay.classList.add('active');
+                // Fallback: ensure display style in case CSS rules are overridden
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    overlay.style.opacity = '1';
+                    overlay.style.visibility = 'visible';
+                }
+                console.log('modalOverlay activated', !!overlay);
                 
                 // If editing address, populate data
                 if (field === 'editAddress' && data) {
@@ -3413,8 +3462,105 @@
                 showToast('Có lỗi xảy ra', 'error');
             }
         }
+            
+            // Expose implementations to global scope so inline event handlers can call them
+            try {
+                // Register real implementations for wrappers
+                window._showSection_impl = showSection;
+                window._loadOrderHistory_impl = loadOrderHistory;
+                window._loadAddressBook_impl = loadAddressBook;
+                window._loadWishlist_impl = loadWishlist;
+                window._saveChanges_impl = saveChanges;
+                window._openModal_impl = openModal;
+                window._closeModal_impl = closeModal;
+                window._saveAddress_impl = saveAddress;
+                window._changePassword_impl = changePassword;
+                window._removeFromWishlist_impl = removeFromWishlist;
+                window._addToCartFromWishlist_impl = addToCartFromWishlist;
+
+                // Also expose as direct functions
+                window.showSection = showSection;
+                window.loadOrderHistory = loadOrderHistory;
+                window.loadAddressBook = loadAddressBook;
+                window.loadWishlist = loadWishlist;
+                window.saveChanges = saveChanges;
+                window.openModal = openModal;
+                window.closeModal = closeModal;
+                window.saveAddress = saveAddress;
+                window.changePassword = changePassword;
+                window.removeFromWishlist = removeFromWishlist;
+                window.addToCartFromWishlist = addToCartFromWishlist;
+
+                // Flush queued calls
+                if (window._profileActionQueue && window._profileActionQueue.length) {
+                    window._profileActionQueue.forEach(call => {
+                        try {
+                            const fn = window[call.fn] || window['_' + call.fn + '_impl'];
+                            if (typeof fn === 'function') fn.apply(null, call.args);
+                        } catch (err) {
+                            console.warn('Error flushing queued call', call, err);
+                        }
+                    });
+                    window._profileActionQueue = [];
+                }
+            } catch (ex) {
+                console.warn('Failed to expose globals:', ex);
+            }
+
+            } catch (e) {
+                console.error('Error in settingProfile.jsp script:', e);
+            }
+        })();
     </script>
     <%@ include file="partials/footer.jsp" %>
 </body>
 </html>
+
+<!-- Inline-onclick converter: binds handlers via addEventListener and removes inline attributes (CSP-safe) -->
+<script>
+    (function(){
+        if (!document.querySelectorAll) return;
+        const elements = Array.from(document.querySelectorAll('[onclick]'));
+        elements.forEach(el => {
+            const code = el.getAttribute('onclick');
+            if (!code) return;
+            // Try to extract a simple function call like: fnName('arg') or fnName(arg) or fnName()
+            const m = code.trim().match(/^\s*([a-zA-Z0-9_$.]+)\s*\((.*)\)/);
+            if (!m) return;
+            const fnPath = m[1];
+            let argsString = m[2].replace(/;\s*return false;?\s*$/,'').trim();
+            // parse arguments (simple split by comma not inside quotes)
+            const args = [];
+            if (argsString.length) {
+                // handle single string arg or multiple simple args
+                try {
+                    // Build an array expression and use JSON-like parsing by replacing single quotes
+                    const safe = '[' + argsString.replace(/'/g, '"') + ']';
+                    const parsed = JSON.parse(safe);
+                    parsed.forEach(a => args.push(a));
+                } catch (e) {
+                    // fallback: raw split
+                    argsString.split(',').forEach(s => args.push(s.trim().replace(/^['"]|['"]$/g,'')));
+                }
+            }
+
+            const listener = function(ev){
+                try{
+                    // resolve function path on window (support dot notation)
+                    const parts = fnPath.split('.');
+                    let fn = window;
+                    for (let p of parts) { if (fn) fn = fn[p]; }
+                    if (typeof fn === 'function') {
+                        fn.apply(el, args);
+                        if (/return\s+false/.test(code)) ev.preventDefault();
+                    }
+                }catch(err){ console.warn('Failed to call handler', fnPath, err); }
+            };
+
+            el.addEventListener('click', listener);
+            // remove inline to avoid CSP conflicts
+            el.removeAttribute('onclick');
+        });
+    })();
+</script>
 

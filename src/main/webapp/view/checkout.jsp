@@ -1026,8 +1026,8 @@
                                         
                                         <div class="form-group">
                                             <label class="form-label">Địa chỉ giao hàng <span class="required">*</span></label>
-                                            <input type="text" id="shippingAddressInput" class="form-control" 
-                                                   placeholder="Nhập địa chỉ và chọn từ gợi ý" autocomplete="off" required>
+                                              <input type="text" id="shippingAddressInput" name="addressDetail" class="form-control" 
+                                                  placeholder="Nhập địa chỉ và chọn từ gợi ý" autocomplete="off" required>
                                             <div id="shippingSuggestions" class="shipping-suggestions" style="display:none"></div>
                                             <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
                                                 <button type="button" id="useLocationBtn" class="btn btn-outline-secondary">Dùng vị trí hiện tại</button>
@@ -1422,11 +1422,12 @@
         document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Check if using saved address or new address
+            // Check if using saved address or new address (only validate when new address form is visible)
             const savedAddress = document.querySelector('.address-option.selected input[type="radio"]:checked');
             const newAddressForm = document.getElementById('newAddressForm');
-            
-            if (!savedAddress && newAddressForm) {
+            const newAddressVisible = newAddressForm && newAddressForm.classList.contains('show');
+
+            if (!savedAddress && newAddressVisible) {
                 // Validate new address form
                 const requiredFields = newAddressForm.querySelectorAll('[required]');
                 let isValid = true;
