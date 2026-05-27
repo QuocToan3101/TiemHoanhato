@@ -1943,27 +1943,27 @@
                         })();
                     </script>
                     <li>
-                        <a href="#" onclick="showSection('profile'); return false;" class="active" data-section="profile">
+                        <a href="javascript:void(0)" onclick="showSection('profile')" class="active" data-section="profile">
                             <i class="fas fa-user"></i> Thông tin cá nhân
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="showSection('orders'); return false;" data-section="orders">
+                        <a href="javascript:void(0)" onclick="showSection('orders')" data-section="orders">
                             <i class="fas fa-shopping-bag"></i> Lịch sử đơn hàng
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="showSection('address'); return false;" data-section="address">
+                        <a href="javascript:void(0)" onclick="showSection('address')" data-section="address">
                             <i class="fas fa-map-marker-alt"></i> Sổ địa chỉ
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="showSection('wishlist'); return false;" data-section="wishlist">
+                        <a href="javascript:void(0)" onclick="showSection('wishlist')" data-section="wishlist">
                             <i class="fas fa-heart"></i> Yêu thích
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="showSection('password'); return false;" data-section="password">
+                        <a href="javascript:void(0)" onclick="showSection('password')" data-section="password">
                             <i class="fas fa-lock"></i> Đổi mật khẩu
                         </a>
                     </li>
@@ -2658,6 +2658,51 @@
             `;
         }
         
+        let currentEditingAddressId = null;
+        
+        function getAddressFormHtml(address) {
+            return `
+                <form id="addressForm" onsubmit="saveAddress(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Tên người nhận <span style="color: var(--error);">*</span></label>
+                            <input type="text" class="form-control" id="addr_receiverName" placeholder="Nhập tên người nhận" maxlength="50" required value="\${address ? (address.receiverName || '') : ''}">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Số điện thoại <span style="color: var(--error);">*</span></label>
+                            <input type="tel" class="form-control" id="addr_phone" placeholder="Nhập số điện thoại" maxlength="10" required value="\${address ? (address.phone || '') : ''}">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Tỉnh/Thành <span style="color: var(--error);">*</span></label>
+                            <input type="text" class="form-control" id="addr_province" placeholder="Tỉnh/Thành" required value="\${address ? (address.province || '') : ''}">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Quận/Huyện <span style="color: var(--error);">*</span></label>
+                            <input type="text" class="form-control" id="addr_district" placeholder="Quận/Huyện" required value="\${address ? (address.district || '') : ''}">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Phường/Xã <span style="color: var(--error);">*</span></label>
+                            <input type="text" class="form-control" id="addr_ward" placeholder="Phường/Xã" required value="\${address ? (address.ward || '') : ''}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Địa chỉ chi tiết <span style="color: var(--error);">*</span></label>
+                        <input type="text" class="form-control" id="addr_detail" placeholder="Số nhà, tên đường..." maxlength="250" required value="\${address ? (address.addressDetail || '') : ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="addr_note" rows="2" placeholder="Ghi chú thêm (không bắt buộc)" maxlength="250">\${address ? (address.note || '') : ''}</textarea>
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0;">
+                        <input type="checkbox" id="addr_isDefault" style="width: auto !important; margin: 0;" \${address && address.default ? 'checked' : ''}>
+                        <label for="addr_isDefault" style="margin: 0; cursor: pointer; font-weight: 500;">Đặt làm địa chỉ mặc định</label>
+                    </div>
+                </form>
+            `;
+        }
+        
         function editAddress(index) {
             const address = addresses[index];
             currentEditingAddressId = address.id;
@@ -2690,66 +2735,23 @@
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> Thêm địa chỉ mới';
             document.getElementById('modalBody').innerHTML = getAddressFormHtml(null);
             
-            // Show modal footer with save button - thay đổi onclick để gọi saveAddress
             const modalFooter = document.querySelector('#editModal .modal-footer');
-            console.log('Modal footer found:', modalFooter);
-            
             if (modalFooter) {
-                // Đảm bảo hiển thị
                 modalFooter.style.display = 'flex';
                 modalFooter.style.visibility = 'visible';
                 modalFooter.style.opacity = '1';
                 
                 const saveBtn = modalFooter.querySelector('.btn-primary');
-                console.log('Save button found:', saveBtn);
-                
                 if (saveBtn) {
-                    // Thay đổi onclick để submit form thay vì gọi saveChanges
                     saveBtn.onclick = function() {
-                    function getAddressFormHtml() {
-            return `
-                <form id="addressForm" onsubmit="saveAddress(event)">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Tên người nhận <span style="color: var(--error);">*</span></label>
-                            <input type="text" class="form-control" id="addr_receiverName" placeholder="Nhập tên người nhận" maxlength="50" required>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Số điện thoại <span style="color: var(--error);">*</span></label>
-                            <input type="tel" class="form-control" id="addr_phone" placeholder="Nhập số điện thoại" maxlength="10" required>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Tỉnh/Thành <span style="color: var(--error);">*</span></label>
-                            <input type="text" class="form-control" id="addr_province" placeholder="Tỉnh/Thành" required>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Quận/Huyện <span style="color: var(--error);">*</span></label>
-                            <input type="text" class="form-control" id="addr_district" placeholder="Quận/Huyện" required>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Phường/Xã <span style="color: var(--error);">*</span></label>
-                            <input type="text" class="form-control" id="addr_ward" placeholder="Phường/Xã" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Địa chỉ chi tiết <span style="color: var(--error);">*</span></label>
-                        <input type="text" class="form-control" id="addr_detail" placeholder="Số nhà, tên đường..." maxlength="250" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Ghi chú</label>
-                        <textarea class="form-control" id="addr_note" rows="2" placeholder="Ghi chú thêm (không bắt buộc)" maxlength="250"></textarea>
-                    </div>
-                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0;">
-                        <input type="checkbox" id="addr_isDefault" style="width: auto !important; margin: 0;">
-                        <label for="addr_isDefault" style="margin: 0; cursor: pointer; font-weight: 500;">Đặt làm địa chỉ mặc định</label>
-                    </div>
-                </form>
-            `;
+                        const form = document.getElementById('addressForm');
+                        if (form) form.requestSubmit();
+                    };
+                }
+            }
+            
+            document.getElementById('modalOverlay').classList.add('active');
         }
-        
-        let currentEditingAddressId = null;
         
         function saveAddress(event) {
             if (event) event.preventDefault();
@@ -3720,6 +3722,12 @@
                 window.changePassword = changePassword;
                 window.removeFromWishlist = removeFromWishlist;
                 window.addToCartFromWishlist = addToCartFromWishlist;
+                window.openAddAddressModal = openAddAddressModal;
+                window.editAddress = editAddress;
+                window.setDefaultAddress = setDefaultAddress;
+                window.deleteAddress = deleteAddress;
+                window.togglePassword = togglePassword;
+                window.checkPasswordStrength = checkPasswordStrength;
 
                 // Flush queued calls
                 if (window._profileActionQueue && window._profileActionQueue.length) {
@@ -3790,6 +3798,65 @@
             el.addEventListener('click', listener);
             // remove inline to avoid CSP conflicts
             el.removeAttribute('onclick');
+        });
+    })();
+</script>
+
+<!-- Robust bindings: ensure sidebar navigation and modal save always work -->
+<script>
+    (function(){
+        document.addEventListener('DOMContentLoaded', function(){
+            // Attach safe click handlers to sidebar links (data-section)
+            try {
+                document.querySelectorAll('.sidebar-menu a[data-section]').forEach(a => {
+                    // avoid double-binding if converter already added a listener
+                    a.addEventListener('click', function(e){
+                        e.preventDefault();
+                        const section = this.getAttribute('data-section');
+                        if (!section) return;
+                        try {
+                            if (typeof window.showSection === 'function') {
+                                window.showSection(section);
+                            } else if (window._profileActionQueue) {
+                                window._profileActionQueue.push({fn: 'showSection', args: [section]});
+                            } else {
+                                console.warn('showSection not available');
+                            }
+                        } catch (err) { console.error(err); }
+                    });
+                });
+            } catch (ex) { console.warn('Failed to attach sidebar handlers', ex); }
+
+            // Guard wrapper for showSection to avoid runtime exceptions when element missing
+            try {
+                const _origShow = window.showSection;
+                window.showSection = function(sectionName){
+                    try {
+                        if (!sectionName) return;
+                        const el = document.getElementById('section-' + sectionName);
+                        if (!el) {
+                            console.warn('Section not found:', sectionName);
+                            return;
+                        }
+                        if (typeof _origShow === 'function') return _origShow(sectionName);
+                        // fallback minimal behaviour
+                        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                        el.classList.add('active');
+                    } catch(e) { console.error('showSection wrapper error', e); }
+                };
+            } catch (ex) { /* ignore */ }
+
+            // Ensure modal save uses addEventListener (more reliable than inline onclick)
+            try {
+                const modalSave = document.querySelector('#editModal .modal-footer .btn-primary');
+                if (modalSave) {
+                    modalSave.addEventListener('click', function(e){
+                        if (typeof window.saveChanges === 'function') window.saveChanges();
+                        else if (window._profileActionQueue) window._profileActionQueue.push({fn: 'saveChanges', args: []});
+                    });
+                    modalSave.removeAttribute && modalSave.removeAttribute('onclick');
+                }
+            } catch (ex) { console.warn('Failed to wire modal save', ex); }
         });
     })();
 </script>

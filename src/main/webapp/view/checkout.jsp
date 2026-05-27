@@ -1033,9 +1033,6 @@
                                               <input type="text" id="shippingAddressInput" name="addressDetail" class="form-control" 
                                                   placeholder="Nhập địa chỉ và chọn từ gợi ý" autocomplete="off" required>
                                             <div id="shippingSuggestions" class="shipping-suggestions" style="display:none"></div>
-                                            <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-                                                <button type="button" id="useLocationBtn" class="btn btn-outline-secondary">Dùng vị trí hiện tại</button>
-                                            </div>
                                             <div id="shippingMap" style="width:100%; height:180px; border-radius:12px; overflow:hidden; background:#f5f5f5; margin-top:12px; display:none"></div>
                                             <div id="shippingInfo" style="font-size:14px; color:var(--muted); margin-top:12px;">
                                                 <div id="shippingSkeleton" class="shipping-skeleton" style="display:none">

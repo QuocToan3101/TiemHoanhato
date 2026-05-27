@@ -177,6 +177,7 @@ public class CategoryDAO {
                     category.setId(rs.getInt(1));
                 }
                 cacheManager.invalidateCategoryCache();
+                cacheManager.invalidateProductCache();
                 return true;
             }
         } catch (SQLException e) {
@@ -211,6 +212,7 @@ public class CategoryDAO {
             boolean updated = ps.executeUpdate() > 0;
             if (updated) {
                 cacheManager.invalidateCategoryCache();
+                cacheManager.invalidateProductCache();
             }
             return updated;
         } catch (SQLException e) {
@@ -232,6 +234,7 @@ public class CategoryDAO {
             boolean deleted = ps.executeUpdate() > 0;
             if (deleted) {
                 cacheManager.invalidateCategoryCache();
+                cacheManager.invalidateProductCache();
             }
             return deleted;
         } catch (SQLException e) {

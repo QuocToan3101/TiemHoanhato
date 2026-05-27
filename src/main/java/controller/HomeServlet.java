@@ -33,6 +33,8 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        disableCaching(response);
         
         System.out.println("=== HomeServlet được gọi ===");
 
@@ -79,5 +81,11 @@ public class HomeServlet extends HttpServlet {
         
         // Forward đến trang home.jsp
         request.getRequestDispatcher("/view/home.jsp").forward(request, response);
+    }
+
+    private void disableCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
     }
 }

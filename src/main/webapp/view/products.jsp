@@ -828,14 +828,14 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     
     <!-- CSRF Token Helper -->
-    <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
+    <script src="${pageContext.request.contextPath}/js/csrf-helper.js?v=20260527"></script>
 
     <!-- SweetAlert2 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
     <!-- Notification System Utility -->
-    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
+    <script src="${pageContext.request.contextPath}/js/notification.js?v=20260527"></script>
 </head>
 
 <body id="wandave-theme" class="index">

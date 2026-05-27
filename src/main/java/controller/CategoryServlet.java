@@ -36,6 +36,8 @@ public class CategoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        disableCaching(response);
         
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
@@ -171,5 +173,11 @@ public class CategoryServlet extends HttpServlet {
         // Trong thực tế, bạn có thể thêm children vào mỗi parent
         // Nhưng model Category hiện tại chưa có field List<Category> children
         return parentCategories;
+    }
+
+    private void disableCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
     }
 }

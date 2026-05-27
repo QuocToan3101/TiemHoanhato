@@ -35,6 +35,8 @@ public class SearchServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        disableCaching(response);
+
         request.setCharacterEncoding("UTF-8");
 
         String query = request.getParameter("q");
@@ -119,5 +121,11 @@ public class SearchServlet extends HttpServlet {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private void disableCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
     }
 }

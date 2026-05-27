@@ -19,6 +19,9 @@ public class ImageCarouselServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         response.setContentType("application/json; charset=UTF-8");
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
         
         try {
             ProductDAO productDAO = new ProductDAO();
@@ -48,10 +51,6 @@ public class ImageCarouselServlet extends HttpServlet {
             if (limit > 0) {
                 carouselImages = carouselImages.subList(0, limit);
             }
-            
-            // Set cache headers - cache 24 hours for carousel images
-            response.setHeader("Cache-Control", "public, max-age=86400, immutable");
-            response.setHeader("Expires", String.valueOf(System.currentTimeMillis() + 86400000L));
             
             // Trả về JSON
             Gson gson = new Gson();

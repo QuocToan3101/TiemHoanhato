@@ -34,6 +34,8 @@ public class ProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        disableCaching(response);
+
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null || "/".equals(pathInfo)) {
@@ -214,6 +216,12 @@ public class ProductServlet extends HttpServlet {
         request.setAttribute("relatedProducts", relatedProducts);
 
         request.getRequestDispatcher("/view/product-detail.jsp").forward(request, response);
+    }
+
+    private void disableCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
     }
 
     private List<String> buildProductImages(Product product) {
