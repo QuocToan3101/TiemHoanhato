@@ -65,16 +65,30 @@ public class CSRFFilter implements Filter {
             }
             
             // Lấy token từ header hoặc parameter
-            String clientToken = httpRequest.getHeader(CSRF_HEADER);
-            if (clientToken == null) {
-                clientToken = httpRequest.getParameter(CSRF_PARAM);
+            String clientTokenHeader = httpRequest.getHeader(CSRF_HEADER);
+            String clientTokenParam = httpRequest.getParameter(CSRF_PARAM);
+            String clientToken = clientTokenHeader != null ? clientTokenHeader : clientTokenParam;
+            
+            // Xử lý trường hợp client chèn lặp nhiều lần (ví dụ: "token, token")
+            if (clientToken != null && clientToken.contains(",")) {
+                clientToken = clientToken.split(",")[0].trim();
             }
+            
+            httpRequest.getServletContext().log("[CSRFFilter] Request URI: " + httpRequest.getRequestURI());
+            httpRequest.getServletContext().log("[CSRFFilter] Session ID: " + session.getId());
+            httpRequest.getServletContext().log("[CSRFFilter] Token in Session: " + token);
+            httpRequest.getServletContext().log("[CSRFFilter] Token in Header: " + clientTokenHeader);
+            httpRequest.getServletContext().log("[CSRFFilter] Token in Param: " + clientTokenParam);
+            httpRequest.getServletContext().log("[CSRFFilter] Final Client Token: " + clientToken);
             
             // Kiểm tra token
             if (clientToken == null || !token.equals(clientToken)) {
+                httpRequest.getServletContext().log("[CSRFFilter] => VALIDATION FAILED!");
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, 
                     "CSRF token validation failed");
                 return;
+            } else {
+                httpRequest.getServletContext().log("[CSRFFilter] => VALIDATION PASSED.");
             }
         }
         

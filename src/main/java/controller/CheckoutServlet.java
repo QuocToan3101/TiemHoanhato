@@ -18,11 +18,13 @@ import com.google.gson.JsonObject;
 import dao.CartDAO;
 import dao.CouponDAO;
 import dao.OrderDAO;
+import dao.AddressDAO;
 import model.CartItem;
 import model.Order;
 import model.OrderItem;
 import model.Product;
 import model.User;
+import model.Address;
 import payment.VNPayConfig;
 import service.EmailService;
 import util.AppConfig;
@@ -36,6 +38,7 @@ public class CheckoutServlet extends HttpServlet {
     private CartDAO cartDAO;
     private CouponDAO couponDAO;
     private OrderDAO orderDAO;
+    private AddressDAO addressDAO;
     private Gson gson;
     private VNPayConfig vnpayConfig;
     private EmailService emailService;
@@ -46,6 +49,7 @@ public class CheckoutServlet extends HttpServlet {
         cartDAO = new CartDAO();
         couponDAO = new CouponDAO();
         orderDAO = new OrderDAO();
+        addressDAO = new AddressDAO();
         gson = new Gson();
         vnpayConfig = new VNPayConfig();
         emailService = EmailService.getInstance();
@@ -94,6 +98,10 @@ public class CheckoutServlet extends HttpServlet {
             request.setAttribute("cartItems", cartItems);
             request.setAttribute("cartTotal", cartTotal);
             request.setAttribute("cartCount", cartCount);
+            
+            // Lấy danh sách địa chỉ đã lưu
+            List<Address> addresses = addressDAO.findByUserId(user.getId());
+            request.setAttribute("addresses", addresses);
             
             request.getRequestDispatcher("/view/checkout.jsp").forward(request, response);
         } catch (ServletException | IOException e) {
@@ -168,7 +176,19 @@ public class CheckoutServlet extends HttpServlet {
                 }
             }
 
+            // Đọc phí vận chuyển động từ frontend gửi lên
+            String shippingFeeParam = request.getParameter("shippingFee");
             BigDecimal shippingFee = DEFAULT_SHIPPING_FEE;
+            if (shippingFeeParam != null && !shippingFeeParam.trim().isEmpty()) {
+                try {
+                    shippingFee = new BigDecimal(shippingFeeParam.trim());
+                    if (shippingFee.compareTo(BigDecimal.ZERO) < 0) {
+                        shippingFee = BigDecimal.ZERO;
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("[CheckoutServlet] Phí vận chuyển không hợp lệ: " + shippingFeeParam);
+                }
+            }
             BigDecimal discount = BigDecimal.ZERO;
 
             String couponCode = request.getParameter("appliedCouponCode");
@@ -219,25 +239,42 @@ public class CheckoutServlet extends HttpServlet {
                     ("on".equals(attachGreetingCard)) + ", In thiệp: " + shouldPrintCard);
             }
             
-            // Địa chỉ giao hàng - sử dụng trực tiếp từ form
-            String shippingAddress = addressDetail != null ? addressDetail.trim() : "";
+            // Địa chỉ giao hàng - xử lý Sổ địa chỉ (Saved Address) hoặc Địa chỉ mới
+            String addressIdParam = request.getParameter("addressId");
+            String finalReceiverName = receiverName != null ? receiverName.trim() : "";
+            String finalReceiverPhone = receiverPhone != null ? receiverPhone.trim() : "";
+            String finalShippingAddress = addressDetail != null ? addressDetail.trim() : "";
+
+            if (addressIdParam != null && !addressIdParam.trim().isEmpty()) {
+                try {
+                    int addressId = Integer.parseInt(addressIdParam.trim());
+                    Address savedAddress = addressDAO.findById(addressId);
+                    if (savedAddress != null && savedAddress.getUserId() == user.getId()) {
+                        finalReceiverName = savedAddress.getReceiverName();
+                        finalReceiverPhone = savedAddress.getPhone();
+                        finalShippingAddress = savedAddress.getFullAddress();
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("[CheckoutServlet] addressId không hợp lệ: " + addressIdParam);
+                }
+            }
             
             // Validate dữ liệu
-            if (receiverName == null || receiverName.trim().isEmpty()) {
+            if (finalReceiverName.isEmpty()) {
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Vui lòng nhập tên người nhận");
                 out.print(gson.toJson(jsonResponse));
                 return;
             }
             
-            if (receiverPhone == null || !receiverPhone.matches("^[0-9]{10,11}$")) {
+            if (finalReceiverPhone.isEmpty() || !finalReceiverPhone.matches("^[0-9]{10,11}$")) {
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Số điện thoại không hợp lệ");
                 out.print(gson.toJson(jsonResponse));
                 return;
             }
             
-            if (shippingAddress == null || shippingAddress.trim().isEmpty()) {
+            if (finalShippingAddress.isEmpty()) {
                 jsonResponse.addProperty("success", false);
                 jsonResponse.addProperty("message", "Vui lòng nhập địa chỉ giao hàng");
                 out.print(gson.toJson(jsonResponse));
@@ -247,10 +284,10 @@ public class CheckoutServlet extends HttpServlet {
             // Tạo đơn hàng
             Order order = new Order();
             order.setUserId(user.getId());
-            order.setReceiverName(receiverName.trim());
-            order.setReceiverPhone(receiverPhone.trim());
+            order.setReceiverName(finalReceiverName);
+            order.setReceiverPhone(finalReceiverPhone);
             order.setReceiverEmail(receiverEmail != null ? receiverEmail.trim() : user.getEmail());
-            order.setShippingAddress(shippingAddress);
+            order.setShippingAddress(finalShippingAddress);
             order.setNote(note);
             order.setSubtotal(subtotal);
             order.setShippingFee(shippingFee);

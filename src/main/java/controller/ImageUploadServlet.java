@@ -1,5 +1,7 @@
 package controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.imageio.ImageIO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -24,6 +28,7 @@ import javax.servlet.http.Part;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import util.AppConfig;
+import model.User;
 
 /**
  * Servlet xử lý upload ảnh
@@ -66,12 +71,23 @@ public class ImageUploadServlet extends HttpServlet {
                 return;
             }
 
+            User user = (User) session.getAttribute("user");
+
             // Lấy upload type (product, avatar, banner, v.v.)
             String uploadType = sanitizeUploadType(request.getParameter("type"));
             if (!ALLOWED_TYPES.contains(uploadType)) {
                 result.addProperty("success", false);
                 result.addProperty("message", "Loại upload không hợp lệ");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print(gson.toJson(result));
+                return;
+            }
+
+            boolean adminOnlyUpload = "product".equals(uploadType) || "banner".equals(uploadType);
+            if (adminOnlyUpload && (user == null || user.getRole() == null || !"admin".equalsIgnoreCase(user.getRole()))) {
+                result.addProperty("success", false);
+                result.addProperty("message", "Bạn không có quyền upload loại ảnh này");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 out.print(gson.toJson(result));
                 return;
             }
@@ -122,12 +138,22 @@ public class ImageUploadServlet extends HttpServlet {
                         out.print(gson.toJson(result));
                         return;
                     }
+
+                    byte[] fileBytes = part.getInputStream().readAllBytes();
+                    BufferedImage decoded = ImageIO.read(new ByteArrayInputStream(fileBytes));
+                    if (decoded == null) {
+                        result.addProperty("success", false);
+                        result.addProperty("message", "File ảnh không hợp lệ hoặc đã bị hỏng");
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        out.print(gson.toJson(result));
+                        return;
+                    }
                     
                     // Generate unique filename and save file
                     String fileExtension = fileName.substring(fileName.lastIndexOf("."));
                     String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
                     Path filePath = Paths.get(uploadPath, uniqueFileName);
-                    Files.copy(part.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                    Files.write(filePath, fileBytes);
 
                     // Always return a web-accessible URL under the application context
                     String relativePath = request.getContextPath() + "/" + DEFAULT_UPLOAD_DIR + "/" + uploadType + "/" + uniqueFileName;

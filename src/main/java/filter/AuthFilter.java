@@ -36,6 +36,7 @@ public class AuthFilter implements Filter {
     
     // Các URL chỉ admin mới truy cập được
     private static final List<String> ADMIN_URLS = Arrays.asList(
+        "/view/admin.jsp",
         "/view/admin_1.jsp",
         "/admin",
         "/admin/",

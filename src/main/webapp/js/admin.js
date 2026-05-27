@@ -27,11 +27,40 @@ let allCoupons = [];
 let allContacts = [];
 
 let allCustomOrders = [];
+let lastFocusedModalElement = null;
+let productImageUploadInFlight = false;
+
+function showNotification(title, message, type = "info", options = {}) {
+  if (typeof window.showSuccess === "function" &&
+      typeof window.showError === "function" &&
+      typeof window.showWarning === "function" &&
+      typeof window.showInfo === "function") {
+    if (type === "success") return window.showSuccess(message, title, options);
+    if (type === "error") return window.showError(message, title, options);
+    if (type === "warning") return window.showWarning(message, title, options);
+    return window.showInfo(message, title, options);
+  }
+
+  const fallbackMessage = `${title}: ${message}`;
+  if (type === "error") {
+    console.error(fallbackMessage);
+  } else if (type === "warning") {
+    console.warn(fallbackMessage);
+  } else {
+    console.log(fallbackMessage);
+  }
+
+  if (typeof window.alert === "function") {
+    window.alert(fallbackMessage);
+  }
+}
 
 // Basic menu navigation & initialization
 document.addEventListener("DOMContentLoaded", function () {
   // Menu items click handler
   document.querySelectorAll(".menu-item[data-target]").forEach((item) => {
+    item.setAttribute("role", "button");
+    item.setAttribute("tabindex", "0");
     item.addEventListener("click", function () {
       const target = this.getAttribute("data-target");
       showSection(target);
@@ -40,7 +69,27 @@ document.addEventListener("DOMContentLoaded", function () {
       document.querySelectorAll(".menu-item").forEach((m) => m.classList.remove("active"));
       this.classList.add("active");
     });
+
+    item.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.click();
+      }
+    });
   });
+
+  const bindFormSubmit = (formId, handler) => {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      handler();
+    });
+  };
+
+  bindFormSubmit("productForm", saveProduct);
+  bindFormSubmit("galleryForm", saveGallery);
+  bindFormSubmit("newsForm", saveNews);
 
   // Enter key for global search
   const globalSearch = document.getElementById("globalSearch");
@@ -195,7 +244,16 @@ function formatDateTime(dateString) {
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
+    lastFocusedModalElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     modal.classList.add("show");
+    document.body.classList.add("modal-open");
+
+    window.requestAnimationFrame(() => {
+      const focusTarget = modal.querySelector('input:not([type="hidden"]), select, textarea, button, [tabindex]:not([tabindex="-1"])');
+      if (focusTarget && typeof focusTarget.focus === "function") {
+        focusTarget.focus();
+      }
+    });
   }
 }
 
@@ -203,8 +261,55 @@ function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.remove("show");
+    if (!document.querySelector(".modal-overlay.show")) {
+      document.body.classList.remove("modal-open");
+    }
+    if (lastFocusedModalElement && typeof lastFocusedModalElement.focus === "function") {
+      lastFocusedModalElement.focus();
+      lastFocusedModalElement = null;
+    }
   }
 }
+
+function getModalPrimaryButton(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return null;
+  return modal.querySelector(".modal-footer .btn-primary");
+}
+
+function setModalPrimaryButtonLoading(modalId, isLoading, loadingText = "Đang xử lý...") {
+  const button = getModalPrimaryButton(modalId);
+  if (!button) return;
+
+  if (isLoading) {
+    if (!button.dataset.originalHtml) {
+      button.dataset.originalHtml = button.innerHTML;
+    }
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+    button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+    return;
+  }
+
+  if (button.dataset.originalHtml) {
+    button.innerHTML = button.dataset.originalHtml;
+    delete button.dataset.originalHtml;
+  }
+  button.disabled = false;
+  button.removeAttribute("aria-busy");
+}
+
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Escape") return;
+
+  const openModals = Array.from(document.querySelectorAll(".modal-overlay.show"));
+  if (!openModals.length) return;
+
+  const topModal = openModals[openModals.length - 1];
+  if (topModal && topModal.id) {
+    closeModal(topModal.id);
+  }
+});
 
 // Close modal on overlay click
 document.addEventListener("click", function (e) {
@@ -771,6 +876,7 @@ async function updateOrderStatus() {
   }
 
   try {
+    setModalPrimaryButtonLoading("updateStatusModal", true, "Đang cập nhật...");
     const params = new URLSearchParams();
     params.append("id", currentOrderId);
     params.append("status", newStatus);
@@ -788,12 +894,20 @@ async function updateOrderStatus() {
     if (!result.success) throw new Error(result.message || "Failed to update status");
 
     showNotification("Thành công", "Đã cập nhật trạng thái đơn hàng!", "success");
+    const updatedOrder = currentOrders.find((order) => String(order.id) === String(currentOrderId));
+    if (updatedOrder) {
+      updatedOrder.status = newStatus;
+      updatedOrder.orderStatus = newStatus;
+    }
+    displayOrders();
+    displayOrdersPagination();
     closeModal("updateStatusModal");
-    loadOrders(currentPage);
-    loadStatistics();
+    await loadStatistics();
   } catch (error) {
     console.error("Error updating status:", error);
     showNotification("Lỗi", error.message || "Không thể cập nhật trạng thái", "error");
+  } finally {
+    setModalPrimaryButtonLoading("updateStatusModal", false);
   }
 }
 
@@ -1010,6 +1124,7 @@ async function uploadImage(file) {
   const csrfToken = window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   if (csrfToken) formData.append("csrfToken", csrfToken);
 
+  productImageUploadInFlight = true;
   try {
     showNotification("Đang tải...", "Đang upload ảnh lên server...", "info");
 
@@ -1019,7 +1134,15 @@ async function uploadImage(file) {
       body: formData,
     });
 
-    const result = await response.json();
+    const contentType = response.headers.get("content-type") || "";
+    const result = contentType.includes("application/json")
+      ? await response.json()
+      : { success: false, message: await response.text() };
+
+    if (!response.ok && !result.message) {
+      throw new Error(`Upload failed with status ${response.status}`);
+    }
+
     if (result.success) {
       document.getElementById("productImage").value = result.url;
       showNotification("Thành công", "Upload ảnh thành công!", "success");
@@ -1031,6 +1154,8 @@ async function uploadImage(file) {
     console.error("Error uploading image:", error);
     showNotification("Lỗi", "Không thể upload ảnh: " + error.message, "error");
     clearImage();
+  } finally {
+    productImageUploadInFlight = false;
   }
 }
 
@@ -1039,6 +1164,7 @@ function clearImage() {
   document.getElementById("productImage").value = "";
   document.getElementById("imagePreview").style.display = "none";
   document.getElementById("previewImg").src = "";
+  productImageUploadInFlight = false;
 }
 
 async function openEditProductModal(productId) {
@@ -1088,7 +1214,18 @@ async function saveProduct() {
     return;
   }
 
+  if (!categoryId) {
+    showNotification("Cảnh báo", "Vui lòng chọn danh mục sản phẩm", "warning");
+    return;
+  }
+
+  if (productImageUploadInFlight) {
+    showNotification("Cảnh báo", "Ảnh đang được tải lên. Vui lòng đợi hoàn tất trước khi lưu.", "warning");
+    return;
+  }
+
   try {
+    setModalPrimaryButtonLoading("productModal", true, "Đang lưu sản phẩm...");
     const csrfToken = window.csrfToken || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     const url = productId ? contextPath + "/admin/api/product/update" : contextPath + "/admin/api/product/add";
 
@@ -1131,10 +1268,17 @@ async function saveProduct() {
 
     showNotification("Thành công", productId ? "Đã cập nhật sản phẩm!" : "Đã thêm sản phẩm mới!", "success");
     closeModal("productModal");
-    loadProducts(currentProductPage);
+    try {
+      await loadProducts(currentProductPage);
+      await loadStatistics();
+    } catch (refreshError) {
+      console.warn("Product refresh failed after save:", refreshError);
+    }
   } catch (error) {
     console.error("Error saving product:", error);
     showNotification("Lỗi", error.message || "Không thể lưu sản phẩm", "error");
+  } finally {
+    setModalPrimaryButtonLoading("productModal", false);
   }
 }
 
@@ -1165,7 +1309,12 @@ async function confirmDeleteProduct() {
 
     showNotification("Thành công", "Đã xóa sản phẩm thành công!", "success");
     closeModal("deleteProductModal");
-    loadProducts(currentProductPage);
+    try {
+      await loadProducts(currentProductPage);
+      await loadStatistics();
+    } catch (refreshError) {
+      console.warn("Product refresh failed after delete:", refreshError);
+    }
   } catch (error) {
     console.error("Error deleting product:", error);
     showNotification("Lỗi", error.message || "Không thể xóa sản phẩm", "error");
@@ -1461,7 +1610,7 @@ async function saveCategory() {
 
     showNotification("Thành công", categoryId ? "Đã cập nhật danh mục!" : "Đã thêm danh mục mới!", "success");
     closeModal("categoryModal");
-    loadCategoriesTable();
+    await loadCategoriesTable();
   } catch (error) {
     showNotification("Lỗi", error.message || "Không thể lưu danh mục", "error");
   }
@@ -1479,7 +1628,7 @@ async function deleteCategory(categoryId, categoryName) {
       if (!result.success) throw new Error(result.message || "Failed to delete category");
 
       showNotification("Thành công", "Đã xóa danh mục thành công!", "success");
-      loadCategoriesTable();
+      await loadCategoriesTable();
     } catch (error) {
       showNotification("Lỗi", error.message || "Không thể xóa danh mục", "error");
     }
@@ -2387,16 +2536,17 @@ async function saveGallery() {
     return;
   }
   
-  const formData = new URLSearchParams();
-  formData.append('action', id ? 'update' : 'add');
-  if (id) formData.append('id', id);
-  formData.append('imageUrl', imageUrl);
-  formData.append('caption', caption);
-  formData.append('description', description);
-  formData.append('displayOrder', displayOrder);
-  formData.append('isActive', isActive);
-  
   try {
+    setModalPrimaryButtonLoading('galleryModal', true, 'Đang lưu gallery...');
+    const formData = new URLSearchParams();
+    formData.append('action', id ? 'update' : 'add');
+    if (id) formData.append('id', id);
+    formData.append('imageUrl', imageUrl);
+    formData.append('caption', caption);
+    formData.append('description', description);
+    formData.append('displayOrder', displayOrder);
+    formData.append('isActive', isActive);
+
     const response = await fetch(contextPath + '/api/gallery', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -2414,6 +2564,8 @@ async function saveGallery() {
   } catch (error) {
     console.error('Error saving gallery:', error);
     showNotification('Lỗi', 'Không thể lưu hình ảnh Gallery', 'error');
+  } finally {
+    setModalPrimaryButtonLoading('galleryModal', false);
   }
 }
 
@@ -2609,6 +2761,7 @@ async function saveNews() {
   }
   
   try {
+    setModalPrimaryButtonLoading('newsModal', true, 'Đang lưu bài viết...');
     const action = id ? 'update' : 'add';
     const response = await fetch(contextPath + '/api/news?action=' + action, {
       method: 'POST',
@@ -2627,6 +2780,8 @@ async function saveNews() {
   } catch (error) {
     console.error('Error saving news:', error);
     showNotification('Lỗi', 'Không thể lưu bài viết tin tức', 'error');
+  } finally {
+    setModalPrimaryButtonLoading('newsModal', false);
   }
 }
 

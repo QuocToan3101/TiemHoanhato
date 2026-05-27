@@ -3,6 +3,7 @@
 <%@ page isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:if test="${empty sessionScope.user}">
     <c:redirect url="/view/login_1.jsp" />
 </c:if>
@@ -1896,15 +1897,22 @@
                 <div class="sidebar-user">
                     <c:choose>
                         <c:when test="${not empty sessionScope.user.avatar}">
-                            <img src="${sessionScope.user.avatar}" alt="Avatar" class="sidebar-avatar">
+                            <c:choose>
+                                <c:when test="${fn:contains(sessionScope.user.avatar, '/uploads/')}">
+                                    <img src="${pageContext.request.contextPath}/api/image/${fn:substringAfter(sessionScope.user.avatar, '/uploads/')}?size=thumbnail" alt="Avatar" class="sidebar-avatar" id="sidebarAvatar">
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="${sessionScope.user.avatar}" alt="Avatar" class="sidebar-avatar" id="sidebarAvatar">
+                                </c:otherwise>
+                            </c:choose>
                         </c:when>
                         <c:otherwise>
                             <c:set var="displayName" value="${not empty sessionScope.user.fullname ? sessionScope.user.fullname : 'User'}" />
-                            <img src="https://ui-avatars.com/api/?name=${displayName}&background=c99366&color=fff&size=80" alt="Avatar" class="sidebar-avatar">
+                            <img src="https://ui-avatars.com/api/?name=${displayName}&background=c99366&color=fff&size=80" alt="Avatar" class="sidebar-avatar" id="sidebarAvatar">
                         </c:otherwise>
                     </c:choose>
-                    <div class="sidebar-name">${not empty sessionScope.user.fullname ? sessionScope.user.fullname : 'Chưa cập nhật'}</div>
-                    <div class="sidebar-email">${not empty sessionScope.user.email ? sessionScope.user.email : 'Chưa cập nhật'}</div>
+                    <div class="sidebar-name"><c:out value="${sessionScope.user.fullname}" default="Chưa cập nhật" /></div>
+                    <div class="sidebar-email"><c:out value="${sessionScope.user.email}" default="Chưa cập nhật" /></div>
                 </div>
                 <ul class="sidebar-menu">
                     <script>
@@ -1974,7 +1982,14 @@
                         <div class="avatar-container">
                             <c:choose>
                                 <c:when test="${not empty sessionScope.user.avatar}">
-                                    <img src="${sessionScope.user.avatar}" alt="Avatar" class="avatar" id="avatarImg">
+                                    <c:choose>
+                                        <c:when test="${fn:contains(sessionScope.user.avatar, '/uploads/')}">
+                                            <img src="${pageContext.request.contextPath}/api/image/${fn:substringAfter(sessionScope.user.avatar, '/uploads/')}?size=medium" alt="Avatar" class="avatar" id="avatarImg">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${sessionScope.user.avatar}" alt="Avatar" class="avatar" id="avatarImg">
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:when>
                                 <c:otherwise>
                                     <c:set var="profileName" value="${not empty sessionScope.user.fullname ? sessionScope.user.fullname : 'User'}" />
@@ -1985,8 +2000,8 @@
                                 <i class="fas fa-camera"></i>
                             </button>
                         </div>
-                        <h2 class="profile-name" id="displayName">${not empty sessionScope.user.fullname ? sessionScope.user.fullname : 'Chưa cập nhật'}</h2>
-                        <p class="profile-email">${not empty sessionScope.user.email ? sessionScope.user.email : 'Chưa cập nhật'}</p>
+                        <h2 class="profile-name" id="displayName"><c:out value="${sessionScope.user.fullname}" default="Chưa cập nhật" /></h2>
+                        <p class="profile-email"><c:out value="${sessionScope.user.email}" default="Chưa cập nhật" /></p>
                     </div>
                     
                     <div class="profile-body">
@@ -2001,7 +2016,7 @@
                                         <i class="fas fa-pen"></i>
                                     </button>
                                 </div>
-                                <div class="info-card-value ${empty sessionScope.user.fullname ? 'placeholder' : ''}" id="fullnameValue">${not empty sessionScope.user.fullname ? sessionScope.user.fullname : 'Chưa cập nhật'}</div>
+                                <div class="info-card-value ${empty sessionScope.user.fullname ? 'placeholder' : ''}" id="fullnameValue"><c:out value="${sessionScope.user.fullname}" default="Chưa cập nhật" /></div>
                             </div>
                             
                             <!-- Số điện thoại -->
@@ -2012,9 +2027,7 @@
                                         <i class="fas fa-pen"></i>
                                     </button>
                                 </div>
-                                <div class="info-card-value ${empty sessionScope.user.phone ? 'placeholder' : ''}" id="phoneValue">
-                                    ${not empty sessionScope.user.phone ? sessionScope.user.phone : 'Chưa cập nhật'}
-                                </div>
+                                <div class="info-card-value ${empty sessionScope.user.phone ? 'placeholder' : ''}" id="phoneValue"><c:out value="${sessionScope.user.phone}" default="Chưa cập nhật" /></div>
                             </div>
                             
                             <!-- Giới tính -->
@@ -2057,7 +2070,7 @@
                             <div class="info-row-locked">
                                 <div>
                                     <span class="info-card-label"><i class="fas fa-envelope"></i> Email</span>
-                                    <div class="info-card-value">${not empty sessionScope.user.email ? sessionScope.user.email : 'Chưa cập nhật'}</div>
+                                    <div class="info-card-value"><c:out value="${sessionScope.user.email}" default="Chưa cập nhật" /></div>
                                 </div>
                                 <span class="locked-badge"><i class="fas fa-lock"></i> Không thể thay đổi</span>
                             </div>
@@ -2073,9 +2086,7 @@
                                     <i class="fas fa-pen"></i>
                                 </button>
                             </div>
-                            <p class="bio-content ${empty sessionScope.user.bio ? 'placeholder' : ''}" id="bioValue">
-                                ${not empty sessionScope.user.bio ? sessionScope.user.bio : 'Hãy viết vài dòng giới thiệu về bạn...'}
-                            </p>
+                            <p class="bio-content ${empty sessionScope.user.bio ? 'placeholder' : ''}" id="bioValue"><c:out value="${sessionScope.user.bio}" default="Hãy viết vài dòng giới thiệu về bạn..." /></p>
                         </div>
                     </div>
                 </div>
@@ -2695,67 +2706,43 @@
                 if (saveBtn) {
                     // Thay đổi onclick để submit form thay vì gọi saveChanges
                     saveBtn.onclick = function() {
-                        console.log('Save button clicked');
-                        const form = document.getElementById('addressForm');
-                        if (form) {
-                            console.log('Submitting form...');
-                            form.requestSubmit();
-                        } else {
-                            console.error('Form not found!');
-                        }
-                    };
-                }
-            } else {
-                console.error('Modal footer not found!');
-            }
-            
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-        
-        function getAddressFormHtml(address) {
+                    function getAddressFormHtml() {
             return `
                 <form id="addressForm" onsubmit="saveAddress(event)">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="form-label">Tên người nhận <span style="color: var(--error);">*</span></label>
-                            <input type="text" class="form-control" id="addr_receiverName" 
-                                value="\${address ? address.receiverName : ''}" placeholder="Nhập tên người nhận" required>
+                            <input type="text" class="form-control" id="addr_receiverName" placeholder="Nhập tên người nhận" maxlength="50" required>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="form-label">Số điện thoại <span style="color: var(--error);">*</span></label>
-                            <input type="tel" class="form-control" id="addr_phone" 
-                                value="\${address ? address.phone : ''}" placeholder="Nhập số điện thoại" required>
+                            <input type="tel" class="form-control" id="addr_phone" placeholder="Nhập số điện thoại" maxlength="10" required>
                         </div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem;">
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Tỉnh/Thành</label>
-                            <input type="text" class="form-control" id="addr_province" 
-                                value="\${address ? (address.province || '') : ''}" placeholder="Tỉnh/Thành">
+                            <label class="form-label">Tỉnh/Thành <span style="color: var(--error);">*</span></label>
+                            <input type="text" class="form-control" id="addr_province" placeholder="Tỉnh/Thành" required>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Quận/Huyện</label>
-                            <input type="text" class="form-control" id="addr_district" 
-                                value="\${address ? (address.district || '') : ''}" placeholder="Quận/Huyện">
+                            <label class="form-label">Quận/Huyện <span style="color: var(--error);">*</span></label>
+                            <input type="text" class="form-control" id="addr_district" placeholder="Quận/Huyện" required>
                         </div>
                         <div class="form-group" style="margin-bottom: 0;">
-                            <label class="form-label">Phường/Xã</label>
-                            <input type="text" class="form-control" id="addr_ward" 
-                                value="\${address ? (address.ward || '') : ''}" placeholder="Phường/Xã">
+                            <label class="form-label">Phường/Xã <span style="color: var(--error);">*</span></label>
+                            <input type="text" class="form-control" id="addr_ward" placeholder="Phường/Xã" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Địa chỉ chi tiết <span style="color: var(--error);">*</span></label>
-                        <input type="text" class="form-control" id="addr_detail" 
-                            value="\${address ? address.addressDetail : ''}" placeholder="Số nhà, tên đường..." required>
+                        <input type="text" class="form-control" id="addr_detail" placeholder="Số nhà, tên đường..." maxlength="250" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Ghi chú</label>
-                        <textarea class="form-control" id="addr_note" rows="2" 
-                            placeholder="Ghi chú thêm (không bắt buộc)">\${address ? (address.note || '') : ''}</textarea>
+                        <textarea class="form-control" id="addr_note" rows="2" placeholder="Ghi chú thêm (không bắt buộc)" maxlength="250"></textarea>
                     </div>
                     <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0;">
-                        <input type="checkbox" id="addr_isDefault" style="width: auto !important; margin: 0;" \${address && address.default ? 'checked' : ''}>
+                        <input type="checkbox" id="addr_isDefault" style="width: auto !important; margin: 0;">
                         <label for="addr_isDefault" style="margin: 0; cursor: pointer; font-weight: 500;">Đặt làm địa chỉ mặc định</label>
                     </div>
                 </form>
@@ -2767,15 +2754,56 @@
         function saveAddress(event) {
             if (event) event.preventDefault();
             
+            const receiverName = document.getElementById('addr_receiverName').value.trim();
+            const phone = document.getElementById('addr_phone').value.trim();
+            const province = document.getElementById('addr_province').value.trim();
+            const district = document.getElementById('addr_district').value.trim();
+            const ward = document.getElementById('addr_ward').value.trim();
+            const addressDetail = document.getElementById('addr_detail').value.trim();
+            const note = document.getElementById('addr_note').value.trim();
+            const isDefault = document.getElementById('addr_isDefault').checked;
+
+            // Client-side validations
+            if (!receiverName || receiverName.length < 2 || receiverName.length > 50) {
+                showToast('Tên người nhận phải từ 2 đến 50 ký tự', 'error');
+                return;
+            }
+            if (!/^(0[35789])[0-9]{8}$/.test(phone)) {
+                showToast('Số điện thoại không hợp lệ (10 số, bắt đầu bằng 03/05/07/08/09)', 'error');
+                return;
+            }
+            if (!province || !district || !ward) {
+                showToast('Vui lòng điền đầy đủ Tỉnh/Thành, Quận/Huyện, Phường/Xã', 'error');
+                return;
+            }
+            if (!addressDetail || addressDetail.length < 5 || addressDetail.length > 250) {
+                showToast('Địa chỉ chi tiết phải từ 5 đến 250 ký tự', 'error');
+                return;
+            }
+            if (note.length > 250) {
+                showToast('Ghi chú không được vượt quá 250 ký tự', 'error');
+                return;
+            }
+
+            // Disable button and show spinner to prevent spam/double click
+            const modalFooter = document.querySelector('#editModal .modal-footer');
+            const saveBtn = modalFooter ? modalFooter.querySelector('.btn-primary') : null;
+            let originalText = '';
+            if (saveBtn) {
+                originalText = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+            }
+            
             const formData = new URLSearchParams();
-            formData.append('receiverName', document.getElementById('addr_receiverName').value);
-            formData.append('phone', document.getElementById('addr_phone').value);
-            formData.append('province', document.getElementById('addr_province').value);
-            formData.append('district', document.getElementById('addr_district').value);
-            formData.append('ward', document.getElementById('addr_ward').value);
-            formData.append('addressDetail', document.getElementById('addr_detail').value);
-            formData.append('note', document.getElementById('addr_note').value);
-            formData.append('isDefault', document.getElementById('addr_isDefault').checked);
+            formData.append('receiverName', receiverName);
+            formData.append('phone', phone);
+            formData.append('province', province);
+            formData.append('district', district);
+            formData.append('ward', ward);
+            formData.append('addressDetail', addressDetail);
+            formData.append('note', note);
+            formData.append('isDefault', isDefault);
             
             let url = contextPath + '/address/add';
             if (currentEditingAddressId) {
@@ -2792,6 +2820,10 @@
             })
             .then(response => response.json())
             .then(data => {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
                 if (data.success) {
                     showToast(data.message, 'success');
                     closeModal();
@@ -2801,6 +2833,10 @@
                 }
             })
             .catch(error => {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
                 console.error('Error:', error);
                 showToast('Có lỗi xảy ra', 'error');
             });
@@ -2930,6 +2966,15 @@
                 showToast('Mật khẩu xác nhận không khớp', 'error');
                 return;
             }
+
+            // Disable submit button and show spinner to prevent double click
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            let originalText = '';
+            if (submitBtn) {
+                originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            }
             
             // Send request
             const formData = new URLSearchParams();
@@ -2945,6 +2990,10 @@
             })
             .then(response => response.json())
             .then(data => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
                 if (data.success) {
                     showToast('Đổi mật khẩu thành công!', 'success');
                     // Clear form
@@ -2957,6 +3006,10 @@
                 }
             })
             .catch(error => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
                 console.error('Error:', error);
                 showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
             });
@@ -2976,7 +3029,7 @@
                         <label class="form-label">Họ và tên</label>
                         <input type="text" class="form-control" id="inputFullname" 
                                value="${sessionScope.user.fullname != null ? sessionScope.user.fullname : ''}" 
-                               placeholder="Nhập họ và tên">
+                               placeholder="Nhập họ và tên" maxlength="50">
                     </div>
                 `
             },
@@ -2987,7 +3040,7 @@
                         <label class="form-label">Số điện thoại</label>
                         <input type="tel" class="form-control" id="inputPhone" 
                                value="${sessionScope.user.phone != null ? sessionScope.user.phone : ''}" 
-                               placeholder="Nhập số điện thoại">
+                               placeholder="Nhập số điện thoại" maxlength="10">
                     </div>
                 `
             },
@@ -3021,21 +3074,31 @@
                     <div class="form-group">
                         <label class="form-label">Giới thiệu bản thân</label>
                         <textarea class="form-control" id="inputBio" rows="4" 
-                                  placeholder="Viết vài dòng về bạn...">${sessionScope.user.bio != null ? sessionScope.user.bio : ''}</textarea>
+                                  placeholder="Viết vài dòng về bạn..." maxlength="250">${sessionScope.user.bio != null ? sessionScope.user.bio : ''}</textarea>
                     </div>
                 `
             },
             avatar: {
                 title: 'Thay đổi ảnh đại diện',
                 content: `
-                    <div class="form-group">
-                        <label class="form-label">URL ảnh đại diện</label>
-                        <input type="url" class="form-control" id="inputAvatar" 
-                               value="${sessionScope.user.avatar != null ? sessionScope.user.avatar : ''}" 
-                               placeholder="Nhập URL ảnh">
-                        <small style="color: var(--text-muted); margin-top: 0.5rem; display: block;">
-                            Bạn có thể sử dụng URL ảnh từ các dịch vụ như Imgur, Cloudinary,...
-                        </small>
+                    <div class="form-group" style="text-align: center;">
+                        <div id="avatarDragDropZone" style="border: 2px dashed var(--primary-light); padding: 2rem; border-radius: var(--radius-lg); background: var(--bg-cream); cursor: pointer; transition: var(--transition); position: relative;">
+                            <input type="file" id="avatarFileInput" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" style="display: none;">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                            <p style="font-weight: 500; margin-bottom: 0.25rem;">Kéo thả ảnh vào đây hoặc click để chọn</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Hỗ trợ: PNG, JPG, JPEG, WEBP, GIF (Tối đa 5MB)</p>
+                            <div id="avatarUploadProgress" style="display: none; margin-top: 1rem;">
+                                <div style="background: var(--border-color); border-radius: 50px; height: 8px; overflow: hidden; width: 100%;">
+                                    <div id="avatarProgressBar" style="background: var(--primary); height: 100%; width: 0%; transition: width 0.1s ease;"></div>
+                                </div>
+                                <span style="font-size: 0.8rem; color: var(--primary); margin-top: 0.25rem; display: inline-block;">Đang tải lên...</span>
+                            </div>
+                        </div>
+                        <div id="avatarPreviewContainer" style="margin-top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                            <img id="avatarUploadPreview" src="${not empty sessionScope.user.avatar ? sessionScope.user.avatar : 'https://ui-avatars.com/api/?name=User&background=c99366&color=fff&size=100'}" alt="Preview" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); box-shadow: var(--shadow-md);">
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">Xem trước ảnh</span>
+                        </div>
+                        <input type="hidden" id="inputAvatar" value="${sessionScope.user.avatar != null ? sessionScope.user.avatar : ''}">
                     </div>
                 `
             },
@@ -3103,6 +3166,133 @@
                 }
                 console.log('modalOverlay activated', !!overlay);
                 
+                // Setup upload drag and drop events if editing avatar
+                if (field === 'avatar') {
+                    setTimeout(() => {
+                        const zone = document.getElementById('avatarDragDropZone');
+                        const fileInput = document.getElementById('avatarFileInput');
+                        const preview = document.getElementById('avatarUploadPreview');
+                        const hiddenInput = document.getElementById('inputAvatar');
+                        const progressBar = document.getElementById('avatarProgressBar');
+                        const progressContainer = document.getElementById('avatarUploadProgress');
+                        
+                        if (!zone || !fileInput) return;
+                        
+                        zone.addEventListener('click', () => fileInput.click());
+                        
+                        zone.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            zone.style.borderColor = 'var(--primary)';
+                            zone.style.background = 'rgba(201, 147, 102, 0.05)';
+                        });
+                        
+                        zone.addEventListener('dragleave', () => {
+                            zone.style.borderColor = 'var(--primary-light)';
+                            zone.style.background = 'var(--bg-cream)';
+                        });
+                        
+                        zone.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            zone.style.borderColor = 'var(--primary-light)';
+                            zone.style.background = 'var(--bg-cream)';
+                            if (e.dataTransfer.files.length) {
+                                handleFileSelect(e.dataTransfer.files[0]);
+                            }
+                        });
+                        
+                        fileInput.addEventListener('change', (e) => {
+                            if (fileInput.files.length) {
+                                handleFileSelect(fileInput.files[0]);
+                            }
+                        });
+                        
+                        function handleFileSelect(file) {
+                            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+                            if (!allowedTypes.includes(file.type)) {
+                                showToast('Chỉ chấp nhận định dạng ảnh PNG, JPG, JPEG, WEBP, GIF', 'error');
+                                return;
+                            }
+                            if (file.size > 5 * 1024 * 1024) {
+                                showToast('Dung lượng ảnh tối đa là 5MB', 'error');
+                                return;
+                            }
+                            
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                preview.src = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                            
+                            uploadAvatarFile(file);
+                        }
+                        
+                        function uploadAvatarFile(file) {
+                            const formData = new FormData();
+                            formData.append('image', file);
+                            formData.append('type', 'avatar');
+                            
+                            progressContainer.style.display = 'block';
+                            progressBar.style.width = '0%';
+                            
+                            const saveBtn = document.querySelector('.modal-footer .btn-primary');
+                            if (saveBtn) {
+                                saveBtn.disabled = true;
+                                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải ảnh...';
+                            }
+                            
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('POST', contextPath + '/api/upload-image', true);
+                            
+                            const csrfToken = getCsrfToken();
+                            if (csrfToken) {
+                                xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+                            }
+                            
+                            xhr.upload.onprogress = (e) => {
+                                if (e.lengthComputable) {
+                                    const percent = Math.round((e.loaded / e.total) * 100);
+                                    progressBar.style.width = percent + '%';
+                                }
+                            };
+                            
+                            xhr.onload = () => {
+                                progressContainer.style.display = 'none';
+                                if (saveBtn) {
+                                    saveBtn.disabled = false;
+                                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
+                                }
+                                
+                                if (xhr.status === 200) {
+                                    try {
+                                        const res = JSON.parse(xhr.responseText);
+                                        if (res.success) {
+                                            hiddenInput.value = res.url;
+                                            showToast('Tải lên thành công, bấm "Lưu thay đổi" để xác nhận!', 'success');
+                                        } else {
+                                            showToast(res.message || 'Lỗi upload ảnh', 'error');
+                                        }
+                                    } catch (err) {
+                                        showToast('Lỗi phân tích phản hồi máy chủ', 'error');
+                                    }
+                                } else {
+                                    showToast('Máy chủ trả về mã lỗi: ' + xhr.status, 'error');
+                                }
+                            };
+                            
+                            xhr.onerror = () => {
+                                progressContainer.style.display = 'none';
+                                if (saveBtn) {
+                                    saveBtn.disabled = false;
+                                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
+                                }
+                                showToast('Lỗi mạng khi tải lên', 'error');
+                            };
+                            
+                            xhr.send(formData);
+                        }
+                    }, 50);
+                }
+                
                 // If editing address, populate data
                 if (field === 'editAddress' && data) {
                     document.getElementById('inputAddressName').value = data.name || '';
@@ -3123,7 +3313,6 @@
         }
         
         function saveChanges() {
-            // Check if this is an address form
             const addressForm = document.getElementById('addressForm');
             if (addressForm) {
                 saveAddress();
@@ -3139,9 +3328,17 @@
                         showToast('Vui lòng nhập họ tên', 'error');
                         return;
                     }
+                    if (value.length < 2 || value.length > 50) {
+                        showToast('Họ và tên phải có từ 2 đến 50 ký tự', 'error');
+                        return;
+                    }
                     break;
                 case 'phone':
                     value = document.getElementById('inputPhone').value.trim();
+                    if (value && !/^(0[35789])[0-9]{8}$/.test(value)) {
+                        showToast('Số điện thoại không hợp lệ (10 số, bắt đầu bằng 03/05/07/08/09)', 'error');
+                        return;
+                    }
                     break;
                 case 'gender':
                     value = document.getElementById('inputGender').value.trim();
@@ -3152,16 +3349,36 @@
                     break;
                 case 'birthday':
                     value = document.getElementById('inputBirthday').value;
+                    if (value) {
+                        const selectedDate = new Date(value);
+                        const today = new Date();
+                        if (selectedDate > today) {
+                            showToast('Ngày sinh không thể ở tương lai', 'error');
+                            return;
+                        }
+                    }
                     break;
                 case 'bio':
                     value = document.getElementById('inputBio').value.trim();
+                    if (value.length > 250) {
+                        showToast('Giới thiệu bản thân tối đa 250 ký tự', 'error');
+                        return;
+                    }
                     break;
                 case 'avatar':
                     value = document.getElementById('inputAvatar').value.trim();
                     break;
             }
             
-            // Gửi request lưu vào database
+            // Disable button and show spinner to prevent spam/double click
+            const saveBtn = document.querySelector('#editModal .modal-footer .btn-primary');
+            let originalText = '';
+            if (saveBtn) {
+                originalText = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+            }
+            
             const formData = new URLSearchParams();
             formData.append('field', currentField);
             formData.append('value', value);
@@ -3175,8 +3392,11 @@
             })
             .then(response => response.json())
             .then(data => {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
                 if (data.success) {
-                    // Cập nhật UI
                     updateUI(currentField, value);
                     showToast('Cập nhật thành công!', 'success');
                     closeModal();
@@ -3185,6 +3405,10 @@
                 }
             })
             .catch(error => {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
                 console.error('Error:', error);
                 showToast('Có lỗi xảy ra, vui lòng thử lại', 'error');
             });
@@ -3196,9 +3420,8 @@
                     document.getElementById('fullnameValue').textContent = value;
                     document.getElementById('fullnameValue').classList.remove('placeholder');
                     document.getElementById('displayName').textContent = value;
-                    // Update avatar if using default
                     const avatarImg = document.getElementById('avatarImg');
-                    if (avatarImg.src.includes('ui-avatars.com')) {
+                    if (avatarImg && avatarImg.src.includes('ui-avatars.com')) {
                         avatarImg.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(value) + '&background=c99366&color=fff&size=120';
                     }
                     break;
@@ -3232,11 +3455,18 @@
                     break;
                 case 'avatar':
                     const avatar = document.getElementById('avatarImg');
+                    const sidebarAvatar = document.getElementById('sidebarAvatar');
+                    const timestamp = new Date().getTime();
+                    
                     if (value) {
-                        avatar.src = value;
+                        const cacheBustedUrl = value.includes('?') ? (value + '&t=' + timestamp) : (value + '?t=' + timestamp);
+                        if (avatar) avatar.src = cacheBustedUrl;
+                        if (sidebarAvatar) sidebarAvatar.src = cacheBustedUrl;
                     } else {
                         const name = document.getElementById('displayName').textContent;
-                        avatar.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=c99366&color=fff&size=120';
+                        const defaultUrl = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=c99366&color=fff&size=120';
+                        if (avatar) avatar.src = defaultUrl;
+                        if (sidebarAvatar) sidebarAvatar.src = defaultUrl;
                     }
                     break;
             }

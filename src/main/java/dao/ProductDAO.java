@@ -824,10 +824,10 @@ public class ProductDAO extends BaseDAO {
     }
 
     /**
-     * Xóa sản phẩm soft delete (Xóa Cache)
+     * Xóa sản phẩm thật khỏi database (Xóa Cache)
      */
     public boolean delete(int id) {
-        String sql = "UPDATE products SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        String sql = "DELETE FROM products WHERE id = ?";
         Object[] params = {id};
         
         try {
@@ -835,7 +835,7 @@ public class ProductDAO extends BaseDAO {
             if (rowsAffected > 0) {
                 // Clear obsolete cache
                 cacheManager.invalidateProductCache();
-                logger.info("✓ Product deleted soft (ID: {}) and product cache invalidated", id);
+                logger.info("✓ Product deleted permanently (ID: {}) and product cache invalidated", id);
                 return true;
             }
         } catch (SQLException e) {

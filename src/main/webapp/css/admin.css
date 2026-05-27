@@ -200,6 +200,11 @@ h1, h2, h3, h4, h5, h6 {
   margin: 10px 12px;
 }
 
+.menu-item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 /* ==========================================================================
    MAIN CANVAS & TOP HEADER
    ========================================================================== */
@@ -210,6 +215,20 @@ h1, h2, h3, h4, h5, h6 {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+.admin-two-column-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.admin-two-column-grid-tight {
+  gap: 15px;
 }
 
 .header {
@@ -606,6 +625,12 @@ td strong {
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.btn:focus-visible,
+.modal-close:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .btn-sm {
@@ -1236,6 +1261,10 @@ input[type="file"]:hover {
   
   .modal {
     width: 95%;
+  }
+  .admin-two-column-grid,
+  .admin-two-column-grid-tight {
+    grid-template-columns: 1fr;
   }
   
   .filters {

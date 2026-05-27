@@ -168,19 +168,71 @@ public class NewsServlet extends HttpServlet {
         try {
             String action = request.getParameter("action");
             
+            // Read JSON request body if present
+            JsonObject body = null;
+            String contentType = request.getContentType();
+            if (contentType != null && contentType.toLowerCase().contains("application/json")) {
+                try {
+                    body = gson.fromJson(request.getReader(), JsonObject.class);
+                } catch (Exception e) {
+                    System.err.println("[NewsServlet] Error parsing JSON body: " + e.getMessage());
+                }
+            }
+            
+            final JsonObject jsonBody = body;
+            
+            // Helper functions to fetch parameters from either JSON or standard form parameters
+            java.util.function.Function<String, String> getParam = (name) -> {
+                if (jsonBody != null && jsonBody.has(name) && !jsonBody.get(name).isJsonNull()) {
+                    return jsonBody.get(name).getAsString();
+                }
+                return request.getParameter(name);
+            };
+            
+            java.util.function.Function<String, Boolean> getParamBool = (name) -> {
+                if (jsonBody != null) {
+                    if (jsonBody.has(name) && !jsonBody.get(name).isJsonNull()) {
+                        return jsonBody.get(name).getAsBoolean();
+                    }
+                    if ("isPublished".equals(name) && jsonBody.has("published") && !jsonBody.get("published").isJsonNull()) {
+                        return jsonBody.get("published").getAsBoolean();
+                    }
+                    if ("published".equals(name) && jsonBody.has("isPublished") && !jsonBody.get("isPublished").isJsonNull()) {
+                        return jsonBody.get("isPublished").getAsBoolean();
+                    }
+                }
+                String val = request.getParameter(name);
+                if (val == null) {
+                    if ("isPublished".equals(name)) {
+                        val = request.getParameter("published");
+                    } else if ("published".equals(name)) {
+                        val = request.getParameter("isPublished");
+                    }
+                }
+                return Boolean.parseBoolean(val);
+            };
+            
+            java.util.function.Function<String, Integer> getParamInt = (name) -> {
+                if (jsonBody != null && jsonBody.has(name) && !jsonBody.get(name).isJsonNull()) {
+                    return jsonBody.get(name).getAsInt();
+                }
+                String val = request.getParameter(name);
+                return val != null ? Integer.parseInt(val) : null;
+            };
+            
             if ("add".equals(action)) {
                 // Add new news
                 News news = new News();
-                news.setTitle(request.getParameter("title"));
-                news.setSlug(generateSlug(request.getParameter("title")));
-                news.setExcerpt(request.getParameter("excerpt"));
-                news.setContent(request.getParameter("content"));
-                news.setImageUrl(request.getParameter("imageUrl"));
-                news.setCategory(request.getParameter("category"));
-                news.setAuthor(request.getParameter("author"));
-                news.setPublished(Boolean.parseBoolean(request.getParameter("isPublished")));
+                news.setTitle(getParam.apply("title"));
+                news.setSlug(generateSlug(getParam.apply("title")));
+                news.setExcerpt(getParam.apply("excerpt"));
+                news.setContent(getParam.apply("content"));
+                news.setImageUrl(getParam.apply("imageUrl"));
+                news.setCategory(getParam.apply("category"));
+                news.setAuthor(getParam.apply("author"));
+                news.setPublished(getParamBool.apply("isPublished"));
                 
-                String publishedDateStr = request.getParameter("publishedDate");
+                String publishedDateStr = getParam.apply("publishedDate");
                 if (publishedDateStr != null && !publishedDateStr.isEmpty()) {
                     news.setPublishedDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(publishedDateStr));
                 } else {
@@ -200,20 +252,20 @@ public class NewsServlet extends HttpServlet {
                 
             } else if ("update".equals(action)) {
                 // Update news
-                int id = Integer.parseInt(request.getParameter("id"));
+                int id = getParamInt.apply("id");
                 News news = newsDAO.getById(id);
                 
                 if (news != null) {
-                    news.setTitle(request.getParameter("title"));
-                    news.setSlug(request.getParameter("slug"));
-                    news.setExcerpt(request.getParameter("excerpt"));
-                    news.setContent(request.getParameter("content"));
-                    news.setImageUrl(request.getParameter("imageUrl"));
-                    news.setCategory(request.getParameter("category"));
-                    news.setAuthor(request.getParameter("author"));
-                    news.setPublished(Boolean.parseBoolean(request.getParameter("isPublished")));
+                    news.setTitle(getParam.apply("title"));
+                    news.setSlug(getParam.apply("slug"));
+                    news.setExcerpt(getParam.apply("excerpt"));
+                    news.setContent(getParam.apply("content"));
+                    news.setImageUrl(getParam.apply("imageUrl"));
+                    news.setCategory(getParam.apply("category"));
+                    news.setAuthor(getParam.apply("author"));
+                    news.setPublished(getParamBool.apply("isPublished"));
                     
-                    String publishedDateStr = request.getParameter("publishedDate");
+                    String publishedDateStr = getParam.apply("publishedDate");
                     if (publishedDateStr != null && !publishedDateStr.isEmpty()) {
                         news.setPublishedDate(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(publishedDateStr));
                     }
@@ -228,12 +280,19 @@ public class NewsServlet extends HttpServlet {
                 
             } else if ("updateStatus".equals(action)) {
                 // Update publish status
-                int id = Integer.parseInt(request.getParameter("id"));
-                boolean isPublished = Boolean.parseBoolean(request.getParameter("isPublished"));
+                int id = getParamInt.apply("id");
+                boolean isPublished = getParamBool.apply("isPublished");
                 
                 boolean success = newsDAO.updatePublishStatus(id, isPublished);
                 jsonResponse.addProperty("success", success);
                 jsonResponse.addProperty("message", success ? "Cập nhật trạng thái thành công" : "Cập nhật thất bại");
+                
+            } else if ("delete".equals(action)) {
+                // Delete news via POST
+                int id = getParamInt.apply("id");
+                boolean success = newsDAO.delete(id);
+                jsonResponse.addProperty("success", success);
+                jsonResponse.addProperty("message", success ? "Xóa thành công" : "Xóa thất bại");
                 
             } else {
                 jsonResponse.addProperty("success", false);

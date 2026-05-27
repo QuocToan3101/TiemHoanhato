@@ -267,6 +267,25 @@ function showPrompt(message, inputType = 'text', onConfirm, onCancel = null, tit
 }
 
 /**
+ * Backwards-compatible notification wrapper used by admin.js and legacy pages.
+ * Signature: showNotification(title, message, type = 'info', options = {})
+ */
+function showNotification(title, message, type = 'info', options = {}) {
+    const normalizedType = (type || 'info').toLowerCase();
+
+    if (normalizedType === 'success') {
+        return showSuccess(message, title, options);
+    }
+    if (normalizedType === 'error') {
+        return showError(message, title, options);
+    }
+    if (normalizedType === 'warning') {
+        return showWarning(message, title, options);
+    }
+    return showInfo(message, title, options);
+}
+
+/**
  * Custom modal fallback functions
  */
 function showCustomModal(type, title, message) {
@@ -302,19 +321,28 @@ function showCustomConfirm(message, onConfirm, onCancel, title, confirmText, can
                 ${message}
             </div>
             <div class="custom-modal-footer custom-modal-footer-confirm">
-                <button class="custom-modal-btn custom-modal-btn-cancel" onclick="
-                    const e = this.closest('.custom-modal');
-                    e.remove();
-                    if (onCancel) onCancel();
-                ">${cancelText}</button>
-                <button class="custom-modal-btn custom-modal-btn-confirm" onclick="
-                    const e = this.closest('.custom-modal');
-                    e.remove();
-                    if (onConfirm) onConfirm();
-                ">${confirmText}</button>
+                <button class="custom-modal-btn custom-modal-btn-cancel" type="button">${cancelText}</button>
+                <button class="custom-modal-btn custom-modal-btn-confirm" type="button">${confirmText}</button>
             </div>
         </div>
     `;
+    const cancelButton = modal.querySelector('.custom-modal-btn-cancel');
+    const confirmButton = modal.querySelector('.custom-modal-btn-confirm');
+    const closeModal = () => modal.remove();
+
+    modal.querySelector('.custom-modal-close').addEventListener('click', closeModal);
+    cancelButton.addEventListener('click', () => {
+        closeModal();
+        if (onCancel && typeof onCancel === 'function') {
+            onCancel();
+        }
+    });
+    confirmButton.addEventListener('click', () => {
+        closeModal();
+        if (onConfirm && typeof onConfirm === 'function') {
+            onConfirm();
+        }
+    });
     document.body.appendChild(modal);
 }
 

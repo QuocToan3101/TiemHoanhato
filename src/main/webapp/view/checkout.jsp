@@ -983,7 +983,11 @@
                                     <c:if test="${not empty addresses}">
                                         <div class="saved-addresses">
                                             <c:forEach var="addr" items="${addresses}" varStatus="status">
-                                                <label class="address-option ${addr.isDefault ? 'selected' : ''}" data-address-id="${addr.id}">
+                                                <label class="address-option ${addr.isDefault ? 'selected' : ''}" 
+                                                       data-address-id="${addr.id}"
+                                                       data-receiver-name="${addr.receiverName}"
+                                                       data-receiver-phone="${addr.phone}"
+                                                       data-full-address="${addr.fullAddress}">
                                                     <input type="radio" name="addressId" value="${addr.id}" ${addr.isDefault ? 'checked' : ''}>
                                                     <div class="address-info">
                                                         <div class="address-name">${addr.receiverName} - ${addr.phone}</div>
@@ -1328,8 +1332,36 @@
                     
                     // Hide new address form
                     document.getElementById('newAddressForm')?.classList.remove('show');
+
+                    // Auto-fill receiver details and geocode to calculate shipping
+                    const receiverName = this.getAttribute('data-receiver-name');
+                    const receiverPhone = this.getAttribute('data-receiver-phone');
+                    const fullAddress = this.getAttribute('data-full-address');
+
+                    const nameInput = document.querySelector('input[name="receiverName"]');
+                    const phoneInput = document.querySelector('input[name="receiverPhone"]');
+                    const addressInput = document.getElementById('shippingAddressInput');
+
+                    if (nameInput) nameInput.value = receiverName || '';
+                    if (phoneInput) phoneInput.value = receiverPhone || '';
+                    if (addressInput) addressInput.value = fullAddress || '';
+
+                    if (fullAddress && window.geocodeAndCalculateShipping) {
+                        window.geocodeAndCalculateShipping(fullAddress);
+                    }
                 });
             });
+
+            // Tự động kích hoạt địa chỉ mặc định khi load trang
+            const defaultAddressOpt = document.querySelector('.address-option.selected');
+            if (defaultAddressOpt) {
+                const fullAddress = defaultAddressOpt.getAttribute('data-full-address');
+                if (fullAddress && window.geocodeAndCalculateShipping) {
+                    setTimeout(() => {
+                        window.geocodeAndCalculateShipping(fullAddress);
+                    }, 500);
+                }
+            }
         }
         
         // Initialize payment methods
@@ -1482,6 +1514,12 @@
                 const params = new URLSearchParams();
                 for (const [key, value] of formData.entries()) {
                     params.append(key, value);
+                }
+
+                // Vá lỗi bảo mật: Đảm bảo chèn token CSRF trực tiếp vào URLSearchParams
+                const token = getCsrfToken();
+                if (token) {
+                    params.set('csrfToken', token);
                 }
                 
                 console.log('Submitting order with params:', params.toString());

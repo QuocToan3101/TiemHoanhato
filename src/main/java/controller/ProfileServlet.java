@@ -86,6 +86,22 @@ public class ProfileServlet extends HttpServlet {
             out.write("{\"success\": false, \"message\": \"Mật khẩu mới phải có ít nhất 8 ký tự\"}");
             return;
         }
+
+        // Bổ sung xác thực độ mạnh mật khẩu giống như Frontend bằng Regex
+        if (!newPassword.matches(".*[A-Z].*")) {
+            out.write("{\"success\": false, \"message\": \"Mật khẩu mới phải chứa ít nhất 1 chữ cái viết hoa\"}");
+            return;
+        }
+        
+        if (!newPassword.matches(".*[a-z].*")) {
+            out.write("{\"success\": false, \"message\": \"Mật khẩu mới phải chứa ít nhất 1 chữ cái viết thường\"}");
+            return;
+        }
+        
+        if (!newPassword.matches(".*[0-9].*")) {
+            out.write("{\"success\": false, \"message\": \"Mật khẩu mới phải chứa ít nhất 1 chữ số\"}");
+            return;
+        }
         
         // Change password
         boolean success = userDAO.changePassword(user.getId(), currentPassword, newPassword);
@@ -109,18 +125,33 @@ public class ProfileServlet extends HttpServlet {
             
             switch (field) {
                 case "fullname":
-                    if (value != null && !value.trim().isEmpty()) {
-                        user.setFullname(value.trim());
-                        success = userDAO.updateField(user.getId(), "fullname", value.trim());
+                    if (value == null || value.trim().isEmpty()) {
+                        out.write("{\"success\": false, \"message\": \"Họ và tên không được để trống\"}");
+                        return;
                     }
+                    String fullnameTrimmed = value.trim();
+                    if (fullnameTrimmed.length() < 2 || fullnameTrimmed.length() > 50) {
+                        out.write("{\"success\": false, \"message\": \"Họ và tên phải có độ dài từ 2 đến 50 ký tự\"}");
+                        return;
+                    }
+                    user.setFullname(fullnameTrimmed);
+                    success = userDAO.updateField(user.getId(), "fullname", fullnameTrimmed);
                     break;
                     
                 case "bio":
+                    if (value != null && value.length() > 250) {
+                        out.write("{\"success\": false, \"message\": \"Giới thiệu bản thân không được vượt quá 250 ký tự\"}");
+                        return;
+                    }
                     user.setBio(value);
                     success = userDAO.updateField(user.getId(), "bio", value);
                     break;
                     
                 case "gender":
+                    if (value != null && !value.equals("male") && !value.equals("female") && !value.equals("other") && !value.isEmpty()) {
+                        out.write("{\"success\": false, \"message\": \"Giới tính không hợp lệ\"}");
+                        return;
+                    }
                     user.setGender(value);
                     success = userDAO.updateField(user.getId(), "gender", value);
                     break;
@@ -128,12 +159,26 @@ public class ProfileServlet extends HttpServlet {
                 case "birthday":
                     if (value != null && !value.isEmpty()) {
                         Date birthday = Date.valueOf(value);
+                        Date today = new Date(System.currentTimeMillis());
+                        if (birthday.after(today)) {
+                            out.write("{\"success\": false, \"message\": \"Ngày sinh không thể ở tương lai\"}");
+                            return;
+                        }
                         user.setBirthday(birthday);
                         success = userDAO.updateBirthday(user.getId(), birthday);
+                    } else {
+                        user.setBirthday(null);
+                        success = userDAO.updateBirthday(user.getId(), null);
                     }
                     break;
                     
                 case "phone":
+                    if (value != null && !value.isEmpty()) {
+                        if (!value.matches("0[35789][0-9]{8}")) {
+                            out.write("{\"success\": false, \"message\": \"Số điện thoại không hợp lệ (phải gồm 10 chữ số và bắt đầu bằng 03, 05, 07, 08 hoặc 09)\"}");
+                            return;
+                        }
+                    }
                     user.setPhone(value);
                     success = userDAO.updateField(user.getId(), "phone", value);
                     break;

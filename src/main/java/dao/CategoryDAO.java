@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Category;
+import util.CacheManager;
 import util.DBConnection;
 
 /**
  * DAO để thao tác với bảng categories
  */
 public class CategoryDAO {
+
+    private static final CacheManager cacheManager = CacheManager.getInstance();
     
     private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
@@ -173,6 +176,7 @@ public class CategoryDAO {
                 if (rs.next()) {
                     category.setId(rs.getInt(1));
                 }
+                cacheManager.invalidateCategoryCache();
                 return true;
             }
         } catch (SQLException e) {
@@ -204,7 +208,11 @@ public class CategoryDAO {
             ps.setBoolean(7, category.isActive());
             ps.setInt(8, category.getId());
             
-            return ps.executeUpdate() > 0;
+            boolean updated = ps.executeUpdate() > 0;
+            if (updated) {
+                cacheManager.invalidateCategoryCache();
+            }
+            return updated;
         } catch (SQLException e) {
             System.err.println("Lỗi cập nhật category: " + e.getMessage());
         }
@@ -221,7 +229,11 @@ public class CategoryDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+            boolean deleted = ps.executeUpdate() > 0;
+            if (deleted) {
+                cacheManager.invalidateCategoryCache();
+            }
+            return deleted;
         } catch (SQLException e) {
             System.err.println("Lỗi xóa category: " + e.getMessage());
         }

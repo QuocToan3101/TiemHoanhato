@@ -938,7 +938,7 @@
               </div>
 
               <!-- Charts Row -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+              <div class="admin-two-column-grid" style="margin-bottom: 30px;">
                 <div class="card">
                   <div class="card-header">
                     <h4>Doanh Thu Theo Ngày</h4>
@@ -963,7 +963,7 @@
               </div>
 
               <!-- Top Products & Categories -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div class="admin-two-column-grid">
                 <div class="card">
                   <div class="card-header">
                     <h4>Top Sản Phẩm Bán Chạy</h4>
@@ -1355,9 +1355,7 @@
         <div class="modal-body">
           <form id="productForm">
             <input type="hidden" id="productId" />
-            <div
-              style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px"
-            >
+            <div class="admin-two-column-grid">
               <div>
                 <div class="form-group">
                   <label for="productName"
@@ -1572,7 +1570,7 @@
         <div class="modal-body">
           <form id="couponForm">
             <input type="hidden" id="couponId" />
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+            <div class="admin-two-column-grid admin-two-column-grid-tight">
               <div class="form-group">
                 <label for="couponCode">Mã Code <span class="text-danger">*</span></label>
                 <input type="text" id="couponCode" class="form-input" required placeholder="VD: SALE50" style="text-transform: uppercase;" />
@@ -1637,7 +1635,7 @@
         </div>
         <div class="modal-body">
           <input type="hidden" id="contactId" />
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px">
+          <div class="admin-two-column-grid" style="margin-bottom: 20px;">
             <div>
               <div class="info-group">
                 <label>Tên:</label>
@@ -1723,7 +1721,7 @@
               <textarea id="galleryDescription" class="form-input" rows="3" placeholder="Mô tả chi tiết về hình ảnh"></textarea>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="admin-two-column-grid admin-two-column-grid-tight">
               <div class="form-group">
                 <label for="galleryOrder">Thứ Tự Hiển Thị</label>
                 <input type="number" id="galleryOrder" class="form-input" value="0" min="0" />
@@ -1779,13 +1777,7 @@
             
             
             
-            <!-- Preview image -->
-            <div class="form-group" id="galleryPreviewContainer" style="display: none;">
-              <label>Xem Trước:</label>
-              <img id="galleryPreview" style="max-width: 100%; border-radius: 8px; margin-top: 10px;" />
-            </div>
-          </form>
-        </div> -->
+
             <div class="form-group">
               <label for="newsExcerpt">Tóm Tắt <span style="color: red;">*</span></label>
               <textarea id="newsExcerpt" class="form-input" rows="2" placeholder="Tóm tắt ngắn gọn về bài viết" required></textarea>
@@ -1802,7 +1794,7 @@
               <input type="url" id="newsImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="admin-two-column-grid admin-two-column-grid-tight">
               <div class="form-group">
                 <label for="newsCategory">Danh Mục <span style="color: rgb(157, 109, 109);">*</span></label>
                 <select id="newsCategory" class="form-input" required>
@@ -1822,7 +1814,7 @@
               </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="admin-two-column-grid admin-two-column-grid-tight">
               <div class="form-group">
                 <label for="newsPublishedDate">Ngày Đăng</label>
                 <input type="datetime-local" id="newsPublishedDate" class="form-input" />

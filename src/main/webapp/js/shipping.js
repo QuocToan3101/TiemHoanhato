@@ -478,6 +478,57 @@
       .replaceAll("'", '&#39;');
   }
 
+  async function geocodeAndCalculateShipping(addressText) {
+    if (!addressText) return;
+    showSkeleton(true);
+    try {
+      const url = new URL('https://nominatim.openstreetmap.org/search');
+      url.searchParams.set('q', addressText);
+      url.searchParams.set('format', 'jsonv2');
+      url.searchParams.set('addressdetails', '1');
+      url.searchParams.set('countrycodes', 'vn');
+      url.searchParams.set('limit', '1');
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      if (!response.ok) throw new Error('geocode_failed');
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const item = data[0];
+        selectedAddress = {
+          placeId: item.place_id,
+          lat: parseFloat(item.lat),
+          lng: parseFloat(item.lon),
+          displayName: item.display_name,
+          osmType: item.osm_type,
+          osmId: item.osm_id
+        };
+        
+        if (addressInput) addressInput.value = selectedAddress.displayName;
+        if (placeIdInput) placeIdInput.value = selectedAddress.placeId;
+        if (latInput) latInput.value = String(selectedAddress.lat);
+        if (lngInput) lngInput.value = String(selectedAddress.lng);
+        if (osmTypeInput) osmTypeInput.value = selectedAddress.osmType || '';
+        if (osmIdInput) osmIdInput.value = String(selectedAddress.osmId || '');
+
+        renderMap(selectedAddress.lat, selectedAddress.lng, selectedAddress.displayName);
+        await calculateShipping();
+      } else {
+        showError('Không thể tự động xác định vị trí của địa chỉ đã lưu.');
+      }
+    } catch (error) {
+      showError('Lỗi xác định vị trí địa chỉ đã lưu.');
+    } finally {
+      showSkeleton(false);
+    }
+  }
+
+  window.geocodeAndCalculateShipping = geocodeAndCalculateShipping;
+
   function injectShippingStyles() {
     const style = document.createElement('style');
     style.textContent = `
