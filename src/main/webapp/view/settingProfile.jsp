@@ -3802,62 +3802,58 @@
     })();
 </script>
 
-<!-- Robust bindings: ensure sidebar navigation and modal save always work -->
+<!-- Robust bindings: delegate clicks for sidebar and modal save, with logging -->
 <script>
     (function(){
-        document.addEventListener('DOMContentLoaded', function(){
-            // Attach safe click handlers to sidebar links (data-section)
+        // Use event delegation so timing doesn't matter and we avoid double-binding
+        document.addEventListener('click', function(e){
             try {
-                document.querySelectorAll('.sidebar-menu a[data-section]').forEach(a => {
-                    // avoid double-binding if converter already added a listener
-                    a.addEventListener('click', function(e){
-                        e.preventDefault();
-                        const section = this.getAttribute('data-section');
-                        if (!section) return;
-                        try {
-                            if (typeof window.showSection === 'function') {
-                                window.showSection(section);
-                            } else if (window._profileActionQueue) {
-                                window._profileActionQueue.push({fn: 'showSection', args: [section]});
-                            } else {
-                                console.warn('showSection not available');
-                            }
-                        } catch (err) { console.error(err); }
-                    });
-                });
-            } catch (ex) { console.warn('Failed to attach sidebar handlers', ex); }
-
-            // Guard wrapper for showSection to avoid runtime exceptions when element missing
-            try {
-                const _origShow = window.showSection;
-                window.showSection = function(sectionName){
-                    try {
-                        if (!sectionName) return;
-                        const el = document.getElementById('section-' + sectionName);
-                        if (!el) {
-                            console.warn('Section not found:', sectionName);
-                            return;
+                const a = e.target.closest && e.target.closest('.sidebar-menu a[data-section]');
+                if (a) {
+                    e.preventDefault();
+                    const section = a.getAttribute('data-section');
+                    console.debug('sidebar click ->', section);
+                    if (section) {
+                        if (typeof window.showSection === 'function') {
+                            window.showSection(section);
+                        } else if (window._profileActionQueue) {
+                            window._profileActionQueue.push({fn: 'showSection', args: [section]});
+                        } else {
+                            console.warn('showSection not available');
                         }
-                        if (typeof _origShow === 'function') return _origShow(sectionName);
-                        // fallback minimal behaviour
-                        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-                        el.classList.add('active');
-                    } catch(e) { console.error('showSection wrapper error', e); }
-                };
-            } catch (ex) { /* ignore */ }
-
-            // Ensure modal save uses addEventListener (more reliable than inline onclick)
-            try {
-                const modalSave = document.querySelector('#editModal .modal-footer .btn-primary');
-                if (modalSave) {
-                    modalSave.addEventListener('click', function(e){
-                        if (typeof window.saveChanges === 'function') window.saveChanges();
-                        else if (window._profileActionQueue) window._profileActionQueue.push({fn: 'saveChanges', args: []});
-                    });
-                    modalSave.removeAttribute && modalSave.removeAttribute('onclick');
+                    }
+                    return;
                 }
-            } catch (ex) { console.warn('Failed to wire modal save', ex); }
-        });
+
+                // modal save button (delegated)
+                const saveBtn = e.target.closest && e.target.closest('#editModal .modal-footer .btn-primary');
+                if (saveBtn) {
+                    e.preventDefault();
+                    console.debug('modal save clicked');
+                    if (typeof window.saveChanges === 'function') window.saveChanges();
+                    else if (window._profileActionQueue) window._profileActionQueue.push({fn: 'saveChanges', args: []});
+                    return;
+                }
+            } catch (err) { console.warn('delegated handler error', err); }
+        }, true);
+
+        // Safe wrapper for programmatic calls: ensure section exists before using
+        (function(){
+            const orig = window.showSection;
+            window.showSection = function(sectionName){
+                try {
+                    if (!sectionName) return;
+                    const el = document.getElementById('section-' + sectionName);
+                    if (!el) {
+                        console.warn('Section not found:', sectionName);
+                        return;
+                    }
+                    if (typeof orig === 'function') return orig(sectionName);
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                    el.classList.add('active');
+                } catch (e) { console.error('showSection wrapper error', e); }
+            };
+        })();
     })();
 </script>
 
