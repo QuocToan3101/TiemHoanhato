@@ -33,18 +33,18 @@ public final class Constants {
         public static final class PRODUCTS {
             public static final String COLUMNS_ACTIVE = 
                 "id, category_id, name, slug, description, short_description, " +
-                "price, sale_price, quantity, image, is_featured, " +
-                "view_count, sold_count, average_rating, review_count";
+                "price, sale_price, quantity, image, images, is_featured, " +
+                "view_count, sold_count, average_rating, review_count, created_at, updated_at";
             
             public static final String COLUMNS_ADMIN = 
-                COLUMNS_ACTIVE + ", is_active, created_at, updated_at";
+                COLUMNS_ACTIVE + ", is_active";
             
             // Pre-built query with JOIN (N+1 fix)
             public static final String QUERY_ACTIVE = 
                 "SELECT p.id, p.category_id, p.name, p.slug, p.description, " +
                 "p.short_description, p.price, p.sale_price, p.quantity, " +
-                "p.image, p.is_featured, p.view_count, p.sold_count, " +
-                "p.average_rating, p.review_count, " +
+                "p.image, p.images, p.is_featured, p.view_count, p.sold_count, " +
+                "p.average_rating, p.review_count, p.created_at, p.updated_at, " +
                 "c.name as category_name, c.slug as category_slug " +
                 "FROM products p " +
                 "LEFT JOIN categories c ON p.category_id = c.id " +
