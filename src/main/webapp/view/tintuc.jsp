@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -1156,7 +1156,7 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <!-- CSRF Token Helper -->
-    <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+    <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">

@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
@@ -707,7 +707,7 @@
     </style>
     
     <!-- CSRF Token Helper -->
-    <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+    <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">

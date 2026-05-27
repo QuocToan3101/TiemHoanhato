@@ -1275,7 +1275,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
     
     <!-- CSRF Token Helper - Phải load SAU axios -->
-    <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+    <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
     <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
     
     <script>

@@ -58,7 +58,7 @@
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
       <!-- CSRF Token Helper -->
-      <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+      <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
 
       <!-- SweetAlert2 CDN -->
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">

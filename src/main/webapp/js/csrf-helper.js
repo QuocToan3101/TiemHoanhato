@@ -1,27 +1,35 @@
 /**
  * CSRF Token Helper
- * Tự động thêm CSRF token vào tất cả AJAX requests
+ * Tự động thêm CSRF token vào tất cả AJAX, Fetch, XMLHttpRequest, jQuery và Axios requests.
  */
+
+// Định nghĩa hàm getCsrfToken toàn cục để tương thích ngược với các trang JSP cũ
+function getCsrfToken() {
+    // 1. Thử lấy từ meta tag
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag) {
+        return metaTag.getAttribute('content');
+    }
+    
+    // 2. Thử lấy từ hidden input trong form
+    const hiddenInput = document.querySelector('input[name="csrfToken"]');
+    if (hiddenInput) {
+        return hiddenInput.value;
+    }
+    
+    // 3. Thử lấy từ window variable
+    if (window.csrfToken) {
+        return window.csrfToken;
+    }
+    
+    return '';
+}
+
+// Đưa getCsrfToken lên đối tượng window
+window.getCsrfToken = getCsrfToken;
 
 (function() {
     'use strict';
-    
-    // Lấy CSRF token từ meta tag hoặc cookie
-    function getCsrfToken() {
-        // Thử lấy từ meta tag
-        const metaTag = document.querySelector('meta[name="csrf-token"]');
-        if (metaTag) {
-            return metaTag.getAttribute('content');
-        }
-        
-        // Thử lấy từ hidden input
-        const hiddenInput = document.querySelector('input[name="csrfToken"]');
-        if (hiddenInput) {
-            return hiddenInput.value;
-        }
-        
-        return null;
-    }
     
     // Override fetch để tự động thêm CSRF token
     const originalFetch = window.fetch;
@@ -64,6 +72,37 @@
         return originalSend.call(this, ...args);
     };
     
+    // Override jQuery AJAX để tự động thêm CSRF token
+    if (typeof jQuery !== 'undefined') {
+        jQuery.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                const method = (settings.type || 'GET').toUpperCase();
+                if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+                    const token = getCsrfToken();
+                    if (token) {
+                        xhr.setRequestHeader('X-CSRF-Token', token);
+                    }
+                }
+            }
+        });
+    }
+    
+    // Override Axios để tự động thêm CSRF token
+    if (typeof axios !== 'undefined') {
+        axios.interceptors.request.use(function (config) {
+            const method = (config.method || 'get').toUpperCase();
+            if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+                const token = getCsrfToken();
+                if (token) {
+                    config.headers['X-CSRF-Token'] = token;
+                }
+            }
+            return config;
+        }, function (error) {
+            return Promise.reject(error);
+        });
+    }
+    
     // Thêm token vào tất cả forms khi submit
     document.addEventListener('submit', function(e) {
         const form = e.target;
@@ -85,7 +124,7 @@
         }
     });
     
-    // Export helper function
+    // Export helper functions trên đối tượng window.CSRF
     window.CSRF = {
         getToken: getCsrfToken,
         
@@ -109,4 +148,5 @@
         }
     };
     
+    console.log('Standardized CSRF Helper loaded');
 })();

@@ -1151,7 +1151,7 @@
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
           <!-- CSRF Token Helper - Tự động thêm token vào fetch/AJAX -->
-          <script src="${pageContext.request.contextPath}/fileJS/csrf-token.js"></script>
+          <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
 
           <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/main-scripts.js?v=245" rel="preload"
             as="script" type="text/javascript" />

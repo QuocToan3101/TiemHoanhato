@@ -16,7 +16,7 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
 
-    <link rel="stylesheet" href="registration.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/registration.css" />
     <style>
       .alert {
         padding: 12px 15px;
