@@ -832,96 +832,96 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ============================================================================
 
 -- INDEX 1: Email + status for login queries
-CREATE INDEX IF NOT EXISTS idx_users_email_status ON users(email, status);
+CREATE INDEX idx_users_email_status ON users(email, status);
 
 -- INDEX 2: Role + status for admin filtering
-CREATE INDEX IF NOT EXISTS idx_users_role_status ON users(role, status);
+CREATE INDEX idx_users_role_status ON users(role, status);
 
 -- INDEX 3: Status + creation date for user management
-CREATE INDEX IF NOT EXISTS idx_users_status_created ON users(status, created_at DESC);
+CREATE INDEX idx_users_status_created ON users(status, created_at DESC);
 
 -- ============================================================================
 -- CATEGORIES TABLE INDEXES (3)
 -- ============================================================================
 
 -- INDEX 4: Active status + display order for menu navigation
-CREATE INDEX IF NOT EXISTS idx_categories_active_order ON categories(is_active, display_order ASC);
+CREATE INDEX idx_categories_active_order ON categories(is_active, display_order ASC);
 
 -- INDEX 5: Parent category + active status for hierarchy
-CREATE INDEX IF NOT EXISTS idx_categories_parent_active ON categories(parent_id, is_active);
+CREATE INDEX idx_categories_parent_active ON categories(parent_id, is_active);
 
 -- INDEX 6: Category slug for URL-based lookups
-CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
+CREATE INDEX idx_categories_slug ON categories(slug);
 
 -- ============================================================================
 -- PRODUCTS TABLE INDEXES (5)
 -- ============================================================================
 
 -- INDEX 7: Category + active status + creation date for product listings
-CREATE INDEX IF NOT EXISTS idx_products_category_active ON products(category_id, is_active, created_at DESC);
+CREATE INDEX idx_products_category_active ON products(category_id, is_active, created_at DESC);
 
 -- INDEX 8: Featured + active status for home page banner
-CREATE INDEX IF NOT EXISTS idx_products_featured_active ON products(is_featured, is_active);
+CREATE INDEX idx_products_featured_active ON products(is_featured, is_active);
 
 -- INDEX 9: Product slug for detail page lookups
-CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
+CREATE INDEX idx_products_slug ON products(slug);
 
 -- INDEX 10: FULLTEXT search on name and description
 ALTER TABLE products ADD FULLTEXT INDEX ft_products_search (name, description);
 
 -- INDEX 11: Active status + creation date for sorting
-CREATE INDEX IF NOT EXISTS idx_products_active_created ON products(is_active, created_at DESC);
+CREATE INDEX idx_products_active_created ON products(is_active, created_at DESC);
 
 -- ============================================================================
 -- ORDERS TABLE INDEXES (4)
 -- ============================================================================
 
 -- INDEX 12: User + creation date for order history
-CREATE INDEX IF NOT EXISTS idx_orders_user_created ON orders(user_id, created_at DESC);
+CREATE INDEX idx_orders_user_created ON orders(user_id, created_at DESC);
 
 -- INDEX 13: Order status + creation date for admin dashboard
-CREATE INDEX IF NOT EXISTS idx_orders_status_created ON orders(order_status, created_at DESC);
+CREATE INDEX idx_orders_status_created ON orders(order_status, created_at DESC);
 
 -- INDEX 14: Payment status + creation date for financial reports
-CREATE INDEX IF NOT EXISTS idx_orders_payment_created ON orders(payment_status, created_at DESC);
+CREATE INDEX idx_orders_payment_created ON orders(payment_status, created_at DESC);
 
 -- INDEX 15: Order code for order tracking
-CREATE INDEX IF NOT EXISTS idx_orders_code ON orders(order_code);
+CREATE INDEX idx_orders_code ON orders(order_code);
 
 -- ============================================================================
 -- ORDER_ITEMS TABLE INDEXES (1)
 -- ============================================================================
 
 -- INDEX 16: Order ID for order details
-CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+CREATE INDEX idx_order_items_order ON order_items(order_id);
 
 -- ============================================================================
 -- CARTS TABLE INDEXES (1)
 -- ============================================================================
 
 -- INDEX 17: User + active status for cart operations
-CREATE INDEX IF NOT EXISTS idx_carts_user_active ON carts(user_id, is_active);
+CREATE INDEX idx_carts_user_active ON carts(user_id, is_active);
 
 -- ============================================================================
 -- WISHLIST TABLE INDEXES (1)
 -- ============================================================================
 
 -- INDEX 18: User + creation date for wishlist page
-CREATE INDEX IF NOT EXISTS idx_wishlist_user_created ON wishlist(user_id, created_at DESC);
+CREATE INDEX idx_wishlist_user_created ON wishlist(user_id, created_at DESC);
 
 -- ============================================================================
 -- PRODUCT_REVIEWS TABLE INDEXES (1)
 -- ============================================================================
 
 -- INDEX 19: Product + status + creation date for reviews
-CREATE INDEX IF NOT EXISTS idx_reviews_product_status_created ON product_reviews(product_id, status, created_at DESC);
+CREATE INDEX idx_reviews_product_status_created ON product_reviews(product_id, status, created_at DESC);
 
 -- ============================================================================
 -- COUPONS TABLE INDEXES (1)
 -- ============================================================================
 
 -- INDEX 20: Code + active status for coupon validation
-CREATE INDEX IF NOT EXISTS idx_coupons_code_active ON coupons(code, is_active);
+CREATE INDEX idx_coupons_code_active ON coupons(code, is_active);
 
 SET FOREIGN_KEY_CHECKS = 1;
 

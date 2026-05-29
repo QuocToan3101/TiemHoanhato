@@ -1,11 +1,11 @@
 param(
-    [string]$ServerIp = "103.137.185.6",
+    [string]$ServerIp = "180.93.165.99",
     [string]$ServerUser = "root",
     [string]$WarPath = ".\build\libs\flowerstore.war",
-    [string]$RemoteWarName = "ROOT.war",
-    [string]$DatabaseSqlPath = ".\database\database.sql",
+    [string]$RemoteWarName = "flowerstore.war",
+    [string]$DatabaseSqlPath = ".\database\flowerstore-complete.sql",
     [string]$DbSetupScriptPath = ".\vps-db-setup.sh",
-    [string]$IdentityFile = ""
+    [string]$IdentityFile = "$env:USERPROFILE\.ssh\id_ed25519"
 )
 
 $ErrorActionPreference = "Stop"
@@ -55,7 +55,14 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-& scp @sshScpCommonArgs $DbSetupScriptPath "$ServerUser@$ServerIp`:/tmp/vps-db-setup.sh"
+# Convert vps-db-setup.sh to Unix line endings
+$dbSetupContent = Get-Content $DbSetupScriptPath -Raw
+$dbSetupContentUnix = $dbSetupContent -replace "`r", ""
+$tempDbSetup = Join-Path $env:TEMP "vps-db-setup.sh"
+[System.IO.File]::WriteAllText($tempDbSetup, $dbSetupContentUnix, (New-Object System.Text.UTF8Encoding($false)))
+
+& scp @sshScpCommonArgs $tempDbSetup "$ServerUser@$ServerIp`:/tmp/vps-db-setup.sh"
+Remove-Item -Path $tempDbSetup -Force -ErrorAction SilentlyContinue
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Failed to upload vps-db-setup.sh"
     exit 1
@@ -113,18 +120,44 @@ fi
 
 retry_apt apt-get install -y nginx "$TOMCAT_PKG" "$JAVA_PKG"
 systemctl enable "$TOMCAT_PKG" nginx
-systemctl stop "$TOMCAT_PKG" || true
-rm -rf "$WEBAPPS_DIR/ROOT" "$WEBAPPS_DIR/ROOT.war"
-cp /tmp/ROOT.war "$WEBAPPS_DIR/ROOT.war"
-if id tomcat >/dev/null 2>&1; then
-    chown tomcat:tomcat "$WEBAPPS_DIR/ROOT.war"
+
+# Automatically configure JAVA_HOME for Tomcat to use the installed Java 21 JRE
+if [ -f "/etc/default/$TOMCAT_PKG" ]; then
+    if ! grep -q "JAVA_HOME" "/etc/default/$TOMCAT_PKG"; then
+        echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> "/etc/default/$TOMCAT_PKG"
+    fi
 fi
+
+systemctl stop "$TOMCAT_PKG" || true
+
+# Remove old ROOT deployment to avoid double-deploying
+rm -rf "$WEBAPPS_DIR/ROOT" "$WEBAPPS_DIR/ROOT.war"
+if [ -d "/var/lib/tomcat10" ]; then
+    rm -rf "/var/lib/tomcat10/webapps-javaee/ROOT.war"
+fi
+
+if [ "$TOMCAT_PKG" = "tomcat10" ]; then
+    JAVAEE_DIR="/var/lib/tomcat10/webapps-javaee"
+    mkdir -p "$JAVAEE_DIR"
+    rm -rf "$WEBAPPS_DIR/flowerstore" "$WEBAPPS_DIR/flowerstore.war" "$JAVAEE_DIR/flowerstore.war"
+    cp /tmp/flowerstore.war "$JAVAEE_DIR/flowerstore.war"
+    if id tomcat >/dev/null 2>&1; then
+        chown tomcat:tomcat "$JAVAEE_DIR/flowerstore.war"
+    fi
+else
+    rm -rf "$WEBAPPS_DIR/flowerstore" "$WEBAPPS_DIR/flowerstore.war"
+    cp /tmp/flowerstore.war "$WEBAPPS_DIR/flowerstore.war"
+    if id tomcat >/dev/null 2>&1; then
+        chown tomcat:tomcat "$WEBAPPS_DIR/flowerstore.war"
+    fi
+fi
+
 systemctl start "$TOMCAT_PKG"
 
 cat >/etc/nginx/sites-available/flowerstore <<EOF
 server {
     listen 80;
-    server_name _;
+    server_name tiemhoanhato.site www.tiemhoanhato.site _;
 
     gzip on;
     gzip_vary on;
@@ -133,23 +166,12 @@ server {
     gzip_min_length 1024;
     gzip_types text/plain text/css application/json application/javascript application/xml+rss application/xml image/svg+xml;
 
-    # Cache static assets from Tomcat to reduce repeat load time.
-    location ~* \.(?:css|js|jpg|jpeg|png|gif|svg|webp|ico|woff2?|ttf|glb)$ {
-        expires 7d;
-        add_header Cache-Control "public, max-age=604800, immutable" always;
-        proxy_pass http://127.0.0.1:8080;
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Port \$server_port;
+    location = / {
+        return 301 http://\$host/flowerstore/;
     }
 
-    location / {
-        proxy_pass http://127.0.0.1:8080;
+    location /flowerstore/ {
+        proxy_pass http://127.0.0.1:8080/flowerstore/;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
         proxy_set_header Host \$host;
