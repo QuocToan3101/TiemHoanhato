@@ -86,7 +86,7 @@
       content="Khám phá những câu chuyện về hoa và cuộc sống đẹp đẽ"
     />
 
-    <link rel="canonical" href="https://lavieestbelle.vn/pages/news" />
+    <link rel="canonical" href="https://tiemhoanhato.site/pages/news" />
 
     <meta name="robots" content="index,follow,noodp" />
 
@@ -1137,7 +1137,7 @@
 
       // [FIX #3] Chỉ giữ một giá trị Haravan.shop. Đã xóa dòng gán đè "lavieestbelle.myharavan.com".
       // Nếu cần dùng domain Haravan nội bộ, hãy lưu vào một biến riêng, ví dụ: Haravan.internalDomain
-      Haravan.shop = "lavieestbelle.vn";
+      Haravan.shop = "tiemhoanhato.site";
 
       Haravan.culture = "vi-VN";
 
@@ -1149,7 +1149,7 @@
         role: "main",
       };
 
-      Haravan.domain = "lavieestbelle.vn";
+      Haravan.domain = "tiemhoanhato.site";
     </script>
 
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />

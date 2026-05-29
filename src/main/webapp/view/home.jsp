@@ -70,7 +70,7 @@
 
           <title>Tiệm Hoa nhà tớ</title>
 
-          <link rel="canonical" href="https://lavieestbelle.vn/" />
+          <link rel="canonical" href="https://tiemhoanhato.site/" />
 
           <meta name="robots" content="index,follow,noodp" />
 
@@ -1267,7 +1267,7 @@
               Haravan = {};
             }
 
-            Haravan.shop = "lavieestbelle.vn";
+            Haravan.shop = "tiemhoanhato.site";
 
             const tbag_radom = {
               item: [
@@ -1313,7 +1313,7 @@
               role: "main",
             };
 
-            Haravan.domain = "lavieestbelle.vn";
+            Haravan.domain = "tiemhoanhato.site";
 
             //]]>
           </script>
@@ -1398,11 +1398,11 @@
       {
         "@context": "http://schema.org",
         "@type": "WebSite",
-        "name": "lavieestbelle.vn",
-        "url": "https://lavieestbelle.vn",
+        "name": "tiemhoanhato.site",
+        "url": "https://tiemhoanhato.site",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://lavieestbelle.vn/search?&q={search_term_string}",
+          "target": "https://tiemhoanhato.site/search?&q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }

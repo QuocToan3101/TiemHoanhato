@@ -78,7 +78,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
     <meta name="revisit-after" content="1 day" />
 
-    <link rel="canonical" href="https://lavieestbelle.vn/" />
+    <link rel="canonical" href="https://tiemhoanhato.site/" />
 
     <meta name="robots" content="index,follow,noodp" />
 
@@ -111,7 +111,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       content="La Vie Est Belle ( Flower &amp; Gift)"
     />
 
-    <meta property="og:url" content="https://lavieestbelle.vn/" />
+    <meta property="og:url" content="https://tiemhoanhato.site/" />
 
     <meta property="og:site_name" content="La Vie Est Belle - Flower & Gift" />
     <!-- Shop id asset -->
@@ -1458,7 +1458,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         Haravan = {};
       }
 
-      Haravan.shop = "lavieestbelle.vn";
+      Haravan.shop = "tiemhoanhato.site";
 
       const tbag_radom = {
         item: [
@@ -1504,7 +1504,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         role: "main",
       };
 
-      Haravan.domain = "lavieestbelle.vn";
+      Haravan.domain = "tiemhoanhato.site";
 
       //]]>
     </script>
@@ -1593,11 +1593,11 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       {
         "@context": "http://schema.org",
         "@type": "WebSite",
-        "name": "lavieestbelle.vn",
-        "url": "https://lavieestbelle.vn",
+        "name": "tiemhoanhato.site",
+        "url": "https://tiemhoanhato.site",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://lavieestbelle.vn/search?&q={search_term_string}",
+          "target": "https://tiemhoanhato.site/search?&q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }

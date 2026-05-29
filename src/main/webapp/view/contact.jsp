@@ -69,7 +69,7 @@
       if (typeof Haravan === "undefined") {
         Haravan = {};
       }
-      Haravan.shop = "lavieestbelle.vn";
+      Haravan.shop = "tiemhoanhato.site";
     </script>
 
     <style>

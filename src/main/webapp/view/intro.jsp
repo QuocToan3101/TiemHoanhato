@@ -73,7 +73,7 @@
       content="Khám phá câu chuyện về Tiệm Hoa nhà tớ. NÆ¡i cảm xúc nảy mầm và cuộc sống được tô điểm bằng những đóa hoa tươi đẹp."
     />
 
-    <link rel="canonical" href="https://lavieestbelle.vn/pages/about-us" />
+    <link rel="canonical" href="https://tiemhoanhato.site/pages/about-us" />
 
     <meta name="robots" content="index,follow,noodp" />
 
@@ -1045,7 +1045,7 @@
         Haravan = {};
       }
 
-      Haravan.shop = "lavieestbelle.vn";
+      Haravan.shop = "tiemhoanhato.site";
 
       Haravan.culture = "vi-VN";
 
@@ -1057,7 +1057,7 @@
         role: "main",
       };
 
-      Haravan.domain = "lavieestbelle.vn";
+      Haravan.domain = "tiemhoanhato.site";
     </script>
 
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
