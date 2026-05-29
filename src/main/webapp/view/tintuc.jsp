@@ -7,6 +7,7 @@
   <head>
     <!-- [FIX #1] charset phải là thẻ đầu tiên để browser decode HTML đúng trước khi parse bất kỳ nội dung nào -->
     <meta charset="utf-8" />
+    <%@ include file="partials/head-icons.jsp" %>
 
     <title>Tin Tức - La Vie Est Belle - Flower & Gift</title>
 
@@ -1151,9 +1152,9 @@
       Haravan.domain = "lavieestbelle.vn";
     </script>
 
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>

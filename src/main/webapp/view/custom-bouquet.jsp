@@ -50,8 +50,7 @@
       <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245" rel="stylesheet" />
       <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/styles-new.scss.css?v=245" rel="stylesheet" />
 
-      <!-- Font Awesome -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      <%@ include file="partials/head-icons.jsp" %>
 
       <!-- jQuery -->
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -1053,9 +1052,9 @@
                     <!-- Navigation Footer (Fixed at the bottom of the card) -->
                     <div class="bouquet-stepper-actions">
                       <button class="bouquet-btn-secondary" type="button" id="btnPrev" style="display: none;"><i
-                          class="fa fa-arrow-left"></i> Quay lại</button>
+                          class="fas fa-arrow-left"></i> Quay lại</button>
                       <button class="bouquet-btn-primary" type="button" id="btnNext" style="margin-left: auto;">Tiếp tục
-                        <i class="fa fa-arrow-right"></i></button>
+                        <i class="fas fa-arrow-right"></i></button>
                     </div>
                   </form>
                 </div>
@@ -1488,9 +1487,9 @@
                   // Finish/Next label state
                   if (btnNext) {
                     if (currentStep === totalSteps) {
-                      btnNext.innerHTML = 'Đặt hàng <i class="fa fa-shopping-cart"></i>';
+                      btnNext.innerHTML = 'Đặt hàng <i class="fas fa-shopping-cart"></i>';
                     } else {
-                      btnNext.innerHTML = 'Tiếp tục <i class="fa fa-arrow-right"></i>';
+                      btnNext.innerHTML = 'Tiếp tục <i class="fas fa-arrow-right"></i>';
                     }
                   }
                 } catch (err) {

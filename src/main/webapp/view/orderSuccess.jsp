@@ -20,11 +20,7 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    <%@ include file="partials/head-icons.jsp" %>
     <!-- Main Site CSS -->
     <link
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"

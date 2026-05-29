@@ -52,6 +52,7 @@
           <!-- End Google Tag Manager -->
 
           <meta charset="utf-8" />
+          <%@ include file="partials/head-icons.jsp" %>
 
           <link rel="shortcut icon" href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245"
             type="image/x-icon" />
@@ -1407,9 +1408,9 @@
       }
     </script>
 
-          <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+          <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
-          <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
         </head>
 
         <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -2025,7 +2026,7 @@
                 <ul class="active overflow-active">
                   <li class="hotline">
                     <a href="tel:0919897969" data-toggle="tooltip" data-original-title="Liên hệ 0919897969"><i
-                        class="fa fa-phone"></i></a>
+                        class="fas fa-phone"></i></a>
                   </li>
 
                   <li class="zalo">

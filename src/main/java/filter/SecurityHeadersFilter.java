@@ -40,12 +40,13 @@ public class SecurityHeadersFilter implements Filter {
         
         // Content-Security-Policy: enable a safe policy allowing known CDNs and inline styles/scripts
         String csp = "default-src 'self'; " +
-                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.hstatic.net http://cdn.hstatic.net https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://www.google-analytics.com https://translate.google.com https://translate.googleapis.com; " +
-                 "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.hstatic.net http://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://stackpath.bootstrapcdn.com https://translate.googleapis.com https://www.gstatic.com; " +
-                 "img-src 'self' data: https: http: blob: https://file.hstatic.net http://file.hstatic.net https://translate.google.com https://translate.googleapis.com; " +
-                 "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
-                 "connect-src 'self' https: wss: https://translate.googleapis.com https://translate.google.com; " +
-                 "frame-ancestors 'none';";
+             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.hstatic.net http://cdn.hstatic.net https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://www.google-analytics.com https://translate.google.com https://translate.googleapis.com; " +
+             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.hstatic.net http://cdn.hstatic.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://stackpath.bootstrapcdn.com https://translate.googleapis.com https://www.gstatic.com; " +
+             "img-src 'self' data: https: http: blob: https://file.hstatic.net http://file.hstatic.net https://translate.google.com https://translate.googleapis.com; " +
+             "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+             "connect-src 'self' https: wss: https://translate.googleapis.com https://translate.google.com; " +
+             "frame-src 'self' https://www.google.com https://maps.google.com; " +
+             "frame-ancestors 'none';";
         httpResponse.setHeader("Content-Security-Policy", csp);
         
         // Referrer-Policy: Kiểm soát thông tin referrer

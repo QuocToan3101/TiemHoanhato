@@ -56,6 +56,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <!-- End Google Tag Manager -->
 
     <meta charset="utf-8" />
+    <%@ include file="partials/head-icons.jsp" %>
 
     <link
       rel="shortcut icon"
@@ -1602,9 +1603,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       }
     </script>
 
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
 
     <!-- SweetAlert2 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">

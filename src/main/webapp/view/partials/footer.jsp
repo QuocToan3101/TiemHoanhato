@@ -11,15 +11,15 @@
             <p></p>
             <ul>
               <li>
-                <i class="fa fa-map-marker" aria-hidden="true"></i> 11A Nguyen
+                <i class="bi bi-geo-alt-fill" aria-hidden="true"></i> 11A Nguyen
                 An, Thanh My Loi, HCMC
               </li>
               <li>
-                <i class="fa fa-phone" aria-hidden="true"></i>
+                <i class="bi bi-telephone-fill" aria-hidden="true"></i>
                 <a rel="nofollow" href="tel:0921.45.06.20">0921.45.06.20</a>
               </li>
               <li>
-                <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                <i class="bi bi-envelope-fill" aria-hidden="true"></i>
                 <a rel="nofollow" href="mailto:tiemhoamhato@gmail.com"
                   >tiemhoanhato@gmail.com</a
                 >
@@ -31,7 +31,7 @@
                     class="lazyload dt-width-auto"
                     width="160"
                     height="40"
-                    src="img\logo-da-thong-bao-bo-cong-thuong-mau-xanh.png"
+                    src="//cdn.hstatic.net/themes/200000846175/1001403720/14/dathongbao.png?v=245"
                     data-src="//cdn.hstatic.net/themes/200000846175/1001403720/14/dathongbao.png?v=245"
                 /></a>
               </li>

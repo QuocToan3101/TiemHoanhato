@@ -17,18 +17,6 @@
       rel="stylesheet"
     />
 
-    <!-- Font Awesome (for header/footer icons) -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-
-    <!-- Bootstrap Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-
     <!-- Header/Footer CSS (from main theme) -->
     <link
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"
@@ -46,8 +34,10 @@
       type="text/css"
     />
 
+    <%@ include file="partials/head-icons.jsp" %>
+
     <!-- AOS Animation -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <!-- jQuery (required for header/footer functionality) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -801,6 +791,7 @@
             id="contactForm"
             method="post"
             action="${pageContext.request.contextPath}/contact"
+            onsubmit="return false;"
           >
             <div class="form-row">
               <div class="form-group">
@@ -860,7 +851,7 @@
               ></textarea>
             </div>
 
-            <button type="submit" class="submit-btn">
+            <button type="button" id="contactSubmitBtn" class="submit-btn" data-original="Gửi liên hệ">
               Gửi liên hệ
               <i class="bi bi-arrow-right"></i>
             </button>
@@ -1065,7 +1056,7 @@
     ></script>
 
     <!-- AOS Animation -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     <script>
       // Initialize AOS
       AOS.init({
@@ -1075,43 +1066,94 @@
         easing: "ease-out-cubic",
       });
 
-      // Form submission with AJAX
-      document
-        .getElementById("contactForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
+      // Form submission with AJAX (wrapped to avoid errors preventing handler)
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          const contactForm = document.getElementById('contactForm');
+          if (!contactForm) return;
 
-          const btn = this.querySelector(".submit-btn");
-          const originalText = btn.innerHTML;
-          btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang gửi...';
-          btn.disabled = true;
+          // Ensure button triggers our AJAX flow instead of native submit
+          const contactBtn = document.getElementById('contactSubmitBtn');
+          if (contactBtn) {
+            contactBtn.addEventListener('click', function (ev) {
+              ev.preventDefault();
+              contactForm.dispatchEvent(new Event('submit', { cancelable: true }));
+            });
+          }
 
-          const formData = new FormData(this);
+          contactForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            try {
+              const btn = this.querySelector('.submit-btn');
 
-          fetch("${pageContext.request.contextPath}/contact", {
-            method: "POST",
-            body: new URLSearchParams(formData),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.success) {
-                // Show success message
-                showNotification(data.message, "success");
-                // Reset form
+      // Map iframe fallback: show link if iframe doesn't load in time
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          const mapContainer = document.querySelector('.map-container');
+          if (!mapContainer) return;
+          const iframe = mapContainer.querySelector('iframe');
+          if (!iframe) return;
+
+          let loaded = false;
+          iframe.addEventListener('load', function () { loaded = true; });
+
+          setTimeout(function () {
+            if (!loaded) {
+              // show fallback overlay with link
+              const overlay = document.createElement('div');
+              overlay.className = 'map-fallback-overlay';
+              overlay.innerHTML = '<div class="map-fallback"><p>Google Maps không tải được.</p><a class="btn" target="_blank" href="https://maps.google.com/?q=11A+Nguyen+An+Thanh+My+Loi+Thu+Duc">Mở Google Maps</a></div>';
+              mapContainer.appendChild(overlay);
+            }
+          }, 4000);
+        } catch (err) {
+          console.error('Map fallback handler error', err);
+        }
+      });
+              const originalText = btn ? btn.innerHTML : '';
+              if (btn) {
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang gửi...';
+                btn.disabled = true;
+              }
+
+              const formData = new FormData(this);
+              const body = new URLSearchParams();
+              for (const pair of formData.entries()) body.append(pair[0], pair[1]);
+
+              const resp = await fetch('${pageContext.request.contextPath}/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString(),
+              });
+
+              let data;
+              try {
+                data = await resp.json();
+              } catch (err) {
+                data = { success: false, message: 'Không nhận được phản hồi hợp lệ từ server' };
+              }
+
+              if (data && data.success) {
+                showNotification(data.message || 'Gửi liên hệ thành công', 'success');
                 this.reset();
               } else {
-                showNotification(data.message || "Có lỗi xảy ra", "error");
+                showNotification(data.message || 'Có lỗi xảy ra', 'error');
               }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              showNotification("Có lỗi xảy ra, vui lòng thử lại", "error");
-            })
-            .finally(() => {
-              btn.innerHTML = originalText;
-              btn.disabled = false;
-            });
-        });
+            } catch (err) {
+              console.error('Contact submit error:', err);
+              showNotification('Có lỗi xảy ra, vui lòng thử lại', 'error');
+            } finally {
+              const btn = this.querySelector('.submit-btn');
+              if (btn) {
+                btn.innerHTML = btn.getAttribute('data-original') || 'Gửi liên hệ';
+                btn.disabled = false;
+              }
+            }
+          });
+        } catch (err) {
+          console.error('Failed to attach contactForm handler:', err);
+        }
+      });
 
       // Notification function
       function showNotification(message, type) {
@@ -1215,6 +1257,20 @@
           transform: translateX(0);
         }
       }
+      .map-container { position: relative; }
+      .map-fallback-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(245,245,245,0.95);
+        border-radius: 12px;
+        z-index: 5;
+      }
+      .map-fallback { text-align: center; }
+      .map-fallback p { margin-bottom: 12px; color: #666; }
+      .map-fallback .btn { background: var(--primary); color: #fff; padding: 10px 14px; border-radius: 8px; text-decoration: none; }
     </style>
   </body>
 </html>

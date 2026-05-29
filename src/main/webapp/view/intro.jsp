@@ -46,6 +46,7 @@
     </script>
 
     <meta charset="utf-8" />
+    <%@ include file="partials/head-icons.jsp" %>
 
     <link
       rel="shortcut icon"
@@ -1059,9 +1060,9 @@
       Haravan.domain = "lavieestbelle.vn";
     </script>
 
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     
     <!-- CSRF Token Helper -->
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
@@ -1467,7 +1468,7 @@
             href="tel:0919897969"
             data-toggle="tooltip"
             data-original-title="Liên hệ 0919897969"
-            ><i class="fa fa-phone"></i
+            ><i class="fas fa-phone"></i
           ></a>
         </li>
 
