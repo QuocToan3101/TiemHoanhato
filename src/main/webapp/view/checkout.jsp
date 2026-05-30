@@ -9,25 +9,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="context-path" content="${pageContext.request.contextPath}">
     <title>Thanh toán - Tiệm Hoa nhà tớ</title>
-    
-    <!-- CSRF Token -->
+
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
-    
+
     <link rel="shortcut icon" href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245" type="image/x-icon">
     <link rel="icon" href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245" type="image/png">
-    
-    <!-- Google Fonts -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
+
     <%@ include file="partials/head-icons.jsp" %>
-    
-    <!-- Main Site CSS -->
+
     <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245" rel="stylesheet" type="text/css">
     <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/styles-new.scss.css?v=245" rel="stylesheet" type="text/css">
-    
+
     <style>
         :root {
             /* Main colors */
@@ -45,26 +42,26 @@
             --error: #e74c3c;
             --warning: #f39c12;
             --info: #3498db;
-            
+
             /* Shadows */
             --shadow-sm: 0 2px 8px rgba(60,41,34,0.06);
             --shadow-md: 0 8px 24px rgba(60,41,34,0.1);
             --shadow-lg: 0 16px 48px rgba(60,41,34,0.15);
-            
+
             /* Border radius */
             --radius-sm: 8px;
             --radius-md: 16px;
             --radius-lg: 24px;
-            
+
             /* Transitions */
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            
+
             /* Header */
             --height-head: 72px;
             --bgfooter: #ffffff;
             --colorfooter: #000000;
         }
-        
+
         /* Font Awesome fix */
         .fas, .far, .fab, .fa {
             font-family: "Font Awesome 6 Free" !important;
@@ -72,13 +69,13 @@
         }
         .far { font-weight: 400; }
         .fab { font-family: "Font Awesome 6 Brands" !important; }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-cream) 100%);
@@ -86,32 +83,32 @@
             line-height: 1.6;
             min-height: 100vh;
         }
-        
+
         /* Checkout Container */
         .checkout-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
-        
+
         /* Page Header */
         .checkout-header {
             text-align: center;
             margin-bottom: 2rem;
         }
-        
+
         .checkout-header h1 {
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
             color: var(--brown-main);
             margin-bottom: 0.5rem;
         }
-        
+
         .checkout-header p {
             color: var(--text-muted);
             font-size: 1rem;
         }
-        
+
         /* Breadcrumb */
         .checkout-breadcrumb {
             display: flex;
@@ -121,7 +118,7 @@
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
-        
+
         .breadcrumb-step {
             display: flex;
             align-items: center;
@@ -129,16 +126,16 @@
             color: var(--text-muted);
             font-size: 0.9rem;
         }
-        
+
         .breadcrumb-step.active {
             color: var(--primary);
             font-weight: 600;
         }
-        
+
         .breadcrumb-step.completed {
             color: var(--success);
         }
-        
+
         .breadcrumb-step .step-number {
             width: 28px;
             height: 28px;
@@ -150,36 +147,36 @@
             font-size: 0.85rem;
             font-weight: 600;
         }
-        
+
         .breadcrumb-step.active .step-number {
             background: var(--primary);
             color: white;
         }
-        
+
         .breadcrumb-step.completed .step-number {
             background: var(--success);
             color: white;
         }
-        
+
         .breadcrumb-divider {
             width: 40px;
             height: 2px;
             background: var(--border-color);
         }
-        
+
         /* Main Grid Layout */
         .checkout-grid {
             display: grid;
             grid-template-columns: 1fr 420px;
             gap: 2rem;
         }
-        
+
         @media (max-width: 968px) {
             .checkout-grid {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         /* Card Style */
         .checkout-card {
             background: var(--white);
@@ -187,7 +184,7 @@
             box-shadow: var(--shadow-md);
             overflow: hidden;
         }
-        
+
         .card-header {
             padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
@@ -195,40 +192,40 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         .card-header i {
             color: var(--primary);
             font-size: 1.2rem;
         }
-        
+
         .card-header h3 {
             font-family: 'Crimson Text', serif;
             font-size: 1.25rem;
             font-weight: 600;
             color: var(--brown-main);
         }
-        
+
         .card-body {
             padding: 1.5rem;
         }
-        
+
         /* Form Styles */
         .form-group {
             margin-bottom: 1.25rem;
         }
-        
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
-        
+
         @media (max-width: 576px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         .form-label {
             display: block;
             font-size: 0.9rem;
@@ -236,11 +233,11 @@
             color: var(--brown-soft);
             margin-bottom: 0.5rem;
         }
-        
+
         .form-label .required {
             color: var(--error);
         }
-        
+
         .form-control {
             width: 100%;
             padding: 0.875rem 1rem;
@@ -251,26 +248,26 @@
             background: var(--white);
             transition: var(--transition);
         }
-        
+
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(201, 147, 102, 0.15);
         }
-        
+
         .form-control::placeholder {
             color: var(--text-muted);
         }
-        
+
         .form-control.error {
             border-color: var(--error);
         }
-        
+
         textarea.form-control {
             resize: vertical;
             min-height: 100px;
         }
-        
+
         select.form-control {
             cursor: pointer;
             appearance: none;
@@ -279,23 +276,23 @@
             background-position: right 1rem center;
             padding-right: 2.5rem;
         }
-        
+
         .error-message {
             color: var(--error);
             font-size: 0.8rem;
             margin-top: 0.25rem;
             display: none;
         }
-        
+
         .form-control.error + .error-message {
             display: block;
         }
-        
+
         /* Saved Addresses */
         .saved-addresses {
             margin-bottom: 1.5rem;
         }
-        
+
         .address-option {
             display: flex;
             align-items: flex-start;
@@ -307,37 +304,37 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        
+
         .address-option:hover {
             border-color: var(--primary-light);
         }
-        
+
         .address-option.selected {
             border-color: var(--primary);
             background: rgba(201, 147, 102, 0.05);
         }
-        
+
         .address-option input[type="radio"] {
             margin-top: 0.25rem;
             accent-color: var(--primary);
         }
-        
+
         .address-info {
             flex: 1;
         }
-        
+
         .address-name {
             font-weight: 600;
             color: var(--brown-main);
             margin-bottom: 0.25rem;
         }
-        
+
         .address-detail {
             font-size: 0.9rem;
             color: var(--text-muted);
             line-height: 1.5;
         }
-        
+
         .address-default {
             display: inline-block;
             padding: 0.2rem 0.5rem;
@@ -347,7 +344,7 @@
             border-radius: 4px;
             margin-top: 0.5rem;
         }
-        
+
         .new-address-toggle {
             display: inline-flex;
             align-items: center;
@@ -358,29 +355,29 @@
             padding: 0.5rem 0;
             transition: var(--transition);
         }
-        
+
         .new-address-toggle:hover {
             color: var(--primary-dark);
         }
-        
+
         .new-address-form {
             display: none;
             padding-top: 1rem;
             border-top: 1px solid var(--border-color);
             margin-top: 1rem;
         }
-        
+
         .new-address-form.show {
             display: block;
         }
-        
+
         /* Payment Methods */
         .payment-methods {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
         }
-        
+
         .payment-option {
             display: flex;
             align-items: center;
@@ -391,20 +388,20 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        
+
         .payment-option:hover {
             border-color: var(--primary-light);
         }
-        
+
         .payment-option.selected {
             border-color: var(--primary);
             background: rgba(201, 147, 102, 0.05);
         }
-        
+
         .payment-option input[type="radio"] {
             accent-color: var(--primary);
         }
-        
+
         .payment-icon {
             width: 48px;
             height: 32px;
@@ -416,22 +413,22 @@
             font-size: 1.2rem;
             color: var(--primary);
         }
-        
+
         .payment-info {
             flex: 1;
         }
-        
+
         .payment-name {
             font-weight: 600;
             color: var(--brown-main);
             font-size: 0.95rem;
         }
-        
+
         .payment-desc {
             font-size: 0.8rem;
             color: var(--text-muted);
         }
-        
+
         .payment-detail {
             display: none;
             padding: 1rem;
@@ -441,63 +438,63 @@
             font-size: 0.9rem;
             color: var(--brown-soft);
         }
-        
+
         .payment-option.selected .payment-detail {
             display: block;
         }
-        
+
         .bank-info {
             background: var(--white);
             padding: 1rem;
             border-radius: var(--radius-sm);
             margin-top: 0.75rem;
         }
-        
+
         .bank-info p {
             margin-bottom: 0.5rem;
         }
-        
+
         .bank-info strong {
             color: var(--brown-main);
         }
-        
+
         /* Order Summary */
         .order-summary {
             position: sticky;
             top: calc(var(--height-head) + 20px);
         }
-        
+
         .summary-items {
             max-height: 300px;
             overflow-y: auto;
             padding-right: 0.5rem;
         }
-        
+
         .summary-items::-webkit-scrollbar {
             width: 4px;
         }
-        
+
         .summary-items::-webkit-scrollbar-track {
             background: var(--bg-light);
             border-radius: 2px;
         }
-        
+
         .summary-items::-webkit-scrollbar-thumb {
             background: var(--primary-light);
             border-radius: 2px;
         }
-        
+
         .summary-item {
             display: flex;
             gap: 1rem;
             padding: 1rem 0;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .summary-item:last-child {
             border-bottom: none;
         }
-        
+
         .item-image {
             width: 70px;
             height: 70px;
@@ -506,13 +503,13 @@
             flex-shrink: 0;
             position: relative;
         }
-        
+
         .item-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .item-quantity {
             position: absolute;
             top: -8px;
@@ -528,11 +525,11 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
-        
+
         .item-info {
             flex: 1;
         }
-        
+
         .item-name {
             font-weight: 600;
             color: var(--brown-main);
@@ -543,29 +540,29 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        
+
         .item-variant {
             font-size: 0.8rem;
             color: var(--text-muted);
         }
-        
+
         .item-price {
             font-weight: 600;
             color: var(--primary-dark);
             white-space: nowrap;
         }
-        
+
         /* Coupon */
         .coupon-section {
             padding: 1rem 1.5rem;
             border-top: 1px solid var(--border-color);
         }
-        
+
         .coupon-input {
             display: flex;
             gap: 0.5rem;
         }
-        
+
         .coupon-input input {
             flex: 1;
             padding: 0.75rem 1rem;
@@ -573,12 +570,12 @@
             border-radius: var(--radius-sm);
             font-size: 0.9rem;
         }
-        
+
         .coupon-input input:focus {
             outline: none;
             border-color: var(--primary);
         }
-        
+
         .coupon-btn {
             padding: 0.75rem 1.25rem;
             background: var(--brown-main);
@@ -589,11 +586,11 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        
+
         .coupon-btn:hover {
             background: var(--brown-soft);
         }
-        
+
         .coupon-applied {
             display: flex;
             align-items: center;
@@ -603,7 +600,7 @@
             border-radius: var(--radius-sm);
             margin-top: 0.75rem;
         }
-        
+
         .coupon-applied .coupon-code {
             display: flex;
             align-items: center;
@@ -611,23 +608,23 @@
             color: var(--success);
             font-weight: 600;
         }
-        
+
         .coupon-applied .remove-coupon {
             color: var(--text-muted);
             cursor: pointer;
             padding: 0.25rem;
         }
-        
+
         .coupon-applied .remove-coupon:hover {
             color: var(--error);
         }
-        
+
         /* Summary Totals */
         .summary-totals {
             padding: 1rem 1.5rem;
             border-top: 1px solid var(--border-color);
         }
-        
+
         .total-row {
             display: flex;
             justify-content: space-between;
@@ -635,11 +632,11 @@
             padding: 0.5rem 0;
             font-size: 0.95rem;
         }
-        
+
         .total-row.discount {
             color: var(--success);
         }
-        
+
         .total-row.grand-total {
             padding-top: 1rem;
             margin-top: 0.5rem;
@@ -647,18 +644,18 @@
             font-size: 1.1rem;
             font-weight: 700;
         }
-        
+
         .total-row.grand-total .amount {
             color: var(--primary-dark);
             font-size: 1.3rem;
         }
-        
+
         /* Submit Button */
         .checkout-submit {
             padding: 1rem 1.5rem;
             border-top: 1px solid var(--border-color);
         }
-        
+
         .btn-checkout {
             width: 100%;
             padding: 1rem 2rem;
@@ -675,18 +672,18 @@
             gap: 0.75rem;
             transition: var(--transition);
         }
-        
+
         .btn-checkout:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(201, 147, 102, 0.4);
         }
-        
+
         .btn-checkout:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-        
+
         .btn-checkout .spinner {
             width: 20px;
             height: 20px;
@@ -696,19 +693,19 @@
             animation: spin 0.8s linear infinite;
             display: none;
         }
-        
+
         .btn-checkout.loading .spinner {
             display: block;
         }
-        
+
         .btn-checkout.loading .btn-text {
             display: none;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         .secure-note {
             display: flex;
             align-items: center;
@@ -718,11 +715,11 @@
             font-size: 0.8rem;
             color: var(--text-muted);
         }
-        
+
         .secure-note i {
             color: var(--success);
         }
-        
+
         /* Back Link */
         .back-to-cart {
             display: inline-flex;
@@ -734,35 +731,35 @@
             margin-bottom: 1.5rem;
             transition: var(--transition);
         }
-        
+
         .back-to-cart:hover {
             color: var(--primary);
         }
-        
+
         /* Empty Cart */
         .empty-cart {
             text-align: center;
             padding: 4rem 2rem;
         }
-        
+
         .empty-cart i {
             font-size: 4rem;
             color: var(--border-color);
             margin-bottom: 1.5rem;
         }
-        
+
         .empty-cart h3 {
             font-family: 'Crimson Text', serif;
             font-size: 1.5rem;
             color: var(--brown-main);
             margin-bottom: 0.5rem;
         }
-        
+
         .empty-cart p {
             color: var(--text-muted);
             margin-bottom: 1.5rem;
         }
-        
+
         .btn-shop {
             display: inline-flex;
             align-items: center;
@@ -775,12 +772,12 @@
             font-weight: 600;
             transition: var(--transition);
         }
-        
+
         .btn-shop:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
         }
-        
+
         /* Toast Notification */
         .toast-container {
             position: fixed;
@@ -788,7 +785,7 @@
             right: 20px;
             z-index: 9999;
         }
-        
+
         .toast {
             display: flex;
             align-items: center;
@@ -801,38 +798,38 @@
             animation: slideIn 0.3s ease;
             max-width: 350px;
         }
-        
+
         .toast.success {
             border-left: 4px solid var(--success);
         }
-        
+
         .toast.error {
             border-left: 4px solid var(--error);
         }
-        
+
         .toast i {
             font-size: 1.25rem;
         }
-        
+
         .toast.success i {
             color: var(--success);
         }
-        
+
         .toast.error i {
             color: var(--error);
         }
-        
+
         .toast-message {
             flex: 1;
             font-size: 0.9rem;
         }
-        
+
         .toast-close {
             cursor: pointer;
             color: var(--text-muted);
             padding: 0.25rem;
         }
-        
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -843,7 +840,7 @@
                 opacity: 1;
             }
         }
-        
+
         /* Loading Overlay */
         .loading-overlay {
             position: fixed;
@@ -859,11 +856,11 @@
             z-index: 10000;
             display: none;
         }
-        
+
         .loading-overlay.show {
             display: flex;
         }
-        
+
         .loading-spinner {
             width: 50px;
             height: 50px;
@@ -873,65 +870,60 @@
             animation: spin 0.8s linear infinite;
             margin-bottom: 1rem;
         }
-        
+
         .loading-text {
             color: var(--brown-main);
             font-weight: 500;
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
             .checkout-container {
                 padding: 1rem;
             }
-            
+
             .checkout-header h1 {
                 font-size: 1.75rem;
             }
-            
+
             .checkout-breadcrumb {
                 gap: 0.5rem;
             }
-            
+
             .breadcrumb-divider {
                 width: 20px;
             }
-            
+
             .card-body {
                 padding: 1rem;
             }
-            
+
             .order-summary {
                 position: static;
             }
         }
     </style>
-    
-    <!-- jQuery -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- Header -->
+
     <%@ include file="partials/header.jsp" %>
-    
-    <!-- Toast Container -->
+
     <div class="toast-container" id="toastContainer"></div>
-    
-    <!-- Loading Overlay -->
+
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Đang xử lý đơn hàng...</div>
     </div>
-    
+
     <div class="checkout-container">
-        
-        <!-- Page Header -->
+
         <div class="checkout-header">
             <h1>Thanh toán</h1>
             <p>Hoàn tất đơn hàng của bạn</p>
         </div>
-        
-        <!-- Breadcrumb Steps -->
+
         <div class="checkout-breadcrumb">
             <div class="breadcrumb-step completed">
                 <span class="step-number"><i class="fas fa-check"></i></span>
@@ -948,11 +940,10 @@
                 <span>Hoàn tất</span>
             </div>
         </div>
-        
-        <!-- Check if cart is empty -->
+
         <c:choose>
             <c:when test="${empty cartItems}">
-                <!-- Empty Cart -->
+
                 <div class="checkout-card">
                     <div class="empty-cart">
                         <i class="fas fa-shopping-bag"></i>
@@ -969,20 +960,20 @@
                 <form id="checkoutForm" action="${pageContext.request.contextPath}/checkout" method="POST">
                     <input type="hidden" name="csrfToken" value="${csrfToken}">
                     <div class="checkout-grid">
-                        <!-- Left Column - Form -->
+
                         <div class="checkout-form">
-                            <!-- Shipping Information -->
+
                             <div class="checkout-card" style="margin-bottom: 1.5rem;">
                                 <div class="card-header">
                                     <i class="fas fa-truck"></i>
                                     <h3>Thông tin giao hàng</h3>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Saved Addresses -->
+
                                     <c:if test="${not empty addresses}">
                                         <div class="saved-addresses">
                                             <c:forEach var="addr" items="${addresses}" varStatus="status">
-                                                <label class="address-option ${addr.isDefault ? 'selected' : ''}" 
+                                                <label class="address-option ${addr.isDefault ? 'selected' : ''}"
                                                        data-address-id="${addr.id}"
                                                        data-receiver-name="${addr.receiverName}"
                                                        data-receiver-phone="${addr.phone}"
@@ -1003,33 +994,32 @@
                                             <span>Giao đến địa chỉ khác</span>
                                         </div>
                                     </c:if>
-                                    
-                                    <!-- New Address Form -->
+
                                     <div class="new-address-form ${empty addresses ? 'show' : ''}" id="newAddressForm">
                                         <div class="form-row">
                                             <div class="form-group">
                                                 <label class="form-label">Họ và tên <span class="required">*</span></label>
-                                                <input type="text" name="receiverName" class="form-control" 
+                                                <input type="text" name="receiverName" class="form-control"
                                                        value="${sessionScope.user.fullname}" placeholder="Nhập họ tên người nhận" required>
                                                 <div class="error-message">Vui lòng nhập họ tên</div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="form-label">Số điện thoại <span class="required">*</span></label>
-                                                <input type="tel" name="receiverPhone" class="form-control" 
+                                                <input type="tel" name="receiverPhone" class="form-control"
                                                        value="${sessionScope.user.phone}" placeholder="Nhập số điện thoại" required>
                                                 <div class="error-message">Vui lòng nhập số điện thoại hợp lệ</div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                             <label class="form-label">Email</label>
-                                            <input type="email" name="receiverEmail" class="form-control" 
+                                            <input type="email" name="receiverEmail" class="form-control"
                                                    value="${sessionScope.user.email}" placeholder="Nhập email nhận thông báo">
                                         </div>
-                                        
+
                                         <div class="form-group">
                                             <label class="form-label">Địa chỉ giao hàng <span class="required">*</span></label>
-                                              <input type="text" id="shippingAddressInput" name="addressDetail" class="form-control" 
+                                              <input type="text" id="shippingAddressInput" name="addressDetail" class="form-control"
                                                   placeholder="Nhập địa chỉ và chọn từ gợi ý" autocomplete="off" required>
                                             <div id="shippingSuggestions" class="shipping-suggestions" style="display:none"></div>
                                             <div id="shippingMap" style="width:100%; height:180px; border-radius:12px; overflow:hidden; background:#f5f5f5; margin-top:12px; display:none"></div>
@@ -1053,19 +1043,17 @@
                                             <input type="hidden" id="shipping_osm_type" name="shippingOsmType">
                                             <input type="hidden" id="shipping_osm_id" name="shippingOsmId">
                                         </div>
-                                        
-                                        <!-- Hidden fields for backward compatibility -->
+
                                         <input type="hidden" name="province" value="">
                                         <input type="hidden" name="district" value="">
                                         <input type="hidden" name="ward" value="">
-                                        
+
                                         <div class="form-group">
                                             <label class="form-label">Ghi chú</label>
-                                            <textarea name="note" class="form-control" 
+                                            <textarea name="note" class="form-control"
                                                       placeholder="Ghi chú thêm (thời gian giao, hướng dẫn giao hàng...)"></textarea>
                                         </div>
-                                        
-                                        <!-- Greeting Card Option -->
+
                                         <c:if test="${not empty sessionScope.greetingCardImage and not empty sessionScope.greetingCardMessage}">
                                         <div class="form-group mt-4">
                                             <div class="greeting-card-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; color: white;">
@@ -1098,8 +1086,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Payment Method -->
+
                             <div class="checkout-card">
                                 <div class="card-header">
                                     <i class="fas fa-credit-card"></i>
@@ -1107,7 +1094,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="payment-methods">
-                                        <!-- COD -->
+
                                         <label class="payment-option selected">
                                             <input type="radio" name="paymentMethod" value="cod" checked>
                                             <div class="payment-icon">
@@ -1118,8 +1105,7 @@
                                                 <div class="payment-desc">Thanh toán bằng tiền mặt khi nhận hàng</div>
                                             </div>
                                         </label>
-                                        
-                                        <!-- Bank Transfer -->
+
                                         <label class="payment-option">
                                             <input type="radio" name="paymentMethod" value="bank_transfer">
                                             <div class="payment-icon">
@@ -1139,8 +1125,7 @@
                                                 </div>
                                             </div>
                                         </label>
-                                        
-                                        <!-- VNPay -->
+
                                         <label class="payment-option">
                                             <input type="radio" name="paymentMethod" value="vnpay">
                                             <div class="payment-icon">
@@ -1154,13 +1139,12 @@
                                                 </div>
                                             </div>
                                         </label>
-                                        
+
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Right Column - Order Summary -->
+
                         <div class="order-summary">
                             <div class="checkout-card">
                                 <div class="card-header">
@@ -1188,8 +1172,7 @@
                                         </c:forEach>
                                     </div>
                                 </div>
-                                
-                                <!-- Coupon -->
+
                                 <div class="coupon-section">
                                     <div class="coupon-input">
                                         <input type="text" name="couponCode" id="couponCode" placeholder="Nhập mã giảm giá">
@@ -1205,8 +1188,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                
-                                <!-- Totals -->
+
                                 <div class="summary-totals">
                                     <div class="total-row">
                                         <span>Tạm tính</span>
@@ -1227,15 +1209,13 @@
                                         </span>
                                     </div>
                                 </div>
-                                
-                                <!-- Hidden fields -->
+
                                 <input type="hidden" name="subtotal" value="${cartTotal}">
                                 <input type="hidden" name="shippingFee" id="shippingFeeInput" value="0">
                                 <input type="hidden" name="discount" id="discountInput" value="0">
                                 <input type="hidden" name="total" id="totalInput" value="${cartTotal}">
                                 <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
-                                
-                                <!-- Submit -->
+
                                 <div class="checkout-submit">
                                     <button type="submit" class="btn-checkout" id="btnCheckout">
                                         <span class="btn-text">
@@ -1256,8 +1236,7 @@
             </c:otherwise>
         </c:choose>
     </div>
-    
-    <!-- Footer -->
+
     <%@ include file="partials/footer.jsp" %>
 
     <div id="addressConfirmModal" class="shipping-modal" style="display:none;">
@@ -1270,14 +1249,12 @@
             </div>
         </div>
     </div>
-    
-    <!-- Scripts -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
-    
-    <!-- CSRF Token Helper - Phải load SAU axios -->
+
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
     <script src="${pageContext.request.contextPath}/js/shipping.js"></script>
-    
+
     <script>
         // Variables
         let provinces = [];
@@ -1287,7 +1264,7 @@
         const subtotal = <c:out value="${cartTotal != null ? cartTotal : 0}"/>;
         let shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '0', 10);
         let discount = 0;
-        
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initPaymentMethods();
@@ -1299,12 +1276,12 @@
             shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '0', 10);
             updateTotals();
         });
-        
+
         // Toggle new address form
         function toggleNewAddressForm() {
             const form = document.getElementById('newAddressForm');
             form.classList.toggle('show');
-            
+
             // Deselect saved addresses
             if (form.classList.contains('show')) {
                 document.querySelectorAll('.address-option input[type="radio"]').forEach(radio => {
@@ -1315,7 +1292,7 @@
                 });
             }
         }
-        
+
         // Initialize address options
         function initAddressOptions() {
             document.querySelectorAll('.address-option').forEach(option => {
@@ -1325,7 +1302,7 @@
                     });
                     this.classList.add('selected');
                     this.querySelector('input[type="radio"]').checked = true;
-                    
+
                     // Hide new address form
                     document.getElementById('newAddressForm')?.classList.remove('show');
 
@@ -1359,7 +1336,7 @@
                 }
             }
         }
-        
+
         // Initialize payment methods
         function initPaymentMethods() {
             document.querySelectorAll('.payment-option').forEach(option => {
@@ -1372,7 +1349,7 @@
                 });
             });
         }
-        
+
         // Apply coupon
         async function applyCoupon() {
             const code = document.getElementById('couponCode').value.trim();
@@ -1380,23 +1357,23 @@
                 showToast('Vui lòng nhập mã giảm giá', 'error');
                 return;
             }
-            
+
             try {
                 const response = await axios.post('${pageContext.request.contextPath}/api/coupon/validate', {
                     code: code,
                     subtotal: subtotal
                 });
-                
+
                 if (response.data.success) {
                     appliedCoupon = response.data.coupon;
                     discount = response.data.discountAmount;
-                    
+
                     document.getElementById('couponApplied').style.display = 'flex';
                     document.getElementById('appliedCouponCode').textContent = code.toUpperCase();
                     document.getElementById('appliedCouponCodeInput').value = code.toUpperCase();
                     document.getElementById('couponCode').value = '';
                     document.getElementById('couponCode').disabled = true;
-                    
+
                     updateTotals();
                     showToast('Áp dụng mã giảm giá thành công!', 'success');
                 } else {
@@ -1406,29 +1383,29 @@
                 showToast('Không thể kiểm tra mã giảm giá lúc này. Vui lòng thử lại!', 'error');
             }
         }
-        
+
         // Remove coupon
         function removeCoupon() {
             appliedCoupon = null;
             discount = 0;
             shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || '0', 10);
-            
+
             document.getElementById('couponApplied').style.display = 'none';
             document.getElementById('couponCode').disabled = false;
             document.getElementById('appliedCouponCodeInput').value = '';
-            
+
             updateTotals();
             showToast('Đã hủy mã giảm giá', 'success');
         }
-        
+
         // Update totals
         function updateTotals() {
             shippingFee = parseInt(document.getElementById('shippingFeeInput')?.value || shippingFee || '0', 10);
             const total = subtotal + shippingFee - discount;
-            
+
             document.getElementById('shippingFee').textContent = formatCurrency(shippingFee);
             document.getElementById('shippingFeeInput').value = shippingFee;
-            
+
             if (discount > 0) {
                 document.getElementById('discountRow').style.display = 'flex';
                 document.getElementById('discountAmount').textContent = '-' + formatCurrency(discount);
@@ -1436,20 +1413,20 @@
             } else {
                 document.getElementById('discountRow').style.display = 'none';
             }
-            
+
             document.getElementById('grandTotal').textContent = formatCurrency(total);
             document.getElementById('totalInput').value = total;
         }
-        
+
         // Format currency
         function formatCurrency(amount) {
             return new Intl.NumberFormat('vi-VN').format(amount) + '₫';
         }
-        
+
         // Form validation
         document.getElementById('checkoutForm')?.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Check if using saved address or new address (only validate when new address form is visible)
             const savedAddress = document.querySelector('.address-option.selected input[type="radio"]:checked');
             const newAddressForm = document.getElementById('newAddressForm');
@@ -1459,7 +1436,7 @@
                 // Validate new address form
                 const requiredFields = newAddressForm.querySelectorAll('[required]');
                 let isValid = true;
-                
+
                 requiredFields.forEach(field => {
                     if (!field.value.trim()) {
                         field.classList.add('error');
@@ -1468,44 +1445,44 @@
                         field.classList.remove('error');
                     }
                 });
-                
+
                 // Validate phone
                 const phoneField = newAddressForm.querySelector('input[name="receiverPhone"]');
                 if (phoneField && !/^[0-9]{10,11}$/.test(phoneField.value.replace(/\s/g, ''))) {
                     phoneField.classList.add('error');
                     isValid = false;
                 }
-                
+
                 if (!isValid) {
                     showToast('Vui lòng điền đầy đủ thông tin giao hàng', 'error');
                     return;
                 }
             }
-            
+
             // Validate payment method
             const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
             if (!paymentMethod) {
                 showToast('Vui lòng chọn phương thức thanh toán', 'error');
                 return;
             }
-            
+
             // Submit form
             submitOrder();
         });
-        
+
         // Submit order
         async function submitOrder() {
             const btn = document.getElementById('btnCheckout');
             const overlay = document.getElementById('loadingOverlay');
-            
+
             btn.classList.add('loading');
             btn.disabled = true;
             if (overlay) overlay.classList.add('show');
-            
+
             try {
                 const form = document.getElementById('checkoutForm');
                 const formData = new FormData(form);
-                
+
                 // Convert FormData to URLSearchParams for proper serialization
                 const params = new URLSearchParams();
                 for (const [key, value] of formData.entries()) {
@@ -1517,17 +1494,17 @@
                 if (token) {
                     params.set('csrfToken', token);
                 }
-                
+
                 console.log('Submitting order with params:', params.toString());
-                
+
                 const response = await axios.post('${pageContext.request.contextPath}/checkout', params, {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 });
-                
+
                 console.log('Response:', response.data);
-                
+
                 if (response.data.success) {
                     // Check if need to redirect to payment gateway
                     if (response.data.redirectUrl) {
@@ -1555,7 +1532,7 @@
                 if (overlay) overlay.classList.remove('show');
             }
         }
-        
+
         // Show toast notification
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
@@ -1567,12 +1544,12 @@
                 '<span class="toast-close" onclick="this.parentElement.remove()">' +
                 '<i class="fas fa-times"></i></span>';
             container.appendChild(toast);
-            
+
             setTimeout(() => {
                 toast.remove();
             }, 4000);
         }
-        
+
         // Remove error class on input
         document.querySelectorAll('.form-control').forEach(input => {
             input.addEventListener('input', function() {

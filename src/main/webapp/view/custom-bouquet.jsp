@@ -8,7 +8,6 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Thiết kế bó hoa - Tiệm Hoa Nhà Tớ</title>
 
-      <!-- Global JS Error Diagnostic Banner -->
       <script>
         window.addEventListener('error', function (e) {
           const errBanner = document.createElement('div');
@@ -34,7 +33,6 @@
         });
       </script>
 
-      <!-- CSRF Token -->
       <meta name="csrf-token" content="${csrfToken}">
       <script>window.csrfToken = '${csrfToken}';</script>
 
@@ -46,24 +44,19 @@
         href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=fallback"
         rel="stylesheet" />
 
-      <!-- Theme CSS -->
       <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245" rel="stylesheet" />
       <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/styles-new.scss.css?v=245" rel="stylesheet" />
 
       <%@ include file="partials/head-icons.jsp" %>
 
-      <!-- jQuery -->
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-      <!-- CSRF Token Helper -->
       <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
 
-      <!-- SweetAlert2 CDN -->
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
-      <!-- Notification System Utility -->
       <script src="${pageContext.request.contextPath}/js/notification.js"></script>
 
       <style>
@@ -794,7 +787,6 @@
           <main class="bouquet-main-container">
             <div class="container">
 
-              <!-- Stepper Indicator Header -->
               <div class="bouquet-stepper-header">
                 <div class="bouquet-stepper-progress-line">
                   <div class="bouquet-stepper-progress-fill"></div>
@@ -815,10 +807,9 @@
 
               <div class="bouquet-builder-grid">
 
-                <!-- Left Form Workspace (Wizard with internal scrolling) -->
                 <div class="bouquet-stepper-card">
                   <form id="customBouquetForm" onsubmit="return false;">
-                    <!-- Hidden form inputs synced with visual choices -->
+
                     <input type="hidden" id="flowerType" value="Hoa tươi mix">
                     <input type="hidden" id="mainFlower" value="Hoa hồng kem">
                     <input type="hidden" id="supportFlower" value="Baby trắng">
@@ -827,10 +818,8 @@
                     <input type="hidden" id="occasion" value="Birthday">
                     <input type="hidden" id="color" value="#d8b1a0">
 
-                    <!-- STEP-BY-STEP SECTIONS WRAPPER FOR INTERNAL SCROLL -->
                     <div class="bouquet-step-sections-wrapper">
 
-                      <!-- STEP 1: CHỌN HOA -->
                       <div class="bouquet-step-section active" id="step1">
                         <h2 class="bouquet-step-title">🌸 Thiết kế lớp hoa chính</h2>
                         <p class="bouquet-step-desc">Chọn phong cách phối hoa chính, các loại hoa và số lượng cành chủ
@@ -921,7 +910,6 @@
                         </div>
                       </div>
 
-                      <!-- STEP 2: PHỐI MÀU & GIẤY GÓI -->
                       <div class="bouquet-step-section" id="step2">
                         <h2 class="bouquet-step-title">🎨 Phối màu & Giấy gói</h2>
                         <p class="bouquet-step-desc">Tông màu và chất liệu giấy gói định hình phong cách sang trọng, cao
@@ -993,7 +981,6 @@
                         </div>
                       </div>
 
-                      <!-- STEP 3: HOÀN TẤT -->
                       <div class="bouquet-step-section" id="step3">
                         <h2 class="bouquet-step-title">✨ Cân đối ngân sách & Lời nhắn</h2>
                         <p class="bouquet-step-desc">Giúp chúng tôi biết dịp đặc biệt này và lời nhắn gửi đi cùng bó
@@ -1049,7 +1036,6 @@
 
                     </div>
 
-                    <!-- Navigation Footer (Fixed at the bottom of the card) -->
                     <div class="bouquet-stepper-actions">
                       <button class="bouquet-btn-secondary" type="button" id="btnPrev" style="display: none;"><i
                           class="fas fa-arrow-left"></i> Quay lại</button>
@@ -1059,7 +1045,6 @@
                   </form>
                 </div>
 
-                <!-- Right Fixed Preview Card Panel (Fixed layout) -->
                 <div class="bouquet-preview-sticky">
                   <div class="bouquet-preview-card">
                     <h3
@@ -1067,57 +1052,54 @@
                       Live Visualizer</h3>
 
                     <div class="bouquet-preview-card-body">
-                      <!-- Gorgeous dynamic inline SVG Visualizer Stage -->
+
                       <div class="bouquet-preview-stage">
                         <div class="bouquet-preview-ribbon">Bản dựng Bouquet</div>
 
                         <svg viewBox="0 0 200 200" width="100%" height="100%" class="bouquet-svg"
                           style="max-height: 160px; filter: drop-shadow(0 8px 16px rgba(79,48,30,0.12));">
                           <defs>
-                            <!-- 1. ROSE TEMPLATE -->
+
                             <g id="tpl-rose">
-                              <!-- Outer backing circle for volume -->
+
                               <circle cx="0" cy="0" r="19" fill="var(--flower-light)" stroke="var(--flower-mid)" stroke-width="0.3"/>
-                              <!-- Outer sweeping petals -->
+
                               <path d="M-17,-7 C-21,-15 -5,-20 5,-17 C15,-20 20,-11 17,-3 C20,7 11,18 -2,17 C-15,18 -20,6 -17,-7 Z" fill="var(--flower-light)" stroke="var(--flower-mid)" stroke-width="0.5"/>
                               <path d="M-15,6 C-21,-2 -11,-15 -1,-15 C9,-15 17,-1 11,11 C2,20 -8,18 -15,6 Z" fill="var(--flower-mid)" stroke="var(--flower-base)" stroke-width="0.5" opacity="0.95"/>
-                              <!-- Middle layer petals -->
+
                               <path d="M-11,-9 C-13,-14 -3,-14 4,-11 C11,-11 11,-3 9,4 C6,11 -6,11 -10,4 Z" fill="var(--flower-base)" stroke="var(--flower-dark)" stroke-width="0.5"/>
                               <path d="M-4,-12 C3,-14 11,-10 11,-2 C9,7 -1,9 -9,4 C-9,-4 -7,-10 -4,-12 Z" fill="var(--flower-base)" stroke="var(--flower-dark)" stroke-width="0.5" opacity="0.9"/>
-                              <!-- Inner swirling petals -->
+
                               <path d="M-7,-5 C-7,-10 7,-10 7,-5 C7,3 -7,3 -7,-5 Z" fill="var(--flower-dark)" stroke="var(--flower-deep)" stroke-width="0.5"/>
                               <path d="M-4,-3 C-4,-6 4,-6 4,-3 C4,2 -4,2 -4,-3 Z" fill="var(--flower-deep)" stroke="var(--flower-dark)" stroke-width="0.5"/>
                             </g>
 
-                            <!-- 2. TULIP TEMPLATE -->
                             <g id="tpl-tulip">
-                              <!-- Back petal -->
+
                               <path d="M-7,7 C-13,-4 -7,-16 0,-18 C7,-16 13,-4 7,7 C4,12 -4,12 -7,7 Z" fill="var(--flower-dark)" stroke="var(--flower-deep)" stroke-width="0.5"/>
-                              <!-- Left petal -->
+
                               <path d="M-9,7 C-14,-1 -9,-10 -2,-14 C-5,-9 -5,-1 -2,5 C-4,10 -7,9 -9,7 Z" fill="var(--flower-base)" stroke="var(--flower-dark)" stroke-width="0.5"/>
-                              <!-- Right petal -->
+
                               <path d="M9,7 C14,-1 9,-10 2,-14 C5,-9 5,-1 2,5 C4,10 7,9 9,7 Z" fill="var(--flower-base)" stroke="var(--flower-dark)" stroke-width="0.5"/>
-                              <!-- Front foreground petal -->
+
                               <path d="M-6,8 C-10,0 -4,-10 0,-12 C4,-10 10,0 6,8 C4,10 -4,10 -6,8 Z" fill="var(--flower-light)" stroke="var(--flower-mid)" stroke-width="0.5"/>
                             </g>
 
-                            <!-- 3. PEONY TEMPLATE -->
                             <g id="tpl-peony">
-                              <!-- Outer ruffled backing -->
+
                               <path d="M0,-19 C5,-20 12,-16 16,-11 C20,-5 20,5 16,11 C12,16 5,20 0,19 C-5,20 -12,16 -16,11 C-20,5 -20,-5 -16,-11 C-12,-16 -5,-20 0,-19 Z" fill="var(--flower-light)" stroke="var(--flower-mid)" stroke-width="0.4"/>
-                              <!-- Overlapping ruffled middle ring -->
+
                               <path d="M-9,-13 C-4,-18 4,-18 9,-13 C13,-9 13,4 9,10 C4,13 -4,13 -9,10 C-13,4 -13,-9 -9,-13 Z" fill="var(--flower-mid)" stroke="var(--flower-base)" stroke-width="0.4"/>
-                              <!-- Core ruffled clusters -->
+
                               <path d="M-10,-2 C-13,-7 -7,-13 -1,-10 C1,-13 9,-10 10,-7 C13,-1 7,7 0,7 C-7,7 -9,2 -10,-2 Z" fill="var(--flower-base)" stroke="var(--flower-dark)" stroke-width="0.4"/>
                               <path d="M-5,-5 C-7,-10 7,-10 5,-5 C9,-1 1,5 0,3 C-1,5 -9,-1 -5,-5 Z" fill="var(--flower-dark)" stroke="var(--flower-deep)" stroke-width="0.4"/>
-                              <!-- Delicate golden stamens -->
+
                               <circle cx="-2" cy="-1" r="1.2" fill="#fbc531"/>
                               <circle cx="2" cy="1" r="1.2" fill="#fbc531"/>
                               <circle cx="1" cy="-2" r="1" fill="#e1b12c"/>
                               <circle cx="-1" cy="2" r="0.9" fill="#fbc531"/>
                             </g>
 
-                            <!-- 4. HYDRANGEA FLORET TEMPLATE -->
                             <g id="tpl-hydrangea-floret">
                               <path d="M0,0 C-3,-4 -4,-3 0,-7 C4,-3 3,-4 0,0 Z" fill="var(--flower-mid)" stroke="var(--flower-base)" stroke-width="0.25"/>
                               <path d="M0,0 C-3,4 -4,3 0,7 C4,3 3,4 0,0 Z" fill="var(--flower-mid)" stroke="var(--flower-base)" stroke-width="0.25"/>
@@ -1126,10 +1108,9 @@
                               <circle cx="0" cy="0" r="1" fill="var(--flower-light)"/>
                             </g>
 
-                            <!-- 5. HYDRANGEA CLUSTER TEMPLATE -->
                             <g id="tpl-hydrangea">
                               <circle cx="0" cy="0" r="17" fill="var(--flower-dark)" opacity="0.5"/>
-                              <!-- Overlapping tiny florets at different coords -->
+
                               <use href="#tpl-hydrangea-floret" x="-7" y="-7" transform="rotate(10 -7 -7) scale(0.9)"/>
                               <use href="#tpl-hydrangea-floret" x="7" y="-7" transform="rotate(40 7 -7) scale(0.85)"/>
                               <use href="#tpl-hydrangea-floret" x="-8" y="5" transform="rotate(-25 -8 5) scale(0.95)"/>
@@ -1142,9 +1123,8 @@
                               <use href="#tpl-hydrangea-floret" x="2" y="2" transform="rotate(30 2 2) scale(1.05)"/>
                             </g>
 
-                            <!-- 6. SUNFLOWER TEMPLATE -->
                             <g id="tpl-sunflower">
-                              <!-- Outer Petals Row -->
+
                               <path d="M0,0 C-3,-6 -2,-15 0,-21 C2,-15 3,-6 0,0 Z" fill="var(--flower-mid)" transform="rotate(0)"/>
                               <path d="M0,0 C-3,-6 -2,-15 0,-21 C2,-15 3,-6 0,0 Z" fill="var(--flower-mid)" transform="rotate(30)"/>
                               <path d="M0,0 C-3,-6 -2,-15 0,-21 C2,-15 3,-6 0,0 Z" fill="var(--flower-mid)" transform="rotate(60)"/>
@@ -1158,7 +1138,6 @@
                               <path d="M0,0 C-3,-6 -2,-15 0,-21 C2,-15 3,-6 0,0 Z" fill="var(--flower-mid)" transform="rotate(300)"/>
                               <path d="M0,0 C-3,-6 -2,-15 0,-21 C2,-15 3,-6 0,0 Z" fill="var(--flower-mid)" transform="rotate(330)"/>
 
-                              <!-- Inner Petals Row (offset by 15 deg) -->
                               <path d="M0,0 C-2.5,-5 -1.8,-13 0,-18 C1.8,-13 2.5,-5 0,0 Z" fill="var(--flower-light)" transform="rotate(15)"/>
                               <path d="M0,0 C-2.5,-5 -1.8,-13 0,-18 C1.8,-13 2.5,-5 0,0 Z" fill="var(--flower-light)" transform="rotate(45)"/>
                               <path d="M0,0 C-2.5,-5 -1.8,-13 0,-18 C1.8,-13 2.5,-5 0,0 Z" fill="var(--flower-light)" transform="rotate(75)"/>
@@ -1172,28 +1151,25 @@
                               <path d="M0,0 C-2.5,-5 -1.8,-13 0,-18 C1.8,-13 2.5,-5 0,0 Z" fill="var(--flower-light)" transform="rotate(315)"/>
                               <path d="M0,0 C-2.5,-5 -1.8,-13 0,-18 C1.8,-13 2.5,-5 0,0 Z" fill="var(--flower-light)" transform="rotate(345)"/>
 
-                              <!-- Dark center seed disk -->
                               <circle cx="0" cy="0" r="9" fill="var(--flower-deep)" stroke="var(--flower-dark)" stroke-width="1.2"/>
                               <circle cx="0" cy="0" r="6" fill="none" stroke="var(--flower-dark)" stroke-dasharray="1.5,1.5" stroke-width="0.8" opacity="0.95"/>
                               <circle cx="0" cy="0" r="3.5" fill="none" stroke="var(--flower-base)" stroke-dasharray="1.2,1.2" stroke-width="0.6" opacity="0.6"/>
                             </g>
 
-                            <!-- 7. ORCHID TEMPLATE -->
                             <g id="tpl-orchid">
-                              <!-- 3 outer sepals -->
+
                               <path d="M0,0 C-4,-8 -7,-15 0,-19 C7,-15 4,-8 0,0 Z" fill="var(--flower-light)" stroke="var(--flower-mid)" stroke-width="0.4"/>
                               <path d="M0,0 C-8,-2 -13,6 -11,11 C-10,16 -4,11 0,0 Z" fill="var(--flower-light)" stroke="var(--flower-mid)" stroke-width="0.4"/>
                               <path d="M0,0 C8,-2 13,6 11,11 C10,16 4,11 0,0 Z" fill="var(--flower-light)" stroke="var(--flower-mid)" stroke-width="0.4"/>
-                              <!-- 2 large rounded side wings -->
+
                               <path d="M0,0 C-10,-6 -19,-5 -19,1 C-19,7 -8,6 0,0 Z" fill="var(--flower-base)" stroke="var(--flower-dark)" stroke-width="0.4"/>
                               <path d="M0,0 C10,-6 19,-5 19,1 C19,7 8,6 0,0 Z" fill="var(--flower-base)" stroke="var(--flower-dark)" stroke-width="0.4"/>
-                              <!-- Detailed labellum center lip -->
+
                               <path d="M-5,1 C-7,6 -3,11 0,9 C3,11 7,6 5,1 C3,3 -3,3 -5,1 Z" fill="#e84393" stroke="#b33939" stroke-width="0.4"/>
                               <circle cx="0" cy="3.5" r="1.2" fill="#fbc531"/>
                             </g>
                           </defs>
 
-                          <!-- Layered Wrapping Paper Backing -->
                           <path id="svg-wrap-back"
                             d="M45,115 C28,65 65,42 90,42 L100,165 Z" fill="var(--wrap-back, #ebd3bd)"
                             stroke="var(--wrap-stroke-back, #ccad91)" stroke-width="0.75" style="transition: fill 0.3s, stroke 0.3s;" />
@@ -1201,51 +1177,48 @@
                             d="M155,115 C172,65 135,42 110,42 L100,165 Z" fill="var(--wrap-back, #ebd3bd)"
                             stroke="var(--wrap-stroke-back, #ccad91)" stroke-width="0.75" style="transition: fill 0.3s, stroke 0.3s;" />
 
-                          <!-- Foliage Leaves (Upgraded beautiful rose leaves) -->
                           <g id="svg-leaves" opacity="0.9">
-                            <!-- Left Leaf Group -->
+
                             <g transform="translate(55, 80) rotate(-35)">
                               <path d="M0,0 C-8,-15 -2,-25 10,-20 C18,-15 15,-5 0,0 Z" fill="#3b5934" stroke="#253a20" stroke-width="0.5"/>
                               <path d="M0,0 Q6,-12 10,-20" stroke="#68965c" stroke-width="0.75" fill="none"/>
                             </g>
-                            <!-- Right Leaf Group -->
+
                             <g transform="translate(145, 80) rotate(35)">
                               <path d="M0,0 C8,-15 2,-25 -10,-20 C-18,-15 -15,-5 0,0 Z" fill="#3b5934" stroke="#253a20" stroke-width="0.5"/>
                               <path d="M0,0 Q-6,-12 -10,-20" stroke="#68965c" stroke-width="0.75" fill="none"/>
                             </g>
-                            <!-- Center Background Leaf -->
+
                             <g transform="translate(100, 52) rotate(10)">
                               <path d="M0,0 C-6,-10 0,-18 6,-18 C12,-18 6,-10 0,0 Z" fill="#2f4829" stroke="#1d3019" stroke-width="0.4"/>
                             </g>
                           </g>
 
-                          <!-- Main Flowers Group -->
                           <g id="svg-flowers">
-                            <!-- Flower 1 (Top Left) -->
+
                             <g id="svg-flower-1-g" transform="translate(82, 72) rotate(-15) scale(0.9)">
                               <use id="svg-flower-1" href="#tpl-rose" x="0" y="0" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.12))"/>
                             </g>
-                            <!-- Flower 2 (Top Right) -->
+
                             <g id="svg-flower-2-g" transform="translate(118, 72) rotate(20) scale(0.95)">
                               <use id="svg-flower-2" href="#tpl-rose" x="0" y="0" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.12))"/>
                             </g>
-                            <!-- Flower 3 (Bottom Left) -->
+
                             <g id="svg-flower-3-g" transform="translate(72, 100) rotate(-10) scale(0.85)">
                               <use id="svg-flower-3" href="#tpl-rose" x="0" y="0" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.12))"/>
                             </g>
-                            <!-- Flower 4 (Bottom Right) -->
+
                             <g id="svg-flower-4-g" transform="translate(128, 100) rotate(15) scale(0.9)">
                               <use id="svg-flower-4" href="#tpl-rose" x="0" y="0" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.12))"/>
                             </g>
-                            <!-- Flower Center -->
+
                             <g id="svg-flower-center-g" transform="translate(100, 86) rotate(5) scale(1.05)">
                               <use id="svg-flower-center" href="#tpl-rose" x="0" y="0" filter="drop-shadow(0 6px 10px rgba(0,0,0,0.15))"/>
                             </g>
                           </g>
 
-                          <!-- Dynamic Support Flowers Group (Toggled by JS) -->
                           <g id="svg-support-flowers" opacity="0.95" style="transition: opacity 0.3s;">
-                            <!-- support-baby -->
+
                             <g id="support-baby" class="support-group" style="display: none;">
                               <path d="M90,130 L95,65 M110,130 L105,65 M80,120 L65,75 M120,120 L135,75 M100,130 L100,50" stroke="#78a070" stroke-width="0.75" fill="none" opacity="0.6"/>
                               <circle cx="100" cy="50" r="2.5" fill="#ffffff" stroke="#d5e0d3" stroke-width="0.3"/>
@@ -1263,7 +1236,6 @@
                               <circle cx="118" cy="58" r="2.2" fill="#ffffff" stroke="#d5e0d3" stroke-width="0.3"/>
                             </g>
 
-                            <!-- support-thanhlieu -->
                             <g id="support-thanhlieu" class="support-group" style="display: none;">
                               <path d="M85,120 L75,55 M115,120 L125,55 M100,130 L102,48" stroke="#68805a" stroke-width="1" fill="none" opacity="0.7"/>
                               <g transform="translate(75, 55)">
@@ -1282,7 +1254,6 @@
                               <circle cx="118" cy="72" r="2.5" fill="#f783ac" stroke="#de3163" stroke-width="0.4"/>
                             </g>
 
-                            <!-- support-labac -->
                             <g id="support-labac" class="support-group" style="display: none;">
                               <g transform="translate(58, 62) rotate(-25)">
                                 <line x1="0" y1="50" x2="0" y2="0" stroke="#718096" stroke-width="1.2"/>
@@ -1300,14 +1271,12 @@
                               </g>
                             </g>
 
-                            <!-- support-lamang -->
                             <g id="support-lamang" class="support-group" style="display: none;">
                               <path d="M90,130 Q70,90 60,60 M90,130 Q75,100 68,75 M90,130 Q65,80 50,55" stroke="#48bb78" stroke-width="0.75" stroke-dasharray="1.5,1.5" fill="none" opacity="0.8"/>
                               <path d="M110,130 Q130,90 140,60 M110,130 Q125,100 132,75 M110,130 Q135,80 150,55" stroke="#48bb78" stroke-width="0.75" stroke-dasharray="1.5,1.5" fill="none" opacity="0.8"/>
                               <path d="M100,130 Q100,80 100,40 M100,130 Q92,90 88,55 M100,130 Q108,90 112,55" stroke="#48bb78" stroke-width="0.75" stroke-dasharray="1.5,1.5" fill="none" opacity="0.8"/>
                             </g>
 
-                            <!-- support-cucnhi -->
                             <g id="support-cucnhi" class="support-group" style="display: none;">
                               <path d="M85,120 L66,66 M115,120 L134,66 M100,130 L98,42" stroke="#68805a" stroke-width="0.8" fill="none"/>
                               <g transform="translate(66, 66)">
@@ -1325,7 +1294,6 @@
                             </g>
                           </g>
 
-                          <!-- Overlapping Wrapping Paper Front Pleated Collars -->
                           <path id="svg-wrap-front-left"
                             d="M60,115 L100,166 L90,120 Z"
                             fill="var(--wrap-front, #ebd3bd)" stroke="var(--wrap-stroke-front, #ccad91)" stroke-width="0.75"
@@ -1339,26 +1307,24 @@
                             fill="var(--wrap-front, #ebd3bd)" stroke="var(--wrap-stroke-front, #ccad91)" stroke-width="0.75"
                             style="transition: fill 0.3s, stroke 0.3s;" />
 
-                          <!-- Ribbon Bow (Premium double loops satin ribbon bow) -->
                           <g id="svg-ribbon-group" style="transition: fill 0.3s;">
-                            <!-- Shadow -->
+
                             <path d="M85,162 C73,150 68,170 100,163 C132,170 127,150 115,162 L113,187 L87,187 Z" fill="rgba(0,0,0,0.12)" filter="blur(2px)"/>
-                            <!-- Loops -->
+
                             <path d="M100,160 C80,145 70,162 85,166 C95,168 98,162 100,160 Z" fill="var(--ribbon-color, #aa6a3f)" stroke="var(--ribbon-dark, #8d5630)" stroke-width="0.5"/>
                             <path d="M88,162 C80,158 78,162 85,164 Z" fill="var(--ribbon-dark, #8d5630)" opacity="0.6"/>
                             <path d="M100,160 C120,145 130,162 115,166 C105,168 102,162 100,160 Z" fill="var(--ribbon-color, #aa6a3f)" stroke="var(--ribbon-dark, #8d5630)" stroke-width="0.5"/>
                             <path d="M112,162 C120,158 122,162 115,164 Z" fill="var(--ribbon-dark, #8d5630)" opacity="0.6"/>
-                            <!-- Tails -->
+
                             <path d="M96,163 C94,172 88,185 86,192 L93,191 L96,163 Z" fill="var(--ribbon-color, #aa6a3f)" stroke="var(--ribbon-dark, #8d5630)" stroke-width="0.5"/>
                             <path d="M104,163 C106,172 112,185 114,192 L107,191 L104,163 Z" fill="var(--ribbon-color, #aa6a3f)" stroke="var(--ribbon-dark, #8d5630)" stroke-width="0.5"/>
-                            <!-- Knot -->
+
                             <rect x="96.5" y="157" width="7" height="7" rx="2" fill="var(--ribbon-color, #aa6a3f)" stroke="var(--ribbon-dark, #8d5630)" stroke-width="0.5"/>
                             <path d="M98,160 C100,161 100,161 102,160" stroke="var(--ribbon-light, #d2a37d)" stroke-width="0.5" fill="none"/>
                           </g>
                         </svg>
                       </div>
 
-                      <!-- Specifications List -->
                       <div class="bouquet-summary-list">
                         <div class="bouquet-summary-item">
                           <span>Phong cách phối</span>
@@ -1374,7 +1340,6 @@
                         </div>
                       </div>
 
-                      <!-- Comparing Estimates price details -->
                       <div class="bouquet-summary-price-wrap">
                         <span>Ước lượng chi phí thực tế</span>
                         <strong id="summary-final-price">890.000 VND</strong>
@@ -1384,7 +1349,6 @@
                         Đang cân đối sát với ngân sách dự kiến của bạn.
                       </div>
 
-                      <!-- Quick Presets -->
                       <div
                         style="border-top: 1px solid var(--bouquet-line); padding-top: 12px; margin-top: auto; flex-shrink: 0;">
                         <span class="bouquet-studio-field-title" style="font-size: 0.92rem; margin-bottom: 8px;">Chọn
@@ -1807,7 +1771,7 @@
                       supportEl.style.opacity = '1';
                       // Toggle active group elements within support flowers group
                       supportEl.querySelectorAll('.support-group').forEach(g => g.style.display = 'none');
-                      
+
                       let activeSupportId = '';
                       if (supportFlowerVal === 'Baby trắng') activeSupportId = 'support-baby';
                       else if (supportFlowerVal === 'Thanh liễu') activeSupportId = 'support-thanhlieu';
@@ -1984,7 +1948,7 @@
                   if (!isLoggedIn) {
                     // Chưa đăng nhập: Lưu cấu hình hiện tại vào localStorage và nhảy tới trang đăng nhập
                     localStorage.setItem('custom_bouquet_draft', JSON.stringify(draft));
-                    
+
                     if (typeof Swal !== 'undefined') {
                       Swal.fire({
                         title: 'Đăng nhập để đặt hàng 🌸',
