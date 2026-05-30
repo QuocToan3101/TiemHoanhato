@@ -23,7 +23,7 @@
                             <a href="${pageContext.request.contextPath}/home"> TRANG CHỦ</a>
                         </li>
                         <li class=" ">
-                            <a href="${pageContext.request.contextPath}/view/intro.jsp"> GIỚI THIỆU</a>
+                            <a href="${pageContext.request.contextPath}/gioi-thieu"> GIỚI THIỆU</a>
 
                         </li>
                           <li class=" ">
@@ -135,9 +135,8 @@
                                 </div>
                             </div>
                         </li>
-                        </li>
-                         <li class=" ">
-                            <a href="${pageContext.request.contextPath}/view/tintuc.jsp"> TIN TỨC</a>
+                         <li class="">
+                            <a href="${pageContext.request.contextPath}/tin-tuc"> TIN TỨC</a>
                         </li>
                         <li class=" ">
                             <a href="${pageContext.request.contextPath}/contact"> LIÊN HỆ</a>
@@ -199,110 +198,6 @@
                                     </div>
                                 </div>
 
-                                <style>
-                                    #goog-gt-tt {
-                                        display: none !important;
-                                    }
-
-                                    .goog-te-banner-frame {
-                                        display: none !important;
-                                    }
-
-                                    .goog-te-menu-value:hover {
-                                        text-decoration: none !important;
-                                    }
-
-                                    #google_translate_element,
-                                    .skiptranslate {
-                                        display: none !important;
-                                    }
-
-                                    a.gflag {
-                                        vertical-align: middle;
-                                        font-size: 0px;
-                                        display: inline-block;
-                                        padding: 0;
-                                        transform: translateY(2px);
-                                        background-repeat: no-repeat;
-                                        background-image: url(//gtranslate.net/flags/24.png);
-                                    }
-
-                                    @media(max-width: 480px) {
-                                        a.gflag {
-                                            transform: translateY(2px);
-                                            margin-right: 0;
-                                            width: 24px;
-                                        }
-                                    }
-
-                                    a.gflag img {
-                                        border: 0;
-                                    }
-
-                                    a.gflag:hover {
-                                        background-image: url(//gtranslate.net/flags/24a.png);
-                                    }
-
-                                    #goog-gt-tt {
-                                        display: none !important;
-                                    }
-
-                                    .goog-te-banner-frame {
-                                        display: none !important;
-                                    }
-
-                                    .goog-te-menu-value:hover {
-                                        text-decoration: none !important;
-                                    }
-
-                                    body {
-                                        top: 0 !important;
-                                    }
-                                </style>
-                                
-                                <script type="text/javascript">
-                                    function googleTranslateElementInit() {
-                                        new google.translate.TranslateElement({ pageLanguage: 'vi', autoDisplay: false }, 'google_translate_element');
-                                        if ($('circle[stroke-width="6"][stroke-linecap="round"]').length > 0) {
-                                            $('circle[stroke-width="6"][stroke-linecap="round"]').parent().parent().parent().hide();
-                                        }
-                                    }
-                                </script>
-                                <script type="text/javascript"
-                                    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-                                <script type="text/javascript">
-                                    function GTranslateFireEvent(a, b) {
-                                        try {
-                                            if (document.createEvent) {
-                                                var c = document.createEvent("HTMLEvents");
-                                                c.initEvent(b, true, true);
-                                                a.dispatchEvent(c);
-                                            } else {
-                                                var c = document.createEventObject();
-                                                a.fireEvent('on' + b, c);
-                                            }
-                                        } catch (e) {}
-                                    }
-                                    function doGTranslate(a) {
-                                        if (a.value) a = a.value;
-                                        if (a == '') return;
-                                        var b = a.split('|')[1];
-                                        var c;
-                                        var d = document.getElementsByTagName('select');
-                                        for (var i = 0; i < d.length; i++) {
-                                            if (d[i].className == 'goog-te-combo') c = d[i];
-                                        }
-                                        if (document.getElementById('google_translate_element') == null || document.getElementById('google_translate_element').innerHTML.length == 0 || c.length == 0 || c.innerHTML.length == 0) {
-                                            setTimeout(function() {
-                                                doGTranslate(a);
-                                            }, 500);
-                                        } else {
-                                            c.value = b;
-                                            GTranslateFireEvent(c, 'change');
-                                            GTranslateFireEvent(c, 'change');
-                                        }
-                                    }
-                                </script>
                             </li>
                         </ul>
 
@@ -471,7 +366,6 @@
     // Sticky header with shadow on scroll
     document.addEventListener('DOMContentLoaded', function() {
         const header = document.querySelector('header');
-        let lastScroll = 0;
         
         window.addEventListener('scroll', function() {
             const currentScroll = window.pageYOffset;
@@ -482,7 +376,6 @@
                 header.style.boxShadow = 'none';
             }
             
-            lastScroll = currentScroll;
         });
         
         // Load cart count
@@ -526,7 +419,8 @@
         cartCountElements.forEach(function(element) {
             if (count > 0) {
                 element.textContent = count;
-                element.style.display = 'inline-block; padding-top: 6px';
+                element.style.display = 'inline-block';
+                element.style.paddingTop = '6px';
             } else {
                 element.textContent = '';
                 element.style.display = 'none';
@@ -534,4 +428,73 @@
         });
     }
     </script>
+
+    <!-- Google Translate Styles (moved out of <li>) -->
+    <style>
+    #goog-gt-tt { display: none !important; }
+    .goog-te-banner-frame { display: none !important; }
+    .goog-te-menu-value:hover { text-decoration: none !important; }
+    #google_translate_element, .skiptranslate { display: none !important; }
+    body { top: 0 !important; }
+    a.gflag {
+        vertical-align: middle;
+        font-size: 0px;
+        display: inline-block;
+        padding: 0;
+        transform: translateY(2px);
+        background-repeat: no-repeat;
+        background-image: url(//gtranslate.net/flags/24.png);
+    }
+    a.gflag img { border: 0; }
+    a.gflag:hover { background-image: url(//gtranslate.net/flags/24a.png); }
+    @media(max-width: 480px) {
+        a.gflag { transform: translateY(2px); margin-right: 0; width: 24px; }
+    }
+    </style>
+
+    <!-- Google Translate Scripts (moved out of <li>) -->
+                                
+                                <script type="text/javascript">
+                                    function googleTranslateElementInit() {
+                                        new google.translate.TranslateElement({ pageLanguage: 'vi', autoDisplay: false }, 'google_translate_element');
+                                        if ($('circle[stroke-width="6"][stroke-linecap="round"]').length > 0) {
+                                            $('circle[stroke-width="6"][stroke-linecap="round"]').parent().parent().parent().hide();
+                                        }
+                                    }
+                                </script>
+                                <script type="text/javascript"
+                                    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+                                <script type="text/javascript">
+                                    function GTranslateFireEvent(a, b) {
+                                        try {
+                                            if (document.createEvent) {
+                                                var c = document.createEvent("HTMLEvents");
+                                                c.initEvent(b, true, true);
+                                                a.dispatchEvent(c);
+                                            } else {
+                                                var c = document.createEventObject();
+                                                a.fireEvent('on' + b, c);
+                                            }
+                                        } catch (e) {}
+                                    }
+                                    function doGTranslate(a) {
+                                        if (a.value) a = a.value;
+                                        if (a == '') return;
+                                        var b = a.split('|')[1];
+                                        var c;
+                                        var d = document.getElementsByTagName('select');
+                                        for (var i = 0; i < d.length; i++) {
+                                            if (d[i].className == 'goog-te-combo') c = d[i];
+                                        }
+                                        if (document.getElementById('google_translate_element') == null || document.getElementById('google_translate_element').innerHTML.length == 0 || c.length == 0 || c.innerHTML.length == 0) {
+                                            setTimeout(function() {
+                                                doGTranslate(a);
+                                            }, 500);
+                                        } else {
+                                            c.value = b;
+                                            GTranslateFireEvent(c, 'change');
+                                            GTranslateFireEvent(c, 'change');
+                                        }
+                                    }
+                                </script>
 </header>
