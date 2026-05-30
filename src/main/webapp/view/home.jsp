@@ -8,7 +8,6 @@
         <head>
           <meta charset="UTF-8" />
 
-          <!-- CSRF Token -->
           <meta name="csrf-token" content="${csrfToken}">
           <script>window.csrfToken = '${csrfToken}';</script>
 
@@ -1147,19 +1146,15 @@
             href="//cdn.hstatic.net/themes/200000846175/1001403720/14/slideshow_1_mob_large.jpg?v=245"
             media="(max-width: 480px)" />
 
-          <!-- jQuery từ CDN đáng tin cậy -->
           <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-          <!-- CSRF Token Helper - Tự động thêm token vào fetch/AJAX -->
           <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
 
           <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/main-scripts.js?v=245" rel="preload"
             as="script" type="text/javascript" />
 
           <script src="https://cdn.tailwindcss.com"></script>
-
-          <!-- Tất cả biến khởi tạo, check sử dụng-->
 
           <script>
             localStorage.setItem("shop_id", "themes/200000846175/1001403720");
@@ -1530,7 +1525,7 @@
                                     </c:forEach>
                                   </c:when>
                                   <c:otherwise>
-                                    <!-- Fallback when bestSellerProducts is empty -->
+
                                     <li class="carousel-slide active">
                                       <img class="carousel-image"
                                         src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop"
@@ -1612,7 +1607,6 @@
                               </ul>
                             </div>
 
-                            <!-- Circle Blur Navigation Buttons -->
                             <button class="carousel-btn carousel-btn-prev" id="carouselPrevBtn"
                               aria-label="Previous slide">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -1627,7 +1621,6 @@
                           </div>
                         </div>
 
-                        <!-- Minimalist Carousel Indicators -->
                         <div class="carousel-nav" id="carouselNav">
                           <c:choose>
                             <c:when test="${not empty bestSellerProducts}">
@@ -1651,8 +1644,6 @@
                   </div>
                 </div>
               </section>
-
-              <!-- Categories Section -->
 
               <section id="categories" class="categories">
                 <div class="container">
@@ -1679,7 +1670,7 @@
                     </c:forEach>
 
                     <c:if test="${empty featuredCategories}">
-                      <!-- Fallback nếu không có dữ liệu từ DB -->
+
                       <div class="category-card animate">
                         <img
                           src="https://file.hstatic.net/200000846175/file/z5900937479779_23a78c66588e62ae16962ab99bf0d410.jpg"
@@ -1715,8 +1706,6 @@
                   </div>
                 </div>
               </section>
-
-              <!-- Products Section -->
 
               <section id="products" class="products">
                 <div class="container">
@@ -1786,7 +1775,7 @@
                     </c:forEach>
 
                     <c:if test="${empty bestSellerProducts}">
-                      <!-- Fallback nếu không có dữ liệu -->
+
                       <div class="product-card animate">
                         <div class="product-image">
                           <img
@@ -1807,8 +1796,6 @@
                   </div>
                 </div>
               </section>
-
-              <!-- Features Section -->
 
               <section class="features">
                 <div class="container">
@@ -1852,8 +1839,6 @@
                 </div>
               </section>
 
-              <!-- Newsletter Section -->
-
               <section class="newsletter">
                 <div class="container">
                   <h2>Đăng Ký Nhận Ưu Đãi</h2>
@@ -1867,8 +1852,6 @@
                   </form>
                 </div>
               </section>
-
-              <!-- Instagram Section -->
 
               <section class="instagram">
                 <div class="container">
@@ -2103,8 +2086,6 @@
               <div id="site-overlay-sw" class="site-overlay"></div>
 
               <div class="modal-backdrop fade"></div>
-
-              <!-- Đây là suggest sale popup -->
 
               <div class="suggest-notify anislideOutDown sales_animated"></div>
 
@@ -2402,8 +2383,6 @@
 
       }
 
-
-
       @keyframes slideOutRight {
 
         from {
@@ -2424,8 +2403,6 @@
 
       }
 
-
-
       /* Parallax effect for hero */
 
       .hero {
@@ -2433,8 +2410,6 @@
         background-attachment: fixed;
 
       }
-
-
 
       /* Hover effect for images */
 
@@ -2444,8 +2419,6 @@
 
       }
 
-
-
       .product-card:hover img,
 
       .category-card:hover img {
@@ -2453,8 +2426,6 @@
         filter: brightness(1.1);
 
       }
-
-
 
       /* Custom scrollbar */
 
@@ -2464,15 +2435,11 @@
 
       }
 
-
-
       ::-webkit-scrollbar-track {
 
         background: #f1f1f1;
 
       }
-
-
 
       ::-webkit-scrollbar-thumb {
 
@@ -2482,15 +2449,11 @@
 
       }
 
-
-
       ::-webkit-scrollbar-thumb:hover {
 
         background: var(--primary-dark);
 
       }
-
-
 
       /* Selection color */
 
@@ -2671,7 +2634,6 @@
                 console.log("🌸 La Vie Est Belle - Website loaded successfully!");
               </script>
 
-              <!-- Add to cart function for home page -->
               <script>
                 // Event delegation for add to cart buttons
                 document.addEventListener("DOMContentLoaded", function () {

@@ -10,8 +10,6 @@
     <title>Đăng nhập</title>
     <%@ include file="partials/head-icons.jsp" %>
 
-    <!-- Custom CSS -->
-
     <style>
       /* 🎨 Tổng thể giao diện login */
 
@@ -389,14 +387,11 @@
   </head>
 
   <body>
-    <!--<a href="home.jsp" class="home-button">-->
+    
 
-    <!--  <i class="bi bi-house-door-fill"></i>-->
-
-    <!--</a>-->
+    
 
     <div class="login-container">
-      <!-- Nút quay về trang chủ -->
 
       <a href="${pageContext.request.contextPath}/home" class="home-button">
         <i class="bi bi-house-door-fill"></i>
@@ -442,7 +437,6 @@
       </c:if>
 
       <form action="${pageContext.request.contextPath}/login" method="post">
-        <!-- Email input -->
 
         <div class="input-group">
           <input
@@ -457,8 +451,6 @@
           <label for="email">Nhập email của bạn</label>
         </div>
 
-        <!-- Password input -->
-
         <div class="input-group">
           <input
             type="password"
@@ -470,8 +462,6 @@
 
           <label for="password">Mật khẩu</label>
         </div>
-
-        <!-- Checkbox + Quên mật khẩu -->
 
         <div class="login-options">
           <div>
@@ -485,11 +475,7 @@
           >
         </div>
 
-        <!-- Submit button -->
-
         <button type="submit" class="login-button">Đăng nhập</button>
-
-        <!-- Register + mạng xã hội -->
 
         <div class="social-login">
           <p>Hoặc đăng nhập bằng:</p>

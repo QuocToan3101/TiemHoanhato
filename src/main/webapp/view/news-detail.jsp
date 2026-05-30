@@ -8,9 +8,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${empty news ? 'Tin tức' : fn:escapeXml(news.title)} - Tiệm Hoa nhà tớ</title>
-    
+
     <%@ include file="partials/head-icons.jsp" %>
-    <!-- Google Fonts -->
+
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -18,20 +18,20 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
             color: #333;
             background: #f8f9fa;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         /* Header */
         .header {
             background: white;
@@ -39,13 +39,13 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 40px;
         }
-        
+
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             font-family: 'Playfair Display', serif;
             font-size: 24px;
@@ -53,7 +53,7 @@
             color: #c99366;
             text-decoration: none;
         }
-        
+
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -65,11 +65,11 @@
             border-radius: 8px;
             transition: all 0.3s;
         }
-        
+
         .back-btn:hover {
             background: #e0e0e0;
         }
-        
+
         /* Main Content */
         .news-detail {
             background: white;
@@ -78,12 +78,12 @@
             box-shadow: 0 2px 20px rgba(0,0,0,0.08);
             margin-bottom: 40px;
         }
-        
+
         .news-header {
             padding: 40px;
             border-bottom: 1px solid #eee;
         }
-        
+
         .news-category {
             display: inline-block;
             padding: 6px 16px;
@@ -94,7 +94,7 @@
             font-weight: 500;
             margin-bottom: 16px;
         }
-        
+
         .news-title {
             font-family: 'Playfair Display', serif;
             font-size: 36px;
@@ -103,30 +103,30 @@
             margin-bottom: 20px;
             color: #2c3e50;
         }
-        
+
         .news-meta {
             display: flex;
             gap: 30px;
             color: #666;
             font-size: 14px;
         }
-        
+
         .meta-item {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .news-featured-image {
             width: 100%;
             height: 500px;
             object-fit: cover;
         }
-        
+
         .news-body {
             padding: 40px;
         }
-        
+
         .news-excerpt {
             font-size: 18px;
             line-height: 1.8;
@@ -137,13 +137,13 @@
             border-left: 4px solid #c99366;
             border-radius: 4px;
         }
-        
+
         .news-content {
             font-size: 16px;
             line-height: 1.8;
             color: #444;
         }
-        
+
         .news-content h3 {
             font-family: 'Playfair Display', serif;
             font-size: 24px;
@@ -151,30 +151,30 @@
             margin: 30px 0 15px;
             color: #2c3e50;
         }
-        
+
         .news-content p {
             margin-bottom: 20px;
         }
-        
+
         .news-content ul, .news-content ol {
             margin: 20px 0;
             padding-left: 30px;
         }
-        
+
         .news-content li {
             margin-bottom: 10px;
         }
-        
+
         .news-content strong {
             color: #2c3e50;
             font-weight: 600;
         }
-        
+
         /* Related News */
         .related-news {
             margin-top: 60px;
         }
-        
+
         .section-title {
             font-family: 'Playfair Display', serif;
             font-size: 28px;
@@ -183,13 +183,13 @@
             text-align: center;
             color: #2c3e50;
         }
-        
+
         .related-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 30px;
         }
-        
+
         .related-card {
             background: white;
             border-radius: 12px;
@@ -199,22 +199,22 @@
             text-decoration: none;
             color: inherit;
         }
-        
+
         .related-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 25px rgba(0,0,0,0.15);
         }
-        
+
         .related-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
         }
-        
+
         .related-content {
             padding: 20px;
         }
-        
+
         .related-title {
             font-weight: 600;
             font-size: 16px;
@@ -222,12 +222,12 @@
             margin-bottom: 10px;
             color: #2c3e50;
         }
-        
+
         .related-date {
             font-size: 14px;
             color: #999;
         }
-        
+
         /* Footer */
         .footer {
             background: #2c3e50;
@@ -236,20 +236,20 @@
             text-align: center;
             margin-top: 60px;
         }
-        
+
         @media (max-width: 768px) {
             .news-title {
                 font-size: 28px;
             }
-            
+
             .news-featured-image {
                 height: 300px;
             }
-            
+
             .news-header, .news-body {
                 padding: 20px;
             }
-            
+
             .related-grid {
                 grid-template-columns: 1fr;
             }
@@ -261,7 +261,6 @@
         <c:redirect url="/news" />
     </c:if>
 
-    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
@@ -272,8 +271,7 @@
             </div>
         </div>
     </header>
-    
-    <!-- Main Content -->
+
     <div class="container">
         <c:if test="${not empty news}">
             <article class="news-detail">
@@ -295,23 +293,22 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <c:if test="${not empty news.imageUrl}">
                     <img src="${news.imageUrl}" alt="${fn:escapeXml(news.title)}" class="news-featured-image" onerror="this.style.display='none'" />
                 </c:if>
-                
+
                 <div class="news-body">
                     <c:if test="${not empty news.excerpt}">
                         <div class="news-excerpt"><c:out value="${news.excerpt}" /></div>
                     </c:if>
-                    
+
                     <div class="news-content">
                         <c:out value="${news.content}" />
                     </div>
                 </div>
             </article>
-            
-            <!-- Related News -->
+
             <c:if test="${not empty relatedNews}">
                 <section class="related-news">
                     <h2 class="section-title">Bài viết liên quan</h2>
@@ -331,7 +328,7 @@
                 </section>
             </c:if>
         </c:if>
-        
+
         <c:if test="${empty news}">
             <div style="text-align: center; padding: 100px 20px;">
                 <i class="fas fa-newspaper" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
@@ -343,8 +340,7 @@
             </div>
         </c:if>
     </div>
-    
-    <!-- Footer -->
+
     <footer class="footer">
         <div class="container">
             <p>&copy; 2026 Tiệm Hoa nhà tớ. All rights reserved.</p>

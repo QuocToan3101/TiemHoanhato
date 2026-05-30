@@ -5,8 +5,7 @@
 <html lang="vi">
   <head>
     <title>Giới thiệu</title>
-    
-    <!-- CSRF Token -->
+
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
 
@@ -81,8 +80,6 @@
 
     <meta property="og:title" content="Giới thiệu" />
 
-    <!-- Shop CSS Variables -->
-
     <style>
       :root {
         --bg-soldout: url(//cdn.hstatic.net/themes/200000846175/1001403720/14/hethang.png?v=245);
@@ -114,8 +111,6 @@
         --accent-dark: #aa6a3f;
       }
     </style>
-
-    <!-- Modern About Page Styles -->
 
     <style>
       * {
@@ -978,7 +973,6 @@
       type="text/css"
     />
 
-    <!-- jQuery từ CDN đáng tin cậy -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script>
@@ -1063,15 +1057,12 @@
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- CSRF Token Helper -->
+
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
 
-    <!-- SweetAlert2 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
-    <!-- Notification System Utility -->
     <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
 
@@ -1099,7 +1090,6 @@
     <%@ include file="partials/header.jsp" %>
 
     <main>
-      <!-- Hero Section -->
 
       <section class="about-hero">
         <div class="hero-background"></div>
@@ -1116,8 +1106,6 @@
           </p>
         </div>
       </section>
-
-      <!-- Story Section -->
 
       <section class="story-section">
         <div class="about-container">
@@ -1157,8 +1145,6 @@
           </div>
         </div>
       </section>
-
-      <!-- Values Section -->
 
       <section class="values-section">
         <div class="about-container">
@@ -1211,8 +1197,6 @@
         </div>
       </section>
 
-      <!-- Team Section -->
-
       <section class="team-section">
         <div class="about-container">
           <div class="team-intro">
@@ -1262,8 +1246,6 @@
         </div>
       </section>
 
-      <!-- Process Section -->
-
       <section class="process-section">
         <div class="about-container">
           <div class="section-header" data-aos="fade-up">
@@ -1310,8 +1292,6 @@
         </div>
       </section>
 
-      <!-- Gallery Section -->
-
       <section class="gallery-section">
         <div class="about-container">
           <div class="section-header" data-aos="fade-up">
@@ -1323,7 +1303,7 @@
           </div>
 
           <div class="gallery-grid" id="galleryGrid">
-            <!-- Gallery items will be loaded dynamically -->
+
             <div class="loading-gallery" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #999;">
               <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 16px;"></i>
               <p>Đang tải hình ảnh...</p>
@@ -1331,8 +1311,6 @@
           </div>
         </div>
       </section>
-
-      <!-- CTA Section -->
 
       <section class="cta-section">
         <div class="about-container">
@@ -1362,8 +1340,6 @@
     </main>
 
     <%@ include file="partials/footer.jsp" %>
-
-    <!-- Modals - giữ nguyên -->
 
     <div class="modal" id="pro-qv-wanda"></div>
 
@@ -1553,8 +1529,6 @@
       </ul>
     </div>
 
-    <!-- JavaScript -->
-
     <script>
       // Initialize AOS
 
@@ -1667,15 +1641,15 @@
       function asyncCall() {
         resolveAfter5Seconds();
       }
-      
+
       // Load gallery from database
       async function loadGallery() {
         const galleryGrid = document.getElementById('galleryGrid');
-        
+
         try {
           const response = await fetch('${pageContext.request.contextPath}/api/gallery/list');
           const result = await response.json();
-          
+
           if (result.success && result.data && result.data.length > 0) {
             galleryGrid.innerHTML = '';
             result.data.forEach((item, index) => {
@@ -1684,15 +1658,15 @@
               galleryItem.className = 'gallery-item';
               galleryItem.setAttribute('data-aos', 'zoom-in');
               galleryItem.setAttribute('data-aos-delay', delay);
-              
+
               galleryItem.innerHTML = '<img src="' + item.imageUrl + '" alt="' + item.caption + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
                 '<div class="gallery-overlay">' +
                   '<span class="gallery-caption">' + item.caption + '</span>' +
                 '</div>';
-              
+
               galleryGrid.appendChild(galleryItem);
             });
-            
+
             // Reinitialize AOS for new elements
             if (typeof AOS !== 'undefined') {
               AOS.refresh();
@@ -1709,7 +1683,7 @@
             '</div>';
         }
       }
-      
+
       // Load gallery when page loads
       document.addEventListener('DOMContentLoaded', function() {
         loadGallery();

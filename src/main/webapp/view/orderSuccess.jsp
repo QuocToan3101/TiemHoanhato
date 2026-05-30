@@ -13,7 +13,7 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245"
       type="image/x-icon"
     />
-    <!-- Google Fonts -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,7 +21,7 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       rel="stylesheet"
     />
     <%@ include file="partials/head-icons.jsp" %>
-    <!-- Main Site CSS -->
+
     <link
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"
       rel="stylesheet"
@@ -427,15 +427,14 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
     </style>
   </head>
   <body>
-    <!-- Header -->
+
     <%@ include file="partials/header.jsp" %>
 
-    <!-- Confetti -->
     <div class="confetti" id="confetti"></div>
 
     <div class="success-container">
       <div class="success-card">
-        <!-- Success Header -->
+
         <div class="success-header">
           <div class="success-icon">
             <i class="fas fa-check"></i>
@@ -462,7 +461,6 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </p>
         </div>
 
-        <!-- Order Info -->
         <div class="order-info">
           <div class="order-code">
             <div class="order-code-label">Mã đơn hàng của bạn</div>
@@ -523,7 +521,6 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </div>
         </div>
 
-        <!-- Status Timeline -->
         <div class="status-timeline">
           <div class="timeline-step active">
             <div class="step-icon">
@@ -551,7 +548,6 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </div>
         </div>
 
-        <!-- Actions -->
         <div class="success-actions">
           <a
             href="${pageContext.request.contextPath}/view/settingProfile.jsp"
@@ -569,7 +565,6 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </a>
         </div>
 
-        <!-- Note -->
         <div class="success-note">
           <div class="note-title">
             <i class="fas fa-info-circle"></i>
@@ -592,7 +587,6 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       </div>
     </div>
 
-    <!-- Footer -->
     <%@ include file="partials/footer.jsp" %>
 
     <script>
