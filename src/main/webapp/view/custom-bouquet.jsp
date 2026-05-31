@@ -1898,18 +1898,14 @@
                 };
               });
 
-              // Defensive Alert Wrapper (Swal fallback to standard alert)
+              // Dialog Helper delegated to Core Premium Notification system
               function showDialog(title, text, icon) {
-                if (typeof Swal !== 'undefined') {
-                  Swal.fire({
-                    title: title,
-                    text: text,
-                    icon: icon,
-                    confirmButtonColor: '#aa6a3f',
-                    timer: icon === 'success' ? 1500 : undefined
-                  });
+                if (icon === 'success') {
+                  showSuccess(text, title);
+                } else if (icon === 'error') {
+                  showError(text, title);
                 } else {
-                  alert(title + "\n" + text);
+                  showInfo(text, title);
                 }
               }
 
@@ -1949,85 +1945,25 @@
                     // Chưa đăng nhập: Lưu cấu hình hiện tại vào localStorage và nhảy tới trang đăng nhập
                     localStorage.setItem('custom_bouquet_draft', JSON.stringify(draft));
 
-                    if (typeof Swal !== 'undefined') {
-                      Swal.fire({
-                        title: 'Đăng nhập để đặt hàng 🌸',
-                        text: 'Bạn cần đăng nhập tài khoản để gửi yêu cầu đặt hoa thiết kế. Tiệm đã tự động lưu lại cấu hình hiện tại của bạn!',
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonColor: '#aa6a3f',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Đăng nhập ngay',
-                        cancelButtonText: 'Hủy'
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          window.location.href = '${pageContext.request.contextPath}/custom-bouquet?action=login';
-                        }
-                      });
-                    } else {
-                      if (confirm('Bạn cần đăng nhập để đặt hàng. Tiệm sẽ tự động lưu lại tùy chọn thiết kế hiện tại của bạn. Đăng nhập ngay?')) {
+                    showConfirm(
+                      'Bạn cần đăng nhập tài khoản để gửi yêu cầu đặt hoa thiết kế. Tiệm đã tự động lưu lại cấu hình hiện tại của bạn!',
+                      function() {
                         window.location.href = '${pageContext.request.contextPath}/custom-bouquet?action=login';
-                      }
-                    }
+                      },
+                      null,
+                      'Đăng nhập để đặt hàng 🌸',
+                      'Đăng nhập ngay',
+                      'Hủy'
+                    );
                     return;
                   }
 
                   // Đã đăng nhập: Tiến hành gửi đơn đặt hàng qua API
-                  if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                      title: 'Xác nhận đặt hoa tùy chỉnh',
-                      text: 'Bạn có chắc chắn muốn gửi yêu cầu đặt hàng bó hoa được thiết kế riêng này không?',
-                      icon: 'question',
-                      showCancelButton: true,
-                      confirmButtonColor: '#aa6a3f',
-                      cancelButtonColor: '#d33',
-                      confirmButtonText: 'Đặt hàng ngay',
-                      cancelButtonText: 'Xem lại',
-                      showLoaderOnConfirm: true,
-                      preConfirm: () => {
-                        return fetch('${pageContext.request.contextPath}/custom-bouquet', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json; charset=UTF-8',
-                            'X-CSRF-Token': window.csrfToken || ''
-                          },
-                          body: JSON.stringify(draft)
-                        })
-                        .then(response => {
-                          if (!response.ok) {
-                            throw new Error(response.statusText);
-                          }
-                          return response.json();
-                        })
-                        .catch(error => {
-                          Swal.showValidationMessage(`Lỗi kết nối: ${error}`);
-                        });
-                      },
-                      allowOutsideClick: () => !Swal.isLoading()
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        const res = result.value;
-                        if (res && res.success) {
-                          Swal.fire({
-                            title: 'Đặt hàng thành công! 💐',
-                            text: res.message,
-                            icon: 'success',
-                            confirmButtonColor: '#aa6a3f'
-                          }).then(() => {
-                            window.location.href = '${pageContext.request.contextPath}/home';
-                          });
-                        } else {
-                          Swal.fire({
-                            title: 'Đặt hàng thất bại 🔴',
-                            text: (res && res.message) ? res.message : 'Có lỗi xảy ra, vui lòng thử lại sau.',
-                            icon: 'error',
-                            confirmButtonColor: '#aa6a3f'
-                          });
-                        }
-                      }
-                    });
-                  } else {
-                    if (confirm('Bạn muốn gửi yêu cầu đặt hàng bó hoa này chứ?')) {
+                  showConfirm(
+                    'Bạn có chắc chắn muốn gửi yêu cầu đặt hàng bó hoa được thiết kế riêng này không?',
+                    function() {
+                      showLoading("Đang xử lý yêu cầu đặt hoa...");
+                      
                       fetch('${pageContext.request.contextPath}/custom-bouquet', {
                         method: 'POST',
                         headers: {
@@ -2036,18 +1972,31 @@
                         },
                         body: JSON.stringify(draft)
                       })
-                      .then(r => r.json())
+                      .then(response => {
+                        hideLoading();
+                        if (!response.ok) throw new Error(response.statusText);
+                        return response.json();
+                      })
                       .then(res => {
-                        if (res.success) {
-                          alert(res.message);
-                          window.location.href = '${pageContext.request.contextPath}/home';
+                        if (res && res.success) {
+                          showSuccess(res.message, 'Đặt hàng thành công! 💐').then(() => {
+                            window.location.href = '${pageContext.request.contextPath}/home';
+                          });
                         } else {
-                          alert(res.message);
+                          showError((res && res.message) ? res.message : 'Có lỗi xảy ra, vui lòng thử lại sau.', 'Đặt hàng thất bại 🔴');
                         }
                       })
-                      .catch(e => alert('Lỗi kết nối: ' + e));
-                    }
-                  }
+                      .catch(error => {
+                        hideLoading();
+                        console.error("Custom bouquet checkout error:", error);
+                        showError('Có lỗi xảy ra khi gửi yêu cầu đặt hoa. Vui lòng kiểm tra kết nối mạng.');
+                      });
+                    },
+                    null,
+                    'Xác nhận đặt hoa tùy chỉnh',
+                    'Đặt hàng ngay',
+                    'Xem lại'
+                  );
                 } catch (err) {
                   console.error("submitCustomOrder error:", err);
                 }
@@ -2127,16 +2076,7 @@
               console.log("Bouquet Builder loaded successfully!");
             } catch (globalErr) {
               console.error("JSP Inline script bootstrapper crash:", globalErr);
-              if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                  title: "Lỗi khởi tạo hệ thống 🌸",
-                  text: "Có lỗi xảy ra khi tải trình thiết kế bó hoa: " + globalErr.message,
-                  icon: "error",
-                  confirmButtonColor: '#aa6a3f'
-                });
-              } else {
-                alert("Có lỗi xảy ra khi tải trình thiết kế bó hoa: " + globalErr.message);
-              }
+              showError("Có lỗi xảy ra khi tải trình thiết kế bó hoa: " + globalErr.message, "Lỗi khởi tạo hệ thống 🌸");
             }
           }
 

@@ -52,6 +52,13 @@
 
           <meta charset="utf-8" />
           <%@ include file="partials/head-icons.jsp" %>
+          
+          <!-- SweetAlert2 CDN -->
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+          <!-- Core Notification System & CSS Components -->
+          <script src="${pageContext.request.contextPath}/js/notification.js"></script>
+          <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components.css">
 
           <link rel="shortcut icon" href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245"
             type="image/x-icon" />
@@ -2299,109 +2306,15 @@
                   });
                 });
 
-                // Notification function
-
+                // Notification function (delegated to core Premium Toast system)
                 function showNotification(message) {
-                  // Remove existing notification if any
-
-                  const existingNotif = document.querySelector(".notification");
-
-                  if (existingNotif) {
-                    existingNotif.remove();
-                  }
-
-                  // Create notification
-
-                  const notification = document.createElement("div");
-
-                  notification.className = "notification";
-
-                  notification.textContent = message;
-
-                  notification.style.cssText = `
-
-        position: fixed;
-
-        top: 20px;
-
-        right: 20px;
-
-        background: linear-gradient(135deg, #4CAF50, #45a049);
-
-        color: white;
-
-        padding: 1rem 2rem;
-
-        border-radius: 50px;
-
-        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-
-        z-index: 10000;
-
-        animation: slideInRight 0.3s ease-out;
-
-        max-width: 400px;
-
-        font-weight: 600;
-
-      `;
-
-                  document.body.appendChild(notification);
-
-                  // Auto remove after 3 seconds
-
-                  setTimeout(() => {
-                    notification.style.animation = "slideOutRight 0.3s ease-out";
-
-                    setTimeout(() => notification.remove(), 300);
-                  }, 3000);
+                  showToast(message, 'info');
                 }
 
                 // Add notification animations to CSS
-
                 const style = document.createElement("style");
-
                 style.textContent = `
 
-      @keyframes slideInRight {
-
-        from {
-
-          transform: translateX(100%);
-
-          opacity: 0;
-
-        }
-
-        to {
-
-          transform: translateX(0);
-
-          opacity: 1;
-
-        }
-
-      }
-
-      @keyframes slideOutRight {
-
-        from {
-
-          transform: translateX(0);
-
-          opacity: 1;
-
-        }
-
-        to {
-
-          transform: translateX(100%);
-
-          opacity: 0;
-
-        }
-
-      }
 
       /* Parallax effect for hero */
 
@@ -2657,7 +2570,7 @@
                     .then((response) => response.json())
                     .then((data) => {
                       if (data.success) {
-                        alert("Đã thêm vào giỏ hàng!");
+                        showToast("Đã thêm sản phẩm vào giỏ hàng thành công!", "success");
                         // Update cart count if exists
                         const cartCount = document.querySelector(".number-cart");
                         if (cartCount && data.cartCount) {
@@ -2668,13 +2581,13 @@
                           window.location.href =
                             "${pageContext.request.contextPath}/login";
                         } else {
-                          alert(data.message || "Có lỗi xảy ra");
+                          showToast(data.message || "Có lỗi xảy ra", "error");
                         }
                       }
                     })
                     .catch((error) => {
                       console.error("Error:", error);
-                      alert("Có lỗi xảy ra khi thêm vào giỏ hàng");
+                      showToast("Có lỗi xảy ra khi thêm vào giỏ hàng", "error");
                     });
                 }
               </script>

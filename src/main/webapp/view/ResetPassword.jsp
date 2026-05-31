@@ -93,11 +93,32 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         .getElementById("resetPasswordForm")
         .addEventListener("submit", function (e) {
           e.preventDefault();
+          
+          // Clear previous errors
+          clearFormErrors(this);
+
+          const newPwd = document.getElementById("newPassword");
+          const confPwd = document.getElementById("confirmPassword");
+          let isValid = true;
+
+          // Inline Validations
+          if (newPwd.value.length < 8) {
+            showFormError(newPwd, "Mật khẩu mới phải có độ dài tối thiểu là 8 ký tự!");
+            isValid = false;
+          } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPwd.value)) {
+            showFormError(newPwd, "Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 số!");
+            isValid = false;
+          }
+
+          if (newPwd.value !== confPwd.value) {
+            showFormError(confPwd, "Mật khẩu xác nhận không trùng khớp!");
+            isValid = false;
+          }
+
+          if (!isValid) return;
 
           const btn = this.querySelector(".btn-submit");
-          const originalText = btn.textContent;
-          btn.disabled = true;
-          btn.textContent = "Đang xử lý...";
+          setButtonLoading(btn, true, "Đang xử lý...");
 
           const formData = new FormData(this);
           fetch("${pageContext.request.contextPath}/reset-password", {
@@ -106,21 +127,19 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
           })
             .then((response) => response.json())
             .then((data) => {
+              setButtonLoading(btn, false);
               if (data.success) {
-                alert(data.message);
-                window.location.href =
-                  "${pageContext.request.contextPath}/view/login_1.jsp";
+                showSuccess(data.message, "Thành công").then(() => {
+                  window.location.href = "${pageContext.request.contextPath}/view/login_1.jsp";
+                });
               } else {
-                alert(data.message || "Có lỗi xảy ra");
-                btn.disabled = false;
-                btn.textContent = originalText;
+                showError(data.message || "Không thể đặt lại mật khẩu");
               }
             })
             .catch((error) => {
               console.error("Error:", error);
-              showError("Có lỗi xảy ra, vui lòng thử lại");
-              btn.disabled = false;
-              btn.textContent = originalText;
+              setButtonLoading(btn, false);
+              showError("Có lỗi xảy ra trong quá trình kết nối với máy chủ.");
             });
         });
     </script>

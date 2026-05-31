@@ -24,6 +24,12 @@
 
     <%@ include file="partials/head-icons.jsp" %>
 
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+    <!-- Core Notification System & CSS Components -->
+    <script src="${pageContext.request.contextPath}/js/notification.js"></script>
+
     <style>
         .fas, .far, .fab { font-family: "Font Awesome 6 Free" !important; font-weight: 900; }
         .far { font-weight: 400; }
@@ -651,90 +657,78 @@
     <!-- FOOTER -->
     <%@ include file="partials/footer.jsp" %>
 
-    <!-- Toast -->
-    <div id="toast">
-        <i class="fas fa-check-circle"></i> <span id="toastMessage"></span>
-    </div>
-
-    <!-- Confirm Modal -->
-    <div id="confirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:20px; padding:2rem; max-width:420px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.2);">
-            <div style="font-size:3rem; margin-bottom:1rem;">⚠️</div>
-            <h3 style="color:var(--brown-main); margin-bottom:0.5rem;">Xác nhận xóa tài khoản</h3>
-            <p style="color:var(--brown-soft); margin-bottom:1.5rem;">Hành động này sẽ vô hiệu hóa tài khoản khách hàng. Bạn có chắc chắn?</p>
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button onclick="closeModal()" class="btn btn-secondary" style="padding:10px 24px;">Hủy</button>
-                <button onclick="doDelete()" class="btn btn-danger" style="padding:10px 24px;">Xác nhận xóa</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const contextPath = '${pageContext.request.contextPath}';
-        let pendingDeleteId = null;
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = message;
-            toast.style.background = type === 'error' ? '#e74c3c' : '#27ae60';
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
-        }
 
         function updateStatus(userId, newStatus) {
-            const labels = { active: 'kích hoạt', banned: 'cấm', inactive: 'xóa' };
-            if (!confirm('Xác nhận ' + (labels[newStatus] || newStatus) + ' tài khoản này?')) return;
-
-            fetch(contextPath + '/admin/api/user/update-status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'id=' + userId + '&status=' + newStatus + '&_csrf=' + (window.csrfToken || '')
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Cập nhật trạng thái thành công!');
-                    setTimeout(() => location.reload(), 1200);
-                } else {
-                    showToast(data.message || 'Cập nhật thất bại', 'error');
-                }
-            })
-            .catch(() => showToast('Có lỗi xảy ra!', 'error'));
+            const labels = { active: 'kích hoạt', banned: 'cấm', inactive: 'vô hiệu hóa' };
+            const statusLabel = labels[newStatus] || newStatus;
+            
+            showConfirm(
+                `Bạn có chắc chắn muốn <strong>${statusLabel}</strong> tài khoản của khách hàng này?`,
+                function() {
+                    showLoading("Đang cập nhật trạng thái...");
+                    fetch(contextPath + '/admin/api/user/update-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'id=' + userId + '&status=' + newStatus + '&_csrf=' + (window.csrfToken || '')
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        hideLoading();
+                        if (data.success) {
+                            showToast('Cập nhật trạng thái thành công!', 'success');
+                            setTimeout(() => location.reload(), 1200);
+                        } else {
+                            showToast(data.message || 'Cập nhật thất bại', 'error');
+                        }
+                    })
+                    .catch((err) => {
+                        hideLoading();
+                        console.error(err);
+                        showToast('Có lỗi xảy ra khi thực hiện yêu cầu!', 'error');
+                    });
+                },
+                null,
+                "Xác nhận thay đổi trạng thái",
+                "Xác nhận",
+                "Hủy"
+            );
         }
 
         function confirmDelete(userId) {
-            pendingDeleteId = userId;
-            document.getElementById('confirmModal').style.display = 'flex';
+            const userName = "${user.fullname}";
+            showConfirm(
+                `Bạn có chắc chắn muốn xóa tài khoản của <strong>${userName}</strong>?<br/>Tài khoản này sẽ bị vô hiệu hóa trên hệ thống.`,
+                function() {
+                    showLoading("Đang vô hiệu hóa tài khoản...");
+                    fetch(contextPath + '/admin/api/user/' + userId, {
+                        method: 'DELETE',
+                        headers: { 'X-CSRF-Token': window.csrfToken || '' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        hideLoading();
+                        if (data.success) {
+                            showSuccess('Đã vô hiệu hóa tài khoản thành công!', 'Xóa thành công').then(() => {
+                                window.location.href = contextPath + '/admin/users';
+                            });
+                        } else {
+                            showToast(data.message || 'Xóa thất bại', 'error');
+                        }
+                    })
+                    .catch((err) => {
+                        hideLoading();
+                        console.error(err);
+                        showToast('Có lỗi xảy ra khi thực hiện yêu cầu!', 'error');
+                    });
+                },
+                null,
+                "Xác nhận xóa tài khoản",
+                "Vô hiệu hóa ngay",
+                "Hủy"
+            );
         }
-
-        function closeModal() {
-            document.getElementById('confirmModal').style.display = 'none';
-            pendingDeleteId = null;
-        }
-
-        function doDelete() {
-            if (!pendingDeleteId) return;
-            closeModal();
-            fetch(contextPath + '/admin/api/user/' + pendingDeleteId, {
-                method: 'DELETE',
-                headers: { 'X-CSRF-Token': window.csrfToken || '' }
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Đã xóa tài khoản thành công!');
-                    setTimeout(() => window.location.href = contextPath + '/admin/users', 1500);
-                } else {
-                    showToast(data.message || 'Xóa thất bại', 'error');
-                }
-            })
-            .catch(() => showToast('Có lỗi xảy ra!', 'error'));
-        }
-
-        // Đóng modal khi click ngoài
-        document.getElementById('confirmModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
     </script>
 </body>
 </html>

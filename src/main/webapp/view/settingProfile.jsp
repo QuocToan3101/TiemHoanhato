@@ -3231,12 +3231,14 @@
                         }
                         
                         function uploadAvatarFile(file) {
+                            progressContainer.style.display = 'block';
+                            
+                            // Initialize premium progress tracker with retry support
+                            const tracker = createUploadProgressTracker(progressContainer, () => uploadAvatarFile(file));
+
                             const formData = new FormData();
                             formData.append('image', file);
                             formData.append('type', 'avatar');
-                            
-                            progressContainer.style.display = 'block';
-                            progressBar.style.width = '0%';
                             
                             const saveBtn = document.querySelector('.modal-footer .btn-primary');
                             if (saveBtn) {
@@ -3255,12 +3257,11 @@
                             xhr.upload.onprogress = (e) => {
                                 if (e.lengthComputable) {
                                     const percent = Math.round((e.loaded / e.total) * 100);
-                                    progressBar.style.width = percent + '%';
+                                    tracker.updateProgress(percent);
                                 }
                             };
                             
                             xhr.onload = () => {
-                                progressContainer.style.display = 'none';
                                 if (saveBtn) {
                                     saveBtn.disabled = false;
                                     saveBtn.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
@@ -3271,24 +3272,28 @@
                                         const res = JSON.parse(xhr.responseText);
                                         if (res.success) {
                                             hiddenInput.value = res.url;
+                                            tracker.showSuccess('Đã tải lên thành công!');
                                             showToast('Tải lên thành công, bấm "Lưu thay đổi" để xác nhận!', 'success');
                                         } else {
+                                            tracker.showError(res.message || 'Lỗi tải ảnh');
                                             showToast(res.message || 'Lỗi upload ảnh', 'error');
                                         }
                                     } catch (err) {
+                                        tracker.showError('Lỗi phân tích phản hồi');
                                         showToast('Lỗi phân tích phản hồi máy chủ', 'error');
                                     }
                                 } else {
+                                    tracker.showError('Máy chủ trả về lỗi: ' + xhr.status);
                                     showToast('Máy chủ trả về mã lỗi: ' + xhr.status, 'error');
                                 }
                             };
                             
                             xhr.onerror = () => {
-                                progressContainer.style.display = 'none';
                                 if (saveBtn) {
                                     saveBtn.disabled = false;
                                     saveBtn.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
                                 }
+                                tracker.showError('Lỗi kết nối mạng');
                                 showToast('Lỗi mạng khi tải lên', 'error');
                             };
                             

@@ -1,44 +1,57 @@
 /**
  * Notification System Utility
- * Centralized notification system using SweetAlert2 with fallback to custom modals
- * Replaces all alert(), confirm(), prompt() with modern notifications
+ * Centralized, premium notification system using SweetAlert2 with responsive fallback
+ * Replaces all native alert(), confirm(), prompt() with premium custom dialogs
+ * Design System: Modern SaaS, Apple Human Interface, and Material 3 inspired.
  */
 
-// Theme configuration
+// Theme configuration using harmonic HSL values to prevent color overlap and ensure perfect contrast
 const NOTIFICATION_THEME = {
-    primary: '#c99366',      // Accent color
-    success: '#27ae60',      // Green for success
-    error: '#e74c3c',        // Red for error
-    warning: '#f39c12',      // Orange for warning
-    info: '#3498db',         // Blue for info
-    dark: '#3c2922',         // Dark brown (main color)
+    primary: '#c99366',       // Warm gold accent
+    primaryDark: '#aa6a3f',   // Dark warm gold
+    success: 'hsl(142, 70%, 45%)',     // Emerald green
+    successBg: 'hsl(142, 70%, 97%)',
+    successText: 'hsl(142, 80%, 15%)',
+    error: 'hsl(350, 75%, 50%)',       // Crimson red
+    errorBg: 'hsl(350, 80%, 98%)',
+    errorText: 'hsl(350, 90%, 15%)',
+    warning: 'hsl(38, 90%, 50%)',      // Amber orange
+    warningBg: 'hsl(38, 90%, 97%)',
+    warningText: 'hsl(38, 90%, 15%)',
+    info: 'hsl(210, 80%, 55%)',        // Sapphire blue
+    infoBg: 'hsl(210, 80%, 98%)',
+    infoText: 'hsl(210, 90%, 15%)',
+    dark: '#3c2922',          // Creamy cocoa dark
 };
 
-// Check if SweetAlert2 is available
 let SWAL_AVAILABLE = false;
 
-// Initialize SweetAlert2 detection
+// Initialize components and apply global custom stylesheets on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
     SWAL_AVAILABLE = typeof Swal !== 'undefined';
+    injectDesignSystemCSS();
     if (SWAL_AVAILABLE) {
-        configureGlobalNotifications();
-    } else {
-        createCustomNotificationStyles();
+        configureGlobalSwal();
     }
 });
 
 /**
- * Show success notification
+ * 1. CORE NOTIFICATION HANDLERS (Success, Error, Warning, Info)
  */
+
 function showSuccess(message, title = "Thành công", options = {}) {
     if (SWAL_AVAILABLE) {
         return Swal.fire({
             title: title,
             html: message,
             icon: 'success',
-            confirmButtonColor: NOTIFICATION_THEME.success,
             confirmButtonText: 'Đóng',
-            allowOutsideClick: false,
+            customClass: {
+                popup: 'premium-popup premium-success-popup'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeInUp' // Slide Up + Fade In
+            },
             timer: 4000,
             timerProgressBar: true,
             ...options
@@ -48,37 +61,45 @@ function showSuccess(message, title = "Thành công", options = {}) {
     }
 }
 
-/**
- * Show error notification
- */
 function showError(message, title = "Lỗi", options = {}) {
+    // Sanitize network/server error details from being exposed to the user
+    let userMessage = message;
+    if (message && (message.includes('500') || message.toLowerCase().includes('internal server error') || message.includes('failed to fetch') || message.includes('fetch failed'))) {
+        userMessage = "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau hoặc liên hệ với bộ phận hỗ trợ.";
+    }
+
     if (SWAL_AVAILABLE) {
         return Swal.fire({
             title: title,
-            html: message,
+            html: userMessage,
             icon: 'error',
-            confirmButtonColor: NOTIFICATION_THEME.error,
             confirmButtonText: 'Đóng',
-            allowOutsideClick: false,
+            customClass: {
+                popup: 'premium-popup premium-error-popup'
+            },
+            showClass: {
+                popup: 'animate__animated animate__shake' // Shake + Fade In
+            },
             ...options
         });
     } else {
-        return showCustomModal('error', title, message);
+        return showCustomModal('error', title, userMessage);
     }
 }
 
-/**
- * Show warning notification
- */
 function showWarning(message, title = "Cảnh báo", options = {}) {
     if (SWAL_AVAILABLE) {
         return Swal.fire({
             title: title,
             html: message,
             icon: 'warning',
-            confirmButtonColor: NOTIFICATION_THEME.warning,
             confirmButtonText: 'Đóng',
-            allowOutsideClick: false,
+            customClass: {
+                popup: 'premium-popup premium-warning-popup'
+            },
+            showClass: {
+                popup: 'animate__animated animate__slideDown' // Slide Down
+            },
             ...options
         });
     } else {
@@ -86,18 +107,19 @@ function showWarning(message, title = "Cảnh báo", options = {}) {
     }
 }
 
-/**
- * Show info notification
- */
 function showInfo(message, title = "Thông tin", options = {}) {
     if (SWAL_AVAILABLE) {
         return Swal.fire({
             title: title,
             html: message,
             icon: 'info',
-            confirmButtonColor: NOTIFICATION_THEME.info,
             confirmButtonText: 'Đóng',
-            allowOutsideClick: false,
+            customClass: {
+                popup: 'premium-popup premium-info-popup'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeIn' // Fade In
+            },
             ...options
         });
     } else {
@@ -106,31 +128,30 @@ function showInfo(message, title = "Thông tin", options = {}) {
 }
 
 /**
- * Show confirmation dialog
+ * 2. PREMIUM DIALOGS & CONFIRMATIONS (Replaces window.confirm / alert)
  */
+
 function showConfirm(message, onConfirm, onCancel = null, title = "Xác nhận", confirmText = "Xác nhận", cancelText = "Hủy") {
     if (SWAL_AVAILABLE) {
         return Swal.fire({
             title: title,
             html: message,
             icon: 'question',
-            confirmButtonColor: NOTIFICATION_THEME.success,
-            cancelButtonColor: '#95a5a6',
+            showCancelButton: true,
             confirmButtonText: confirmText,
             cancelButtonText: cancelText,
-            showCancelButton: true,
             reverseButtons: true,
             allowOutsideClick: false,
-            focusConfirm: true
+            customClass: {
+                popup: 'premium-popup premium-confirm-popup',
+                confirmButton: 'swal-btn-primary',
+                cancelButton: 'swal-btn-secondary'
+            }
         }).then((result) => {
             if (result.isConfirmed) {
-                if (onConfirm && typeof onConfirm === 'function') {
-                    onConfirm();
-                }
+                if (typeof onConfirm === 'function') onConfirm();
             } else if (result.isDismissed) {
-                if (onCancel && typeof onCancel === 'function') {
-                    onCancel();
-                }
+                if (typeof onCancel === 'function') onCancel();
             }
         });
     } else {
@@ -138,12 +159,9 @@ function showConfirm(message, onConfirm, onCancel = null, title = "Xác nhận",
     }
 }
 
-/**
- * Show delete confirmation dialog
- */
 function showDeleteConfirm(itemName, onConfirm, onCancel = null) {
     return showConfirm(
-        `Bạn có chắc chắn muốn xóa <strong>${itemName}</strong>?<br/>Hành động này không thể hoàn tác.`,
+        `Bạn có chắc chắn muốn xóa <strong>${itemName}</strong>?<br/>Hành động này sẽ không thể hoàn tác.`,
         onConfirm,
         onCancel,
         "Xác nhận xóa",
@@ -152,9 +170,236 @@ function showDeleteConfirm(itemName, onConfirm, onCancel = null) {
     );
 }
 
+function showPrompt(message, inputType = 'text', onConfirm, onCancel = null, title = "Nhập thông tin", placeholderText = "") {
+    if (SWAL_AVAILABLE) {
+        return Swal.fire({
+            title: title,
+            html: message,
+            input: inputType,
+            inputPlaceholder: placeholderText,
+            showCancelButton: true,
+            confirmButtonText: "Xác nhận",
+            cancelButtonText: "Hủy",
+            reverseButtons: true,
+            allowOutsideClick: false,
+            customClass: {
+                popup: 'premium-popup',
+                confirmButton: 'swal-btn-primary',
+                cancelButton: 'swal-btn-secondary'
+            },
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Vui lòng điền thông tin vào ô trống!';
+                }
+                if (inputType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    return 'Email không đúng định dạng!';
+                }
+                return undefined;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (typeof onConfirm === 'function') onConfirm(result.value);
+            } else {
+                if (typeof onCancel === 'function') onCancel();
+            }
+        });
+    } else {
+        const val = prompt(message, placeholderText);
+        if (val !== null) {
+            if (typeof onConfirm === 'function') onConfirm(val);
+        } else {
+            if (typeof onCancel === 'function') onCancel();
+        }
+    }
+}
+
 /**
- * Show loading notification
+ * 3. DYNAMIC TOAST SYSTEM (Modern non-blocking notifications)
  */
+
+function showToast(message, type = 'info', duration = 4000) {
+    const validTypes = ['success', 'error', 'warning', 'info'];
+    const finalType = validTypes.includes(type) ? type : 'info';
+    
+    // Fallback error translation inside Toast
+    let displayMsg = message;
+    if (type === 'error' && message && (message.includes('500') || message.includes('failed to fetch') || message.includes('fetch failed'))) {
+        displayMsg = "Đã xảy ra lỗi kết nối. Vui lòng thử lại sau.";
+    }
+
+    if (SWAL_AVAILABLE) {
+        const backgroundColor = {
+            success: NOTIFICATION_THEME.success,
+            error: NOTIFICATION_THEME.error,
+            warning: NOTIFICATION_THEME.warning,
+            info: NOTIFICATION_THEME.info
+        }[finalType];
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: duration,
+            timerProgressBar: true,
+            iconColor: '#ffffff',
+            customClass: {
+                popup: 'colored-toast premium-toast'
+            },
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        return Toast.fire({
+            icon: finalType,
+            title: displayMsg,
+            background: backgroundColor,
+            color: '#ffffff'
+        });
+    } else {
+        return showCustomToast(displayMsg, finalType, duration);
+    }
+}
+
+/**
+ * 4. FORM VALIDATION INLINE HELPERS
+ */
+
+function showFormError(inputElement, errorMessage) {
+    if (!inputElement) return;
+    
+    // Add red border focus class
+    inputElement.classList.add('input-error');
+    
+    // Find or create error container
+    let errorContainer = inputElement.parentNode.querySelector('.validation-error-msg');
+    if (!errorContainer) {
+        errorContainer = document.createElement('div');
+        errorContainer.className = 'validation-error-msg';
+        inputElement.parentNode.appendChild(errorContainer);
+    }
+    
+    errorContainer.innerHTML = `<i class="fas fa-exclamation-circle animate__animated animate__headShake"></i> ${errorMessage}`;
+    errorContainer.style.display = 'flex';
+    
+    // Automatically clear when user interacts
+    const clearHandler = () => {
+        inputElement.classList.remove('input-error');
+        errorContainer.style.display = 'none';
+        inputElement.removeEventListener('input', clearHandler);
+        inputElement.removeEventListener('change', clearHandler);
+    };
+    inputElement.addEventListener('input', clearHandler);
+    inputElement.addEventListener('change', clearHandler);
+}
+
+function clearFormErrors(formElement) {
+    if (!formElement) return;
+    formElement.querySelectorAll('.input-error').forEach(input => {
+        input.classList.remove('input-error');
+    });
+    formElement.querySelectorAll('.validation-error-msg').forEach(msg => {
+        msg.style.display = 'none';
+    });
+}
+
+/**
+ * 5. UPLOAD NOTIFICATION & PROGRESS TRACKER
+ */
+
+function createUploadProgressTracker(containerElement, retryCallback = null) {
+    if (!containerElement) return null;
+    
+    containerElement.innerHTML = `
+        <div class="premium-upload-card animate__animated animate__fadeIn">
+            <div class="upload-preview-wrapper" style="display: none;">
+                <img class="upload-img-preview" src="" alt="Preview"/>
+            </div>
+            <div class="upload-progress-info">
+                <span class="upload-status-label"><i class="fas fa-cloud-upload-alt"></i> Đang tải lên...</span>
+                <span class="upload-pct-label">0%</span>
+            </div>
+            <div class="premium-progress-bar-container">
+                <div class="premium-progress-fill" style="width: 0%;"></div>
+            </div>
+            <button class="upload-retry-btn btn btn-outline btn-sm" style="display: none;">
+                <i class="fas fa-redo"></i> Thử lại
+            </button>
+        </div>
+    `;
+
+    const card = containerElement.querySelector('.premium-upload-card');
+    const previewWrapper = containerElement.querySelector('.upload-preview-wrapper');
+    const imgPreview = containerElement.querySelector('.upload-img-preview');
+    const statusLabel = containerElement.querySelector('.upload-status-label');
+    const pctLabel = containerElement.querySelector('.upload-pct-label');
+    const progressFill = containerElement.querySelector('.premium-progress-fill');
+    const retryBtn = containerElement.querySelector('.upload-retry-btn');
+
+    if (retryCallback && retryBtn) {
+        retryBtn.addEventListener('click', retryCallback);
+    }
+
+    return {
+        updateProgress: (percentage, imageSrc = null) => {
+            const pct = Math.min(100, Math.max(0, Math.round(percentage)));
+            pctLabel.textContent = `${pct}%`;
+            progressFill.style.width = `${pct}%`;
+            
+            if (imageSrc) {
+                imgPreview.src = imageSrc;
+                previewWrapper.style.display = 'block';
+            }
+            retryBtn.style.display = 'none';
+        },
+        showSuccess: (message = "Tải lên thành công!") => {
+            statusLabel.innerHTML = `<i class="fas fa-check-circle" style="color: ${NOTIFICATION_THEME.success}"></i> ${message}`;
+            pctLabel.textContent = "100%";
+            progressFill.style.width = "100%";
+            progressFill.style.backgroundColor = NOTIFICATION_THEME.success;
+            retryBtn.style.display = 'none';
+        },
+        showError: (errorMessage = "Tải lên thất bại.") => {
+            statusLabel.innerHTML = `<i class="fas fa-times-circle" style="color: ${NOTIFICATION_THEME.error}"></i> ${errorMessage}`;
+            progressFill.style.backgroundColor = NOTIFICATION_THEME.error;
+            if (retryCallback) {
+                retryBtn.style.display = 'inline-flex';
+            }
+        }
+    };
+}
+
+/**
+ * 6. BUTTON LOADING & INTERACTION SPIN HELPERS
+ */
+
+function setButtonLoading(buttonElement, isLoading, loadingText = "Đang xử lý...") {
+    if (!buttonElement) return;
+
+    if (isLoading) {
+        if (!buttonElement.dataset.originalHtml) {
+            buttonElement.dataset.originalHtml = buttonElement.innerHTML;
+        }
+        buttonElement.disabled = true;
+        buttonElement.setAttribute('aria-busy', 'true');
+        buttonElement.classList.add('btn-loading');
+        buttonElement.innerHTML = `<span class="premium-button-spinner"></span> ${loadingText}`;
+    } else {
+        if (buttonElement.dataset.originalHtml) {
+            buttonElement.innerHTML = buttonElement.dataset.originalHtml;
+            delete buttonElement.dataset.originalHtml;
+        }
+        buttonElement.disabled = false;
+        buttonElement.removeAttribute('aria-busy');
+        buttonElement.classList.remove('btn-loading');
+    }
+}
+
+/**
+ * 7. SPINNER LOADING OVERLAY (Centralized)
+ */
+
 function showLoading(message = "Đang xử lý...") {
     if (SWAL_AVAILABLE) {
         return Swal.fire({
@@ -170,508 +415,435 @@ function showLoading(message = "Đang xử lý...") {
     }
 }
 
-/**
- * Hide loading notification
- */
 function hideLoading() {
     if (SWAL_AVAILABLE) {
         Swal.close();
     } else {
-        const overlay = document.getElementById('custom-modal-overlay');
-        if (overlay) overlay.style.display = 'none';
+        const overlay = document.getElementById('custom-loading-overlay');
+        if (overlay) overlay.remove();
     }
 }
 
 /**
- * Show toast notification
+ * 8. COMPATIBILITY WRAPPERS
  */
-function showToast(message, type = 'info', duration = 3000) {
-    if (SWAL_AVAILABLE) {
-        const backgroundColor = {
-            'success': NOTIFICATION_THEME.success,
-            'error': NOTIFICATION_THEME.error,
-            'warning': NOTIFICATION_THEME.warning,
-            'info': NOTIFICATION_THEME.info
-        }[type] || NOTIFICATION_THEME.info;
 
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-right',
-            iconColor: '#fff',
-            customClass: {
-                popup: 'colored-toast'
-            },
-            showConfirmButton: false,
-            timerProgressBar: true,
-            timer: duration
-        });
-
-        return Toast.fire({
-            icon: type,
-            title: message,
-            background: backgroundColor,
-            color: '#fff'
-        });
-    } else {
-        return showCustomToast(message, type, duration);
-    }
-}
-
-/**
- * Show input prompt dialog
- */
-function showPrompt(message, inputType = 'text', onConfirm, onCancel = null, title = "Nhập dữ liệu", placeholderText = "") {
-    if (SWAL_AVAILABLE) {
-        return Swal.fire({
-            title: title,
-            html: message,
-            input: inputType,
-            inputPlaceholder: placeholderText,
-            confirmButtonColor: NOTIFICATION_THEME.success,
-            cancelButtonColor: '#95a5a6',
-            confirmButtonText: "Xác nhận",
-            cancelButtonText: "Hủy",
-            showCancelButton: true,
-            reverseButtons: true,
-            allowOutsideClick: false,
-            inputValidator: (value) => {
-                if (inputType === 'email' && value && !isValidEmail(value)) {
-                    return 'Vui lòng nhập email hợp lệ!';
-                }
-                return undefined;
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                if (onConfirm && typeof onConfirm === 'function') {
-                    onConfirm(result.value);
-                }
-            } else if (result.isDismissed) {
-                if (onCancel && typeof onCancel === 'function') {
-                    onCancel();
-                }
-            }
-        });
-    } else {
-        // Fallback to native prompt for custom modal system
-        const value = prompt(message, placeholderText);
-        if (value !== null) {
-            if (onConfirm && typeof onConfirm === 'function') {
-                onConfirm(value);
-            }
-        } else {
-            if (onCancel && typeof onCancel === 'function') {
-                onCancel();
-            }
-        }
-    }
-}
-
-/**
- * Backwards-compatible notification wrapper used by admin.js and legacy pages.
- * Signature: showNotification(title, message, type = 'info', options = {})
- */
 function showNotification(title, message, type = 'info', options = {}) {
     const normalizedType = (type || 'info').toLowerCase();
-
-    if (normalizedType === 'success') {
-        return showSuccess(message, title, options);
-    }
-    if (normalizedType === 'error') {
-        return showError(message, title, options);
-    }
-    if (normalizedType === 'warning') {
-        return showWarning(message, title, options);
-    }
+    if (normalizedType === 'success') return showSuccess(message, title, options);
+    if (normalizedType === 'error') return showError(message, title, options);
+    if (normalizedType === 'warning') return showWarning(message, title, options);
     return showInfo(message, title, options);
 }
 
 /**
- * Custom modal fallback functions
+ * 9. FALLBACK RENDERING IMPLEMENTATION (Pure vanilla JS popup cards)
  */
+
 function showCustomModal(type, title, message) {
-    const modal = document.createElement('div');
-    modal.className = 'custom-modal';
-    modal.innerHTML = `
-        <div class="custom-modal-content custom-modal-${type}">
-            <div class="custom-modal-header">
-                <h2>${getIcon(type)} ${title}</h2>
-                <button class="custom-modal-close" onclick="this.closest('.custom-modal').remove()">✕</button>
+    const overlay = document.createElement('div');
+    overlay.className = 'fallback-modal-overlay animate__animated animate__fadeIn';
+    
+    const icon = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' }[type] || '•';
+    
+    overlay.innerHTML = `
+        <div class="fallback-modal-card fallback-${type} animate__animated animate__zoomIn">
+            <div class="fallback-modal-header">
+                <span class="fallback-icon">${icon}</span>
+                <h3>${title}</h3>
             </div>
-            <div class="custom-modal-body">
-                ${message}
-            </div>
-            <div class="custom-modal-footer">
-                <button class="custom-modal-btn custom-modal-btn-primary" onclick="this.closest('.custom-modal').remove()">Đóng</button>
+            <div class="fallback-modal-body">${message}</div>
+            <div class="fallback-modal-footer">
+                <button class="btn btn-primary fallback-close-btn">Đóng</button>
             </div>
         </div>
     `;
-    document.body.appendChild(modal);
+
+    overlay.querySelector('.fallback-close-btn').addEventListener('click', () => {
+        overlay.classList.add('animate__fadeOut');
+        setTimeout(() => overlay.remove(), 300);
+    });
+
+    document.body.appendChild(overlay);
 }
 
 function showCustomConfirm(message, onConfirm, onCancel, title, confirmText, cancelText) {
-    const modal = document.createElement('div');
-    modal.className = 'custom-modal custom-modal-confirm';
-    modal.innerHTML = `
-        <div class="custom-modal-content">
-            <div class="custom-modal-header">
-                <h2>❓ ${title}</h2>
-                <button class="custom-modal-close" onclick="this.closest('.custom-modal').remove()">✕</button>
+    const overlay = document.createElement('div');
+    overlay.className = 'fallback-modal-overlay animate__animated animate__fadeIn';
+    
+    overlay.innerHTML = `
+        <div class="fallback-modal-card fallback-confirm animate__animated animate__zoomIn">
+            <div class="fallback-modal-header">
+                <span class="fallback-icon">❓</span>
+                <h3>${title}</h3>
             </div>
-            <div class="custom-modal-body">
-                ${message}
-            </div>
-            <div class="custom-modal-footer custom-modal-footer-confirm">
-                <button class="custom-modal-btn custom-modal-btn-cancel" type="button">${cancelText}</button>
-                <button class="custom-modal-btn custom-modal-btn-confirm" type="button">${confirmText}</button>
+            <div class="fallback-modal-body">${message}</div>
+            <div class="fallback-modal-footer fallback-confirm-footer">
+                <button class="btn btn-outline fallback-cancel-btn">${cancelText}</button>
+                <button class="btn btn-primary fallback-confirm-btn">${confirmText}</button>
             </div>
         </div>
     `;
-    const cancelButton = modal.querySelector('.custom-modal-btn-cancel');
-    const confirmButton = modal.querySelector('.custom-modal-btn-confirm');
-    const closeModal = () => modal.remove();
 
-    modal.querySelector('.custom-modal-close').addEventListener('click', closeModal);
-    cancelButton.addEventListener('click', () => {
-        closeModal();
-        if (onCancel && typeof onCancel === 'function') {
-            onCancel();
-        }
+    const closeOverlay = () => {
+        overlay.classList.add('animate__fadeOut');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    overlay.querySelector('.fallback-cancel-btn').addEventListener('click', () => {
+        closeOverlay();
+        if (typeof onCancel === 'function') onCancel();
     });
-    confirmButton.addEventListener('click', () => {
-        closeModal();
-        if (onConfirm && typeof onConfirm === 'function') {
-            onConfirm();
-        }
+
+    overlay.querySelector('.fallback-confirm-btn').addEventListener('click', () => {
+        closeOverlay();
+        if (typeof onConfirm === 'function') onConfirm();
     });
-    document.body.appendChild(modal);
+
+    document.body.appendChild(overlay);
 }
 
 function showCustomToast(message, type, duration) {
+    let container = document.getElementById('fallback-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'fallback-toast-container';
+        container.className = 'fallback-toast-container';
+        document.body.appendChild(container);
+    }
+
     const toast = document.createElement('div');
-    toast.className = `custom-toast custom-toast-${type}`;
-    toast.innerHTML = `${getIcon(type)} ${message}`;
-    document.body.appendChild(toast);
+    toast.className = `fallback-toast fallback-toast-${type} animate__animated animate__slideInRight`;
     
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
+    const icon = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' }[type] || '•';
     
-    setTimeout(() => {
-        toast.classList.remove('show');
+    toast.innerHTML = `
+        <span class="toast-indicator">${icon}</span>
+        <span class="toast-text">${message}</span>
+        <span class="toast-close-x">&times;</span>
+    `;
+
+    toast.querySelector('.toast-close-x').addEventListener('click', () => {
+        toast.classList.replace('animate__slideInRight', 'animate__slideOutRight');
         setTimeout(() => toast.remove(), 300);
+    });
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.classList.replace('animate__slideInRight', 'animate__slideOutRight');
+            setTimeout(() => toast.remove(), 300);
+        }
     }, duration);
 }
 
 function showCustomLoading(message) {
     const overlay = document.createElement('div');
     overlay.id = 'custom-loading-overlay';
-    overlay.className = 'custom-loading-overlay';
+    overlay.className = 'fallback-modal-overlay animate__animated animate__fadeIn';
     overlay.innerHTML = `
-        <div class="custom-loading">
-            <div class="custom-spinner"></div>
+        <div class="premium-spinner-box">
+            <div class="custom-spinner-dots">
+                <div class="dot1"></div>
+                <div class="dot2"></div>
+                <div class="dot3"></div>
+            </div>
             <p>${message}</p>
         </div>
     `;
     document.body.appendChild(overlay);
 }
 
-function getIcon(type) {
-    const icons = {
-        'success': '✓',
-        'error': '✕',
-        'warning': '⚠',
-        'info': 'ℹ'
-    };
-    return icons[type] || '•';
+/**
+ * 10. SYSTEM STYLESHEET CONFIGURATOR
+ */
+
+function configureGlobalSwal() {
+    Swal.mixin({
+        buttonsStyling: true,
+        confirmButtonColor: NOTIFICATION_THEME.primary,
+        cancelButtonColor: '#95a5a6'
+    });
 }
 
-/**
- * Validate email format
- */
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-/**
- * Create custom notification styles as fallback
- */
-function createCustomNotificationStyles() {
+function injectDesignSystemCSS() {
     const style = document.createElement('style');
+    style.id = 'premium-notification-styles';
     style.textContent = `
-        /* Custom Modal Styles */
-        .custom-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: fadeIn 0.3s ease;
+        /* Premium Core Animations */
+        @keyframes customShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
         }
-        
-        @keyframes fadeIn {
+        @keyframes customSlideDown {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes customFadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
-        .custom-modal-content {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(60, 41, 34, 0.2);
-            max-width: 400px;
-            width: 90%;
-            overflow: hidden;
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
+        @keyframes customFadeUp {
+            from { transform: translateY(15px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        
-        .custom-modal-header {
-            background: #f5f5f5;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes bounceDot {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate__animated {
+            animation-duration: 0.3s;
+            animation-fill-mode: both;
+        }
+        .animate__fadeInUp { animation-name: customFadeUp; }
+        .animate__shake { animation-name: customShake; }
+        .animate__slideDown { animation-name: customSlideDown; }
+        .animate__fadeIn { animation-name: customFadeIn; }
+
+        /* Form validation styles */
+        .validation-error-msg {
+            display: none;
             align-items: center;
+            gap: 6px;
+            color: ${NOTIFICATION_THEME.error} !important;
+            font-size: 0.85rem !important;
+            margin-top: 5px !important;
+            font-weight: 500 !important;
+            animation: customSlideDown 0.25s ease-out;
         }
-        
-        .custom-modal-header h2 {
-            margin: 0;
-            font-size: 1.3rem;
-            color: #3c2922;
-            font-family: 'Crimson Text', serif;
-        }
-        
-        .custom-modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #999;
-        }
-        
-        .custom-modal-body {
-            padding: 20px;
-            color: #555;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-        
-        .custom-modal-footer {
-            padding: 15px 20px;
-            border-top: 1px solid #eee;
-            text-align: right;
-        }
-        
-        .custom-modal-footer-confirm {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
-        .custom-modal-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+        .validation-error-msg i {
             font-size: 0.95rem;
-            transition: all 0.3s ease;
         }
-        
-        .custom-modal-btn-primary {
-            background: #c99366;
-            color: white;
+        .input-error {
+            border-color: ${NOTIFICATION_THEME.error} !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.12) !important;
+            background-color: ${NOTIFICATION_THEME.errorBg} !important;
         }
-        
-        .custom-modal-btn-primary:hover {
-            background: #aa6a3f;
+
+        /* Button loading spinner */
+        .premium-button-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
         }
-        
-        .custom-modal-btn-confirm {
-            background: #27ae60;
-            color: white;
+        .btn-loading {
+            opacity: 0.85 !important;
+            cursor: not-allowed !important;
         }
-        
-        .custom-modal-btn-confirm:hover {
-            background: #229954;
-        }
-        
-        .custom-modal-btn-cancel {
-            background: #95a5a6;
-            color: white;
-        }
-        
-        .custom-modal-btn-cancel:hover {
-            background: #7f8c8d;
-        }
-        
-        /* Toast Styles */
-        .custom-toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 6px;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            min-width: 300px;
-            opacity: 0;
-            transform: translateY(100px);
-            transition: all 0.3s ease;
-        }
-        
-        .custom-toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .custom-toast-success {
-            border-left: 4px solid #27ae60;
-            color: #27ae60;
-        }
-        
-        .custom-toast-error {
-            border-left: 4px solid #e74c3c;
-            color: #e74c3c;
-        }
-        
-        .custom-toast-warning {
-            border-left: 4px solid #f39c12;
-            color: #f39c12;
-        }
-        
-        .custom-toast-info {
-            border-left: 4px solid #3498db;
-            color: #3498db;
-        }
-        
-        /* Loading Styles */
-        .custom-loading-overlay {
+
+        /* Standalone Fallback Styles */
+        .fallback-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background-color: rgba(60, 41, 34, 0.45);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
+            z-index: 999999999 !important;
         }
-        
-        .custom-loading {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
+        .fallback-modal-card {
+            background-color: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 440px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(60, 41, 34, 0.15);
+            border: 1px solid rgba(201, 147, 102, 0.15);
         }
-        
-        .custom-spinner {
-            border: 4px solid #f0f0f0;
-            border-top: 4px solid #c99366;
+        .fallback-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .fallback-modal-header h3 {
+            margin: 0;
+            font-family: 'Crimson Text', -apple-system, sans-serif;
+            font-size: 1.35rem;
+            color: ${NOTIFICATION_THEME.dark};
+        }
+        .fallback-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: white;
         }
+        .fallback-success .fallback-icon { background-color: ${NOTIFICATION_THEME.success}; }
+        .fallback-error .fallback-icon { background-color: ${NOTIFICATION_THEME.error}; }
+        .fallback-warning .fallback-icon { background-color: ${NOTIFICATION_THEME.warning}; }
+        .fallback-info .fallback-icon { background-color: ${NOTIFICATION_THEME.info}; }
+        .fallback-confirm .fallback-icon { background-color: ${NOTIFICATION_THEME.primary}; }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-/**
- * Configure global Swal settings
- */
-function configureGlobalNotifications() {
-    // Set default button classes
-    Swal.mixin({
-        buttonsStyling: true
-    });
-    
-    // Add custom CSS
-    const style = document.createElement('style');
-    style.textContent = `
-        .swal2-popup {
-            font-family: 'Crimson Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(60, 41, 34, 0.2);
-        }
-        
-        .swal2-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #3c2922;
-            margin-bottom: 1rem;
-        }
-        
-        .swal2-html-container {
-            font-size: 1.1rem;
-            color: #555;
-            line-height: 1.6;
-        }
-        
-        .swal2-confirm, .swal2-cancel {
-            padding: 0.75rem 2rem;
-            border-radius: 6px;
+        .fallback-modal-body {
+            color: #555555;
             font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .fallback-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
         
-        .swal2-confirm {
-            background-color: #c99366 !important;
-            border: none;
+        /* Fallback toast styling */
+        .fallback-toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999999999 !important;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 360px;
+            width: 90%;
         }
-        
-        .swal2-confirm:hover {
-            background-color: #aa6a3f !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(201, 147, 102, 0.3);
+        .fallback-toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            color: white;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
+        .fallback-toast-success { background-color: ${NOTIFICATION_THEME.success}; }
+        .fallback-toast-error { background-color: ${NOTIFICATION_THEME.error}; }
+        .fallback-toast-warning { background-color: ${NOTIFICATION_THEME.warning}; }
+        .fallback-toast-info { background-color: ${NOTIFICATION_THEME.info}; }
         
-        .swal2-cancel {
+        .toast-indicator { font-weight: bold; }
+        .toast-text { flex-grow: 1; }
+        .toast-close-x { cursor: pointer; opacity: 0.7; font-size: 1.2rem; }
+        .toast-close-x:hover { opacity: 1; }
+
+        /* Spinner box for loading state */
+        .premium-spinner-box {
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        .custom-spinner-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .custom-spinner-dots div {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: ${NOTIFICATION_THEME.primary};
+            animation: bounceDot 1.4s infinite ease-in-out both;
+        }
+        .custom-spinner-dots .dot1 { animation-delay: -0.32s; }
+        .custom-spinner-dots .dot2 { animation-delay: -0.16s; }
+
+        /* Upload progress bar styles */
+        .premium-upload-card {
+            border: 1px solid rgba(201, 147, 102, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            background-color: #faf5ef;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .upload-preview-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .upload-img-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .upload-progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: ${NOTIFICATION_THEME.dark};
+        }
+        .premium-progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(201, 147, 102, 0.15);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .premium-progress-fill {
+            height: 100%;
+            background-color: ${NOTIFICATION_THEME.primary};
+            border-radius: 3px;
+            transition: width 0.2s ease;
+        }
+        .upload-retry-btn {
+            align-self: flex-end;
+            margin-top: 4px;
+        }
+
+        /* Swal Override styling */
+        .premium-popup {
+            font-family: 'Poppins', 'Crimson Text', -apple-system, sans-serif !important;
+            border-radius: 16px !important;
+            box-shadow: 0 15px 40px rgba(60, 41, 34, 0.12) !important;
+            padding: 24px !important;
+        }
+        .swal2-title {
+            color: ${NOTIFICATION_THEME.dark} !important;
+            font-family: 'Crimson Text', serif !important;
+            font-size: 1.45rem !important;
+        }
+        .swal2-html-container {
+            color: #555555 !important;
+            font-size: 1rem !important;
+        }
+        .swal-btn-primary {
+            background-color: ${NOTIFICATION_THEME.primary} !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 10px 24px !important;
+        }
+        .swal-btn-secondary {
             background-color: #95a5a6 !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 10px 24px !important;
         }
         
-        .swal2-cancel:hover {
-            background-color: #7f8c8d !important;
-            transform: translateY(-2px);
-        }
-        
-        .colored-toast.swal2-popup {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .swal2-progress-steps {
-            margin-bottom: 1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .swal2-popup {
-                width: 90% !important;
-                margin: auto;
-            }
-            
-            .swal2-confirm, .swal2-cancel {
-                padding: 0.6rem 1.2rem;
-                font-size: 0.95rem;
-            }
+        /* Force SweetAlert2 container on top of header menus */
+        .swal2-container {
+            z-index: 999999999 !important;
         }
     `;
     document.head.appendChild(style);
 }
-
