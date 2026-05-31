@@ -641,7 +641,7 @@
             padding: 15px 25px;
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-            z-index: 9999;
+            z-index: 999999999 !important;
             font-weight: 600;
             animation: slideIn 0.3s ease;
         }

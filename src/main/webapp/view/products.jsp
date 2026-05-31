@@ -1065,7 +1065,7 @@
     <%@ include file="partials/footer.jsp" %>
     
     <!-- Toast Notification -->
-    <div id="toast" style="display:none; position:fixed; bottom:30px; right:30px; background:#27ae60; color:#fff; padding:15px 25px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2); z-index:9999; font-weight:600;">
+    <div id="toast" style="display:none; position:fixed; bottom:30px; right:30px; background:#27ae60; color:#fff; padding:15px 25px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2); z-index:999999999 !important; font-weight:600;">
         <i class="fas fa-check-circle"></i> <span id="toastMessage"></span>
     </div>
     

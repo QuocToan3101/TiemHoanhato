@@ -308,7 +308,7 @@
             display: none; position: fixed; bottom: 30px; right: 30px;
             background: #27ae60; color: #fff;
             padding: 15px 25px; border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 9999; font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 999999999 !important; font-weight: 600;
         }
 
         @media (max-width: 640px) {

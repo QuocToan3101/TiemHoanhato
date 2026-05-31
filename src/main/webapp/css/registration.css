@@ -98,7 +98,7 @@ h2 {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 2000;
+    z-index: 999999999 !important;
 }
 .toast-message {
     background-color: #a05d2f;

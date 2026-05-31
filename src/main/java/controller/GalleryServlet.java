@@ -20,7 +20,7 @@ import model.User;
 /**
  * Servlet xử lý gallery
  */
-@WebServlet(urlPatterns = {"/gallery", "/api/gallery/*"})
+@WebServlet(urlPatterns = {"/gallery", "/api/gallery/*", "/gioi-thieu", "/gioi-thieu/*"})
 public class GalleryServlet extends HttpServlet {
     
     private GalleryDAO galleryDAO;

@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Servlet xử lý tin tức
  */
-@WebServlet(urlPatterns = {"/news", "/news/*", "/api/news/*"})
+@WebServlet(urlPatterns = {"/news", "/news/*", "/api/news/*", "/tin-tuc", "/tin-tuc/*"})
 public class NewsServlet extends HttpServlet {
     
     private NewsDAO newsDAO;

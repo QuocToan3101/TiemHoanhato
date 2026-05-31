@@ -783,7 +783,7 @@
             position: fixed;
             top: calc(var(--height-head) + 20px);
             right: 20px;
-            z-index: 9999;
+            z-index: 999999999 !important;
         }
 
         .toast {

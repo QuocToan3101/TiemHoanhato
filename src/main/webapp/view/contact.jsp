@@ -692,6 +692,13 @@
     </style>
 
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Notification System Utility -->
+    <script src="${pageContext.request.contextPath}/js/notification.js?v=20260527"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
@@ -1139,108 +1146,25 @@
         }
       });
 
-      // Notification function
+      // Notification function (synchronized to use the unified premium notification.js system)
       function showNotification(message, type) {
-        // Remove existing notification
-        const existing = document.querySelector(".contact-notification");
-        if (existing) existing.remove();
-
-        const notification = document.createElement("div");
-        notification.className = "contact-notification " + type;
-
-        // Determine icon based on type
-        const icon =
-          type === "success" ? "check-circle-fill" : "exclamation-circle-fill";
-
-        notification.innerHTML =
-          '<i class="bi bi-' +
-          icon +
-          '"></i>' +
-          "<span>" +
-          message +
-          "</span>" +
-          '<button onclick="this.parentElement.remove()"><i class="bi bi-x"></i></button>';
-
-        document.body.appendChild(notification);
-
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-          if (notification.parentElement) {
-            notification.classList.add("fade-out");
-            setTimeout(() => notification.remove(), 300);
+        if (type === 'success') {
+          if (typeof showSuccess === 'function') {
+            showSuccess(message, 'Liên hệ');
+          } else {
+            alert(message);
           }
-        }, 5000);
+        } else {
+          if (typeof showError === 'function') {
+            showError(message, 'Liên hệ');
+          } else {
+            alert(message);
+          }
+        }
       }
     </script>
 
     <style>
-      .contact-notification {
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        padding: 16px 20px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-        max-width: 400px;
-      }
-
-      .contact-notification.success {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-      }
-
-      .contact-notification.error {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
-      }
-
-      .contact-notification i:first-child {
-        font-size: 1.3rem;
-      }
-
-      .contact-notification span {
-        flex: 1;
-      }
-
-      .contact-notification button {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        color: white;
-        transition: background 0.2s;
-      }
-
-      .contact-notification button:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
-
-      .contact-notification.fade-out {
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.3s ease;
-      }
-
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateX(100%);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
       .map-container { position: relative; }
       .map-fallback-overlay {
         position: absolute;
