@@ -2149,36 +2149,6 @@
                   });
                 });
 
-                // Add to cart functionality
-
-                const addToCartButtons = document.querySelectorAll(".product-add");
-
-                addToCartButtons.forEach((button) => {
-                  button.addEventListener("click", function () {
-                    const productName =
-                      this.closest(".product-info").querySelector(
-                        ".product-name"
-                      ).textContent;
-
-                    // Animation effect
-
-                    this.textContent = "Đã thêm! ✓";
-
-                    this.style.background = "linear-gradient(135deg, #4CAF50, #45a049)";
-
-                    setTimeout(() => {
-                      this.textContent = "Thêm vào giỏ";
-
-                      this.style.background =
-                        "linear-gradient(135deg, var(--primary), var(--primary-dark))";
-                    }, 2000);
-
-                    // Show notification
-
-                    showNotification(`Đã thêm "${productName}" vào giỏ hàng!`);
-                  });
-                });
-
                 // Wishlist functionality
 
                 const wishlistButtons = document.querySelectorAll(".action-btn");
@@ -2205,14 +2175,14 @@
                     const submitBtn = this.querySelector('button');
 
                     if (!email) {
-                      showNotification("Vui lòng nhập email");
+                      showToast("Vui lòng nhập email", "warning");
                       return;
                     }
 
                     // Validate email
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailRegex.test(email)) {
-                      showNotification("Email không hợp lệ");
+                      showToast("Email không hợp lệ", "warning");
                       return;
                     }
 
@@ -2231,14 +2201,14 @@
                       const result = await response.json();
 
                       if (result.success) {
-                        showNotification("Đăng ký thành công! Kiểm tra email để nhận mã giảm giá.");
+                        showSuccess("Đăng ký thành công! Kiểm tra email để nhận mã giảm giá.", "Đăng ký nhận tin");
                         this.reset();
                       } else {
-                        showNotification(result.message || "Đăng ký thất bại");
+                        showError(result.message || "Đăng ký thất bại", "Đăng ký nhận tin");
                       }
                     } catch (error) {
                       console.error('Newsletter error:', error);
-                      showNotification("Có lỗi xảy ra. Vui lòng thử lại sau.");
+                      showError("Có lỗi xảy ra. Vui lòng thử lại sau.", "Đăng ký nhận tin");
                     } finally {
                       submitBtn.disabled = false;
                       submitBtn.textContent = 'Đăng ký ngay';
@@ -2556,12 +2526,17 @@
                       e.preventDefault();
                       e.stopPropagation();
                       const productId = addButton.getAttribute("data-product-id");
-                      addToCartHome(productId);
+                      addToCartHome(productId, addButton);
                     }
                   });
                 });
 
-                function addToCartHome(productId) {
+                function addToCartHome(productId, button) {
+                  if (button) {
+                    button.disabled = true;
+                    button.innerHTML = '<i class="premium-button-spinner"></i> Đang thêm...';
+                  }
+
                   fetch("${pageContext.request.contextPath}/api/cart/add", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -2576,7 +2551,23 @@
                         if (cartCount && data.cartCount) {
                           cartCount.textContent = data.cartCount;
                         }
+
+                        // Premium visual feedback for the button
+                        if (button) {
+                          button.innerHTML = "Đã thêm! ✓";
+                          button.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                          setTimeout(() => {
+                            button.innerHTML = '<i class="fas fa-shopping-cart"></i> Thêm vào giỏ';
+                            button.style.background = "";
+                            button.disabled = false;
+                          }, 2000);
+                        }
                       } else {
+                        if (button) {
+                          button.innerHTML = '<i class="fas fa-shopping-cart"></i> Thêm vào giỏ';
+                          button.disabled = false;
+                        }
+
                         if (data.message && data.message.includes("đăng nhập")) {
                           window.location.href =
                             "${pageContext.request.contextPath}/login";
@@ -2587,6 +2578,10 @@
                     })
                     .catch((error) => {
                       console.error("Error:", error);
+                      if (button) {
+                        button.innerHTML = '<i class="fas fa-shopping-cart"></i> Thêm vào giỏ';
+                        button.disabled = false;
+                      }
                       showToast("Có lỗi xảy ra khi thêm vào giỏ hàng", "error");
                     });
                 }
