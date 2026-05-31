@@ -21,7 +21,6 @@ import dao.CardTemplateDAO;
 import model.CartTemplate;
 @WebServlet(urlPatterns = {"/products", "/products/*", "/san-pham", "/san-pham/*"})
 public class ProductServlet extends HttpServlet {
-
     private ProductDAO productDAO;
     private CategoryDAO categoryDAO;
 
