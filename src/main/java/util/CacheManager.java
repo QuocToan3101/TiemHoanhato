@@ -47,6 +47,9 @@ public class CacheManager {
     private final Cache<Integer, Object> orderByIdCache;
     private final Cache<String, Object> orderByCodeCache;
     
+    // ============= GALLERY CACHES =============
+    private final Cache<String, Object> galleryListCache;
+    
     private CacheManager() {
         logger.info("Initializing CacheManager with Caffeine...");
         
@@ -118,6 +121,13 @@ public class CacheManager {
         this.orderByCodeCache = Caffeine.newBuilder()
                 .expireAfterWrite(Constants.CACHE.EXPIRY_PRODUCTS, TimeUnit.SECONDS)
                 .maximumSize(500)
+                .recordStats()
+                .build();
+        
+        // ===== GALLERY CACHES: 2 hours =====
+        this.galleryListCache = Caffeine.newBuilder()
+                .expireAfterWrite(Constants.CACHE.EXPIRY_CATEGORIES, TimeUnit.SECONDS)
+                .maximumSize(100)
                 .recordStats()
                 .build();
         
@@ -295,6 +305,26 @@ public class CacheManager {
         logger.info("User cache invalidated");
     }
     
+    // ============= GALLERY CACHE METHODS =============
+    
+    public void putGalleryList(String key, Object galleries) {
+        galleryListCache.put(key, galleries);
+        logger.debug("Gallery list cached: {}", key);
+    }
+    
+    public Object getGalleryList(String key) {
+        Object cached = galleryListCache.getIfPresent(key);
+        if (cached != null) {
+            logger.debug("Gallery list CACHE HIT: {}", key);
+        }
+        return cached;
+    }
+    
+    public void invalidateGalleryCache() {
+        galleryListCache.invalidateAll();
+        logger.info("Gallery cache invalidated");
+    }
+    
     // ============= ORDER CACHE METHODS =============
     
     public void putOrderById(int orderId, Object order) {
@@ -338,6 +368,7 @@ public class CacheManager {
         userByEmailCache.invalidateAll();
         orderByIdCache.invalidateAll();
         orderByCodeCache.invalidateAll();
+        galleryListCache.invalidateAll();
         logger.warn("⚠ All caches invalidated");
     }
     

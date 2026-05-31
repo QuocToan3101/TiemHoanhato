@@ -1,6 +1,9 @@
 package service;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -21,9 +24,12 @@ public class EmailService {
     
     private static EmailService instance;
     private AppConfig config;
+    private final ExecutorService executorService;
     
     private EmailService() {
         config = AppConfig.getInstance();
+        // Giới hạn thread pool ở kích thước 3 để tránh tiêu thụ tài nguyên quá mức
+        executorService = Executors.newFixedThreadPool(3);
     }
     
     public static synchronized EmailService getInstance() {
@@ -52,90 +58,109 @@ public class EmailService {
      */
     public boolean sendEmailWithAttachment(String toEmail, String subject, String htmlBody, 
                                           boolean isHtml, byte[] attachmentBytes) {
-        try {
-            if (!hasUsableEmailConfig()) {
-                System.err.println("Lỗi cấu hình SMTP: thiếu hoặc đang dùng giá trị placeholder cho email.username/email.password. "
-                        + "Vui lòng cập nhật application.properties hoặc biến môi trường EMAIL_USERNAME/EMAIL_PASSWORD.");
-                return false;
-            }
-
-            // Cấu hình properties
-            Properties props = new Properties();
-            props.put("mail.smtp.host", config.getEmailHost());
-            props.put("mail.smtp.port", config.getEmailPort());
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.starttls.required", "true");
-            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-            props.put("mail.smtp.ssl.trust", config.getEmailHost());
-            props.put("mail.smtp.connectiontimeout", "10000");
-            props.put("mail.smtp.timeout", "10000");
-            props.put("mail.smtp.writetimeout", "10000");
-            
-            // Tạo session với authentication
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(
-                        config.getEmailUsername(),
-                        config.getEmailPassword()
-                    );
-                }
-            });
-            
-            // Tạo message
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(
-                config.getEmailFromAddress(),
-                config.getEmailFromName()
-            ));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject(subject);
-            
-            if (attachmentBytes != null && attachmentBytes.length > 0) {
-                // Email với attachment
-                MimeMultipart multipart = new MimeMultipart();
-                
-                // HTML body part
-                MimeBodyPart htmlPart = new MimeBodyPart();
-                if (isHtml) {
-                    htmlPart.setContent(htmlBody, "text/html; charset=UTF-8");
-                } else {
-                    htmlPart.setText(htmlBody);
-                }
-                multipart.addBodyPart(htmlPart);
-                
-                // Greeting card image attachment
-                MimeBodyPart attachmentPart = new MimeBodyPart();
-                javax.activation.DataSource source = new javax.mail.util.ByteArrayDataSource(
-                    attachmentBytes, "image/png"
-                );
-                attachmentPart.setDataHandler(new javax.activation.DataHandler(source));
-                attachmentPart.setFileName("greeting-card.png");
-                multipart.addBodyPart(attachmentPart);
-                
-                message.setContent(multipart);
-                
-            } else {
-                // Email không có attachment
-                if (isHtml) {
-                    message.setContent(htmlBody, "text/html; charset=UTF-8");
-                } else {
-                    message.setText(htmlBody);
-                }
-            }
-            
-            // Gửi email
-            Transport.send(message);
-            
-            System.out.println("Email đã được gửi thành công đến: " + toEmail + 
-                (attachmentBytes != null ? " (kèm thiệp chúc mừng)" : ""));
-            return true;
-            
-        } catch (Exception e) {
-            System.err.println("Lỗi khi gửi email tới " + toEmail + ": " + e.getMessage());
-            e.printStackTrace();
+        if (!hasUsableEmailConfig()) {
+            System.err.println("Lỗi cấu hình SMTP: thiếu hoặc đang dùng giá trị placeholder cho email.username/email.password. "
+                    + "Vui lòng cập nhật application.properties hoặc biến môi trường EMAIL_USERNAME/EMAIL_PASSWORD.");
             return false;
+        }
+
+        // Thực hiện gửi email không đồng bộ để tránh chặn thread xử lý HTTP chính của Servlet
+        executorService.submit(() -> {
+            try {
+                // Cấu hình properties
+                Properties props = new Properties();
+                props.put("mail.smtp.host", config.getEmailHost());
+                props.put("mail.smtp.port", config.getEmailPort());
+                props.put("mail.smtp.auth", "true");
+                props.put("mail.smtp.starttls.enable", "true");
+                props.put("mail.smtp.starttls.required", "true");
+                props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+                props.put("mail.smtp.ssl.trust", config.getEmailHost());
+                props.put("mail.smtp.connectiontimeout", "10000");
+                props.put("mail.smtp.timeout", "10000");
+                props.put("mail.smtp.writetimeout", "10000");
+                
+                // Tạo session với authentication
+                Session session = Session.getInstance(props, new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(
+                            config.getEmailUsername(),
+                            config.getEmailPassword()
+                        );
+                    }
+                });
+                
+                // Tạo message
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(
+                    config.getEmailFromAddress(),
+                    config.getEmailFromName()
+                ));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+                message.setSubject(subject);
+                
+                if (attachmentBytes != null && attachmentBytes.length > 0) {
+                    // Email với attachment
+                    MimeMultipart multipart = new MimeMultipart();
+                    
+                    // HTML body part
+                    MimeBodyPart htmlPart = new MimeBodyPart();
+                    if (isHtml) {
+                        htmlPart.setContent(htmlBody, "text/html; charset=UTF-8");
+                    } else {
+                        htmlPart.setText(htmlBody);
+                    }
+                    multipart.addBodyPart(htmlPart);
+                    
+                    // Greeting card image attachment
+                    MimeBodyPart attachmentPart = new MimeBodyPart();
+                    javax.activation.DataSource source = new javax.mail.util.ByteArrayDataSource(
+                        attachmentBytes, "image/png"
+                    );
+                    attachmentPart.setDataHandler(new javax.activation.DataHandler(source));
+                    attachmentPart.setFileName("greeting-card.png");
+                    multipart.addBodyPart(attachmentPart);
+                    
+                    message.setContent(multipart);
+                    
+                } else {
+                    // Email không có attachment
+                    if (isHtml) {
+                        message.setContent(htmlBody, "text/html; charset=UTF-8");
+                    } else {
+                        message.setText(htmlBody);
+                    }
+                }
+                
+                // Gửi email
+                Transport.send(message);
+                
+                System.out.println("Email đã được gửi thành công đến: " + toEmail + 
+                    (attachmentBytes != null ? " (kèm thiệp chúc mừng)" : ""));
+                
+            } catch (Exception e) {
+                System.err.println("Lỗi khi gửi email tới " + toEmail + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+
+        return true;
+    }
+
+    /**
+     * Dọn dẹp và giải phóng tài nguyên của Thread Pool khi tắt ứng dụng
+     */
+    public void shutdown() {
+        System.out.println("Đang tắt ExecutorService trong EmailService...");
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 

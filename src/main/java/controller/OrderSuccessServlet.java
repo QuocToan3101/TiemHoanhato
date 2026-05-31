@@ -26,6 +26,9 @@ public class OrderSuccessServlet extends HttpServlet {
             throws ServletException, IOException {
         
         request.setCharacterEncoding("UTF-8");
+        request.setAttribute("showInvoice", false);
+        request.setAttribute("paymentConfirmed", false);
+        request.setAttribute("paymentPending", false);
         
         // Lấy mã đơn hàng từ parameter
         String orderCode = request.getParameter("orderCode");
@@ -36,6 +39,12 @@ public class OrderSuccessServlet extends HttpServlet {
             
             if (order != null) {
                 request.setAttribute("order", order);
+                boolean isVnPayOrder = "vnpay".equalsIgnoreCase(order.getPaymentMethod());
+                boolean isPaid = "paid".equalsIgnoreCase(order.getPaymentStatus());
+
+                request.setAttribute("showInvoice", !isVnPayOrder || isPaid);
+                request.setAttribute("paymentConfirmed", isPaid);
+                request.setAttribute("paymentPending", isVnPayOrder && !isPaid);
             }
         }
         

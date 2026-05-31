@@ -27,6 +27,7 @@ public class DBConnection {
 
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(jdbcUrl);
+        hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
         if (dbUser != null) hikariConfig.setUsername(dbUser);
         if (dbPassword != null) hikariConfig.setPassword(dbPassword);
         hikariConfig.setMaximumPoolSize(20);

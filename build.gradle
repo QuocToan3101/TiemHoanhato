@@ -76,3 +76,5 @@ tasks.register('deployToTomcat', Copy) {
     into 'D:/xampp/tomcat/webapps'
     rename { 'flowerstore.war' }
 }
+
+

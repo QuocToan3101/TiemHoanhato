@@ -66,35 +66,37 @@ public class CartDAO {
      * Thêm sản phẩm vào giỏ hàng
      */
     public boolean addToCart(int userId, int productId, int quantity) {
-        if (quantity <= 0) {
+        try (Connection conn = getConnection()) {
+            BigDecimal itemPrice = getCurrentProductDisplayPrice(conn, productId);
+            return addToCart(userId, productId, quantity, itemPrice);
+        } catch (SQLException e) {
+            System.err.println("Lỗi thêm vào cart: " + e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Thêm sản phẩm vào giỏ hàng với giá sản phẩm đã biết trước (Tối ưu hóa giảm DB roundtrip)
+     */
+    public boolean addToCart(int userId, int productId, int quantity, BigDecimal itemPrice) {
+        if (quantity <= 0 || itemPrice == null) {
             return false;
         }
-
-        // Kiểm tra sản phẩm đã có trong giỏ chưa
-        CartItem existing = findByUserAndProduct(userId, productId);
         
-        if (existing != null) {
-            // Cập nhật số lượng
-            return updateQuantity(userId, productId, existing.getQuantity() + quantity);
-        }
+        String sql = "INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES (?, ?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity), updated_at = CURRENT_TIMESTAMP";
         
-        // Thêm mới
-        String sql = "INSERT INTO cart_items (cart_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
-        
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection()) {
             int cartId = getOrCreateActiveCartId(conn, userId);
-            BigDecimal itemPrice = getCurrentProductDisplayPrice(conn, productId);
-            if (itemPrice == null) {
-                return false;
+            
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, cartId);
+                ps.setInt(2, productId);
+                ps.setInt(3, quantity);
+                ps.setBigDecimal(4, itemPrice);
+                
+                return ps.executeUpdate() > 0;
             }
-            
-            ps.setInt(1, cartId);
-            ps.setInt(2, productId);
-            ps.setInt(3, quantity);
-            ps.setBigDecimal(4, itemPrice);
-            
-            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi thêm vào cart: " + e.getMessage());
         }

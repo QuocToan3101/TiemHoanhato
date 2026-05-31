@@ -97,28 +97,41 @@ retry_apt() {
     done
 }
 
-retry_apt apt-get update -y
-
-if apt-cache show tomcat10 >/dev/null 2>&1; then
-    TOMCAT_PKG="tomcat10"
-    WEBAPPS_DIR="/var/lib/tomcat10/webapps"
-elif apt-cache show tomcat9 >/dev/null 2>&1; then
-    TOMCAT_PKG="tomcat9"
-    WEBAPPS_DIR="/var/lib/tomcat9/webapps"
+if command -v nginx >/dev/null 2>&1 && (dpkg -s tomcat9 >/dev/null 2>&1 || dpkg -s tomcat10 >/dev/null 2>&1); then
+    echo "==> Required packages (Nginx and Tomcat) are already installed. Skipping apt update/install to avoid lock contention."
+    if dpkg -s tomcat10 >/dev/null 2>&1; then
+        TOMCAT_PKG="tomcat10"
+        WEBAPPS_DIR="/var/lib/tomcat10/webapps"
+    else
+        TOMCAT_PKG="tomcat9"
+        WEBAPPS_DIR="/var/lib/tomcat9/webapps"
+    fi
 else
-    echo "Cannot find tomcat9 or tomcat10 package in apt repository."
-    exit 1
+    echo "==> Packages missing or incomplete. Running apt update and installation..."
+    retry_apt apt-get update -y
+    
+    if apt-cache show tomcat10 >/dev/null 2>&1; then
+        TOMCAT_PKG="tomcat10"
+        WEBAPPS_DIR="/var/lib/tomcat10/webapps"
+    elif apt-cache show tomcat9 >/dev/null 2>&1; then
+        TOMCAT_PKG="tomcat9"
+        WEBAPPS_DIR="/var/lib/tomcat9/webapps"
+    else
+        echo "Cannot find tomcat9 or tomcat10 package in apt repository."
+        exit 1
+    fi
+    
+    if apt-cache show openjdk-21-jre-headless >/dev/null 2>&1; then
+        JAVA_PKG="openjdk-21-jre-headless"
+    elif apt-cache show openjdk-17-jre-headless >/dev/null 2>&1; then
+        JAVA_PKG="openjdk-17-jre-headless"
+    else
+        JAVA_PKG="default-jre-headless"
+    fi
+    
+    retry_apt apt-get install -y nginx "$TOMCAT_PKG" "$JAVA_PKG"
 fi
 
-if apt-cache show openjdk-21-jre-headless >/dev/null 2>&1; then
-    JAVA_PKG="openjdk-21-jre-headless"
-elif apt-cache show openjdk-17-jre-headless >/dev/null 2>&1; then
-    JAVA_PKG="openjdk-17-jre-headless"
-else
-    JAVA_PKG="default-jre-headless"
-fi
-
-retry_apt apt-get install -y nginx "$TOMCAT_PKG" "$JAVA_PKG"
 systemctl enable "$TOMCAT_PKG" nginx
 
 # Automatically configure JAVA_HOME for Tomcat to use the installed Java 21 JRE

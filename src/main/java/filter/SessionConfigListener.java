@@ -23,6 +23,12 @@ public class SessionConfigListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        // no-op
+        // Shutdown EmailService thread pool to avoid classloader / thread leaks on Tomcat
+        try {
+            service.EmailService.getInstance().shutdown();
+            System.out.println("✓ EmailService background thread pool shut down successfully.");
+        } catch (Exception e) {
+            System.err.println("Error shutting down EmailService thread pool: " + e.getMessage());
+        }
     }
 }

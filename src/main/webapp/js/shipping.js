@@ -457,6 +457,7 @@
     const message = (error && error.message) ? error.message : String(error || '');
     if (message.includes('fetch')) return 'Không thể kết nối máy chủ tính phí. Vui lòng thử lại.';
     if (message.includes('calculate_failed')) return 'Không tính được phí giao hàng lúc này.';
+    if (message && message !== 'Error') return message;
     return 'Địa chỉ không hợp lệ hoặc không thuộc phạm vi giao hàng.';
   }
 

@@ -64,7 +64,7 @@ public class CartService {
                 return new CartOperationResult(false, "Số lượng vượt quá tồn kho hiện có");
             }
 
-            boolean success = cartDAO.addToCart(userId, productId, safeQuantity);
+            boolean success = cartDAO.addToCart(userId, productId, safeQuantity, product.getDisplayPrice());
             if (!success) {
                 return new CartOperationResult(false, "Không thể thêm vào giỏ hàng");
             }
@@ -224,7 +224,7 @@ public class CartService {
             if (currentQty > 0) {
                 cartDAO.updateQuantity(userId, item.getProductId(), mergedQty);
             } else {
-                cartDAO.addToCart(userId, item.getProductId(), mergedQty);
+                cartDAO.addToCart(userId, item.getProductId(), mergedQty, product.getDisplayPrice());
             }
         }
 

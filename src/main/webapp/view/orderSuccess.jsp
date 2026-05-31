@@ -340,6 +340,29 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
         border-top: 1px solid var(--border-color);
       }
 
+      .payment-pending {
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: var(--bg-light);
+        text-align: left;
+      }
+
+      .payment-pending .pending-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--brown-main);
+        margin-bottom: 0.75rem;
+      }
+
+      .payment-pending .pending-message {
+        color: var(--brown-soft);
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+
       .note-title {
         display: flex;
         align-items: center;
@@ -442,7 +465,10 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </div>
           <h1>
             <c:choose>
-              <c:when test="${param.payment == 'success'}">
+              <c:when test="${paymentPending}">
+                Đang chờ xác nhận thanh toán
+              </c:when>
+              <c:when test="${paymentConfirmed || param.payment == 'success'}">
                 Thanh toán thành công!
               </c:when>
               <c:otherwise>
@@ -452,7 +478,10 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </h1>
           <p>
             <c:choose>
-              <c:when test="${param.payment == 'success'}">
+              <c:when test="${paymentPending}">
+                Giao dịch VNPay của bạn đang được xác thực. Hóa đơn sẽ hiển thị sau khi thanh toán thành công.
+              </c:when>
+              <c:when test="${paymentConfirmed || param.payment == 'success'}">
                 Đơn hàng của bạn đã được thanh toán và xác nhận thành công
               </c:when>
               <c:otherwise>
@@ -472,7 +501,8 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </div>
 
           <div class="order-details">
-            <c:if test="${not empty order}">
+            <c:choose>
+              <c:when test="${showInvoice and not empty order}">
               <div class="detail-row">
                 <span class="detail-label">Người nhận</span>
                 <span class="detail-value">${order.receiverName}</span>
@@ -507,8 +537,20 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
                   />₫
                 </span>
               </div>
-            </c:if>
-            <c:if test="${empty order}">
+              </c:when>
+              <c:when test="${paymentPending}">
+                <div class="payment-pending">
+                  <div class="pending-title">
+                    <i class="fas fa-clock"></i>
+                    Đang chờ xác nhận từ VNPay
+                  </div>
+                  <div class="pending-message">
+                    Chúng tôi đã ghi nhận đơn hàng của bạn, nhưng hóa đơn chỉ hiển thị sau khi VNPay trả về kết quả thanh toán thành công.
+                    Vui lòng hoàn tất giao dịch hoặc đợi vài phút rồi tải lại trang.
+                  </div>
+                </div>
+              </c:when>
+              <c:otherwise>
               <div class="detail-row">
                 <span class="detail-label">Trạng thái</span>
                 <span class="detail-value" style="color: var(--success)">
@@ -519,7 +561,8 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
                 <span class="detail-label">Dự kiến giao hàng</span>
                 <span class="detail-value">2-3 ngày làm việc</span>
               </div>
-            </c:if>
+              </c:otherwise>
+            </c:choose>
           </div>
         </div>
 

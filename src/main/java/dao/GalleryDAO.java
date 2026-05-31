@@ -25,7 +25,14 @@ public class GalleryDAO {
     /**
      * Lấy tất cả gallery items đang active, sắp xếp theo display_order
      */
+    @SuppressWarnings("unchecked")
     public List<Gallery> getAllActive() {
+        String cacheKey = "gallery_all_active";
+        Object cached = util.CacheManager.getInstance().getGalleryList(cacheKey);
+        if (cached != null) {
+            return (List<Gallery>) cached;
+        }
+
         List<Gallery> galleries = new ArrayList<>();
         String sql = "SELECT * FROM gallery WHERE is_active = 1 ORDER BY display_order ASC, created_at DESC";
         
@@ -35,6 +42,9 @@ public class GalleryDAO {
             
             while (rs.next()) {
                 galleries.add(mapResultSetToGallery(rs));
+            }
+            if (!galleries.isEmpty()) {
+                util.CacheManager.getInstance().putGalleryList(cacheKey, galleries);
             }
         } catch (SQLException e) {
             System.err.println("Error getting active galleries: " + e.getMessage());
@@ -102,6 +112,7 @@ public class GalleryDAO {
             int affectedRows = ps.executeUpdate();
             
             if (affectedRows > 0) {
+                util.CacheManager.getInstance().invalidateGalleryCache();
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     return generatedKeys.getInt(1);
@@ -130,7 +141,11 @@ public class GalleryDAO {
             ps.setBoolean(5, gallery.isActive());
             ps.setInt(6, gallery.getId());
             
-            return ps.executeUpdate() > 0;
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                util.CacheManager.getInstance().invalidateGalleryCache();
+            }
+            return success;
         } catch (SQLException e) {
             System.err.println("Error updating gallery: " + e.getMessage());
         }
@@ -147,7 +162,11 @@ public class GalleryDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                util.CacheManager.getInstance().invalidateGalleryCache();
+            }
+            return success;
         } catch (SQLException e) {
             System.err.println("Error deleting gallery: " + e.getMessage());
         }
@@ -166,7 +185,11 @@ public class GalleryDAO {
             ps.setBoolean(1, isActive);
             ps.setInt(2, id);
             
-            return ps.executeUpdate() > 0;
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                util.CacheManager.getInstance().invalidateGalleryCache();
+            }
+            return success;
         } catch (SQLException e) {
             System.err.println("Error updating gallery status: " + e.getMessage());
         }
@@ -185,7 +208,11 @@ public class GalleryDAO {
             ps.setInt(1, order);
             ps.setInt(2, id);
             
-            return ps.executeUpdate() > 0;
+            boolean success = ps.executeUpdate() > 0;
+            if (success) {
+                util.CacheManager.getInstance().invalidateGalleryCache();
+            }
+            return success;
         } catch (SQLException e) {
             System.err.println("Error updating display order: " + e.getMessage());
         }
