@@ -6,29 +6,24 @@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Đặt lại mật khẩu</title>
-    
-    <!-- CSRF Token -->
+
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
 
     <%@ include file="partials/head-icons.jsp" %>
-      <!-- CSS riêng -->
+
     <link
       rel="stylesheet"
       href="${pageContext.request.contextPath}/css/ForgotPassword.css"
     />
-    
-    <!-- jQuery -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    
-    <!-- CSRF Token Helper -->
+
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
 
-    <!-- SweetAlert2 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
-    <!-- Notification System Utility -->
     <script src="${pageContext.request.contextPath}/js/notification.js"></script>
   </head>
   <body>

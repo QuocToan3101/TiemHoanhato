@@ -5,19 +5,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Liên hệ - Tiệm Hoa nhà tớ</title>
-    
-    <!-- CSRF Token -->
+
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
 
     <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon" />
-    <!-- Google Fonts -->
+
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Crimson+Text:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Header/Footer CSS (from main theme) -->
     <link
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"
       rel="stylesheet"
@@ -36,13 +34,10 @@
 
     <%@ include file="partials/head-icons.jsp" %>
 
-    <!-- AOS Animation -->
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
-    <!-- jQuery (required for header/footer functionality) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Theme Variables for Header/Footer -->
     <script>
       localStorage.setItem("shop_id", "themes/200000846175/1001403720");
       const tbag_varible = {
@@ -695,13 +690,12 @@
         }
       }
     </style>
-    
-    <!-- CSRF Token Helper -->
+
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
   </head>
 
   <body id="wandave-theme" class="index" data-theme="tbag-fashion">
-    <!-- Mobile Menu -->
+
     <nav id="menu-mobile" class="hidden-md">
       <button
         id="wanda-close-handle"
@@ -767,7 +761,6 @@
 
     <%@ include file="partials/header.jsp" %>
 
-    <!-- HERO SECTION -->
     <section class="contact-hero">
       <div class="hero-content" data-aos="fade-up">
         <h1>Liên hệ với chúng tớ</h1>
@@ -775,10 +768,9 @@
       </div>
     </section>
 
-    <!-- MAIN CONTENT -->
     <main class="contact-main">
       <div class="contact-grid">
-        <!-- FORM -->
+
         <div class="contact-form-card" data-aos="fade-up" data-aos-delay="100">
           <div class="card-header">
             <h2>Gửi lời nhắn cho Tiệm</h2>
@@ -858,9 +850,8 @@
           </form>
         </div>
 
-        <!-- INFO CARDS -->
         <div class="contact-info-card">
-          <!-- Highlight Box - Giờ làm việc -->
+
           <div
             class="info-box highlight"
             data-aos="fade-up"
@@ -892,7 +883,6 @@
             </div>
           </div>
 
-          <!-- Contact Info Box -->
           <div class="info-box" data-aos="fade-up" data-aos-delay="300">
             <div class="info-title">
               <i class="bi bi-info-circle-fill"></i>
@@ -937,7 +927,6 @@
               </div>
             </div>
 
-            <!-- Social Links -->
             <div class="social-section">
               <div class="info-label">Kết nối với chúng tớ</div>
               <div class="social-links">
@@ -980,7 +969,6 @@
       </div>
     </main>
 
-    <!-- FEATURES SECTION -->
     <section class="features-section" data-aos="fade-up" data-aos-delay="100">
       <div class="features-grid">
         <div class="feature-item">
@@ -1014,7 +1002,6 @@
       </div>
     </section>
 
-    <!-- MAP SECTION -->
     <section class="map-section" data-aos="fade-up" data-aos-delay="200">
       <div class="map-card">
         <div class="map-header">
@@ -1042,8 +1029,6 @@
 
     <%@ include file="partials/footer.jsp" %>
 
-    <!-- Scripts -->
-    <!-- Theme JS for header/footer -->
     <script
       type="text/javascript"
       src="//cdn.hstatic.net/themes/200000846175/1001403720/14/pluginscript.js?v=245"
@@ -1055,7 +1040,6 @@
       defer
     ></script>
 
-    <!-- AOS Animation -->
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
     <script>
       // Initialize AOS

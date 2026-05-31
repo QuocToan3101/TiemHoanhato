@@ -8,8 +8,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 <html lang="vi">
   <head>
     <title>Giỏ hàng - Tiệm Hoa nhà tớ</title>
-    
-    <!-- CSRF Token -->
+
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
     <meta name="context-path" content="${pageContext.request.contextPath}">
@@ -114,7 +113,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <meta property="og:url" content="https://tiemhoanhato.site/" />
 
     <meta property="og:site_name" content="La Vie Est Belle - Flower & Gift" />
-    <!-- Shop id asset -->
 
     <style>
       :root {
@@ -342,7 +340,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         gap: 8px;
       }
-      
+
       .qty-btn {
         width: 28px;
         height: 28px;
@@ -359,21 +357,21 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         transition: all 0.2s;
         user-select: none;
       }
-      
+
       .qty-btn:hover {
         background: var(--rose-200);
         transform: scale(1.1);
       }
-      
+
       .qty-btn:active {
         transform: scale(0.95);
       }
-      
+
       .qty-btn:disabled {
         opacity: 0.4;
         cursor: not-allowed;
       }
-      
+
       .qty-number {
         min-width: 30px;
         text-align: center;
@@ -1199,26 +1197,26 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         box-shadow: 0 8px 20px rgba(169, 113, 85, 0.28);
 
         transition: all 0.3s;
-        
+
         font-size: 14px;
       }
 
       .ai-btn.primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        
+
         box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        
+
         font-size: 16px;
-        
+
         padding: 14px 24px;
       }
-      
+
       .ai-btn.primary:hover {
         transform: translateY(-2px);
-        
+
         box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
       }
-      
+
       @keyframes slideIn {
         from {
           transform: translateX(400px);
@@ -1229,7 +1227,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           opacity: 1;
         }
       }
-      
+
       @keyframes slideOut {
         from {
           transform: translateX(0);
@@ -1337,20 +1335,16 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       media="(max-width: 480px)"
     />
 
-    <!-- jQuery từ CDN đáng tin cậy -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    
-    <!-- CSRF Token Helper - Tự động thêm token vào fetch/AJAX -->
+
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
-    
+
     <link
       href="//cdn.hstatic.net/themes/200000846175/1001403720/14/main-scripts.js?v=245"
       rel="preload"
       as="script"
       type="text/javascript"
     />
-
-    <!-- Tất cả biến khởi tạo, check sử dụng-->
 
     <script>
       localStorage.setItem("shop_id", "themes/200000846175/1001403720");
@@ -1607,14 +1601,11 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- SweetAlert2 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
-    <!-- Notification System Utility -->
     <script src="${pageContext.request.contextPath}/js/notification.js"></script>
-    
-    <!-- AI Card Feature - Modern CSS & JS Modules -->
+
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/ai-card.css">
   </head>
 
@@ -1629,7 +1620,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       </p>
 
       <div class="grid">
-        <!-- LEFT: CART LIST -->
 
         <section class="card cart">
           <div class="cart-head">
@@ -1643,7 +1633,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
 
           <div id="cartItems">
-            <!-- Cart items will be inserted here -->
+
           </div>
 
           <div class="section-title">
@@ -1672,7 +1662,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
         </section>
 
-        <!-- RIGHT: Order summary (cart page) -->
         <style>
           /* Order summary improvements: compact items, sticky card, buttons */
           .order-summary { }
@@ -1732,11 +1721,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             </div>
             <div class="card-body">
               <div class="summary-items" id="summaryItems">
-                <!-- JS will fill a compact summary of items here -->
+
               </div>
             </div>
 
-            <!-- Coupon (cart) -->
             <div class="coupon-section" style="padding:12px 18px;">
               <div class="coupon-input" style="display:flex; gap:8px;">
                 <input type="text" name="discountCode" id="discountCode" placeholder="Nhập mã giảm giá" style="flex:1; padding:8px; border-radius:8px; border:1px solid #eee;">
@@ -1750,7 +1738,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
               </div>
             </div>
 
-            <!-- Totals -->
                     <div class="summary-totals" style="padding:12px 18px;">
                       <div class="total-row">
                         <span>Tạm tính</span>
@@ -1769,13 +1756,11 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                       </div>
                     </div>
 
-                    <!-- Hidden fields used by checkout flow -->
                     <input type="hidden" name="subtotal" value="0">
                     <input type="hidden" name="discount" id="discountInput" value="0">
                     <input type="hidden" name="total" id="totalInput" value="0">
                     <input type="hidden" name="appliedCouponCode" id="appliedCouponCodeInput" value="">
 
-            <!-- Actions -->
             <div style="padding:12px 18px; display:flex; gap:8px; flex-direction:column;">
               <button class="btn" onclick="showCheckoutConfirm()">Thanh toán</button>
               <button class="btn secondary" onclick="continueShopping()">Tiếp tục mua</button>
@@ -1784,8 +1769,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         </aside>
       </div>
     </div>
-
-    <!-- Confirmation Modal -->
 
     <div class="modal-overlay" id="confirmModal">
       <div class="modal-content">
@@ -1821,12 +1804,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       </div>
     </div>
 
-    <!-- Invoice Modal -->
-
     <div class="modal-overlay" id="invoiceModal">
       <div class="modal-content" style="max-width: 700px">
         <div class="invoice" id="invoiceContent">
-          <!-- Invoice content will be generated here -->
+
         </div>
 
         <div class="modal-actions">
@@ -1839,8 +1820,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       </div>
     </div>
 
-    <!-- AI Card Modal -->
-
     <div class="ai-modal-backdrop" id="aiCardBackdrop"></div>
 
     <div class="ai-modal" id="aiCardModal">
@@ -1852,7 +1831,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         </div>
 
         <div class="ai-grid">
-          <!-- LEFT: form -->
 
           <div>
             <div class="ai-field">
@@ -1946,13 +1924,11 @@ uri="http://java.sun.com/jsp/jstl/core" %>
                 📥 Tải PNG
               </button>
             </div>
-            
+
             <p class="ai-hint" style="margin-top: 8px; font-size: 13px;">
               💡 Mẹo: Nhấn "Tạo thiệp mới" để AI sinh câu chúc và tạo ảnh thiệp đẹp tự động!
             </p>
           </div>
-
-          <!-- RIGHT: canvas preview -->
 
           <div>
             <div class="ai-canvas-wrap">
@@ -1996,7 +1972,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           currency: "VND",
         }).format(price);
       }
-      
+
       function formatCurrency(amount) {
         return new Intl.NumberFormat("vi-VN", {
           style: "currency",
@@ -2115,7 +2091,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           renderCart();
         });
       }
-      
+
       function increaseQuantity(id) {
         const item = cartItems.find((item) => item.id === id);
         if (item) {
@@ -2145,7 +2121,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           });
         }
       }
-      
+
       function decreaseQuantity(id) {
         const item = cartItems.find((item) => item.id === id);
         if (item && item.quantity > 0) {
@@ -2266,11 +2242,11 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       function removeCoupon() {
         discountAmount = 0;
         appliedCouponCode = null;
-        
+
         document.getElementById("appliedCouponInfo").style.display = "none";
         document.getElementById("discountCode").disabled = false;
         document.getElementById("discountCode").value = "";
-        
+
         updateSummary();
         showSuccess("Đã hủy mã giảm giá!");
       }
@@ -2325,8 +2301,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         </div>
 
-
-
         <div class="invoice-info">
 
           <div class="invoice-section">
@@ -2363,8 +2337,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         </div>
 
-
-
         <div class="invoice-items">
 
           <h3 style="margin-bottom: 16px; color: var(--ink);">Chi tiết đơn hàng</h3>
@@ -2397,8 +2369,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         </div>
 
-
-
         ${dollar}{
           giftNote
             ? `
@@ -2414,8 +2384,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           `
             : ""
         }
-
-
 
         <div class="invoice-total">
 
@@ -2443,7 +2411,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
               <span>-${dollar}{formatPrice(discountAmount)}</span>
 
             </div>
-              
+
           `
               : ""
           }
@@ -2457,8 +2425,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
 
         </div>
-
-
 
         <div class="invoice-footer">
 
@@ -2499,7 +2465,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
       // AI Card Functions - SIMPLIFIED (full logic moved to ai-card-module.js)
       // These functions maintain backward compatibility
-      
+
       function showAICardModal() {
         if (window.aiCardModule) {
           aiCardModule.openModal();
@@ -2523,7 +2489,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           aiCardModule.handleDownloadCard();
         }
       }
-      
+
       // Legacy function placeholders for compatibility
       function grabNoteFromCart() {
         const note = document.getElementById("giftNote")?.value?.trim();
@@ -2553,8 +2519,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       renderCart();
     </script>
     <script src="${pageContext.request.contextPath}/js/cart-components.js"></script>
-    
-    <!-- AI Card Feature - Modern JS Modules -->
+
     <script>
       // Set global contextPath for AI Card API
       const contextPath = '${pageContext.request.contextPath}';

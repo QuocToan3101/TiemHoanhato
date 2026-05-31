@@ -10,8 +10,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - Tiệm Hoa nhà tớ</title>
-    
-    <!-- CSRF Token -->
+
     <meta name="csrf-token" content="${csrfToken}">
     <script>window.csrfToken = '${csrfToken}';</script>
     <script>
@@ -29,27 +28,21 @@
     </script>
 
     <%@ include file="partials/head-icons.jsp" %>
-    <!-- Chart.js -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/admin.css" />
-    
-    <!-- jQuery -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    
-    <!-- CSRF Token Helper -->
+
     <script src="${pageContext.request.contextPath}/js/csrf-helper.js?v=20260527"></script>
 
-    <!-- SweetAlert2 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
 
-    <!-- Notification System Utility -->
     <script src="${pageContext.request.contextPath}/js/notification.js?v=20260527"></script>
   </head>
   <body>
-    <!-- ============================================
-         SIDEBAR
-         ============================================ -->
+
     <div class="sidebar">
       <div class="sidebar-header">
         <h2>
@@ -98,12 +91,12 @@
           <i class="fas fa-envelope"></i>
           <span>Liên Hệ</span>
         </div>
-        
+
         <div class="menu-item" data-target="gallery">
           <i class="fas fa-images"></i>
           <span>Gallery</span>
         </div>
-        
+
         <div class="menu-item" data-target="news">
           <i class="fas fa-newspaper"></i>
           <span>Tin Tức</span>
@@ -132,13 +125,8 @@
       </div>
     </div>
 
-    <!-- ============================================
-         MAIN CONTENT
-         ============================================ -->
     <div class="main-content">
-      <!-- ============================================
-             HEADER
-             ============================================ -->
+
       <div class="header">
         <div class="header-left">
           <h1 id="pageTitle">Dashboard</h1>
@@ -169,15 +157,10 @@
         </div>
       </div>
 
-      <!-- ============================================
-             CONTENT
-             ============================================ -->
       <div class="content">
-        <!-- ============================================
-             DASHBOARD SECTION
-             ============================================ -->
+
         <div id="dashboard" class="content-section active">
-          <!-- Stats Cards -->
+
           <div class="stats-container">
             <div class="stat-card">
               <div class="stat-icon">
@@ -220,9 +203,8 @@
             </div>
           </div>
 
-          <!-- Charts and Recent Orders -->
           <div class="form-row">
-            <!-- Revenue Chart -->
+
             <div class="card" style="flex: 2">
               <div class="card-header">
                 <h3><i class="fas fa-chart-line"></i> Doanh Thu 7 Ngày Qua</h3>
@@ -241,7 +223,6 @@
               </div>
             </div>
 
-            <!-- Order Status -->
             <div class="card" style="flex: 1">
               <div class="card-header">
                 <h3><i class="fas fa-chart-pie"></i> Trạng Thái Đơn Hàng</h3>
@@ -313,9 +294,8 @@
             </div>
           </div>
 
-          <!-- Recent Orders & Top Products -->
           <div class="form-row">
-            <!-- Recent Orders -->
+
             <div class="card" style="flex: 1">
               <div class="card-header">
                 <h3><i class="fas fa-clock"></i> Đơn Hàng Gần Đây</h3>
@@ -349,7 +329,6 @@
               </div>
             </div>
 
-            <!-- Top Products -->
             <div class="card" style="flex: 1">
               <div class="card-header">
                 <h3><i class="fas fa-star"></i> Sản Phẩm Bán Chạy</h3>
@@ -384,7 +363,6 @@
           </div>
         </div>
 
-        <!-- Custom Orders Section -->
         <div id="custom-orders" class="content-section">
           <div class="section-header">
             <div>
@@ -393,7 +371,6 @@
             </div>
           </div>
 
-          <!-- Filters -->
           <div class="card">
             <div class="card-body">
               <div class="filters">
@@ -412,7 +389,6 @@
             </div>
           </div>
 
-          <!-- Table List -->
           <div class="card">
             <div class="card-body" style="padding: 0;">
               <div class="table-container">
@@ -442,7 +418,6 @@
           </div>
         </div>
 
-        <!-- Orders Section -->
         <div id="orders" class="content-section">
           <div class="section-header">
             <div>
@@ -451,7 +426,6 @@
             </div>
           </div>
 
-          <!-- Filters -->
           <div class="card">
             <div class="card-body">
               <div class="filters">
@@ -497,7 +471,6 @@
             </div>
           </div>
 
-          <!-- Orders Table -->
           <div class="card">
             <div class="card-header">
               <h3><i class="fas fa-list"></i> Danh Sách Đơn Hàng</h3>
@@ -530,13 +503,12 @@
                   </tbody>
                 </table>
               </div>
-              <!-- Pagination -->
+
               <div class="pagination" id="ordersPagination"></div>
             </div>
           </div>
         </div>
 
-        <!-- Products Section -->
         <div id="products" class="content-section">
           <div class="section-header">
             <div>
@@ -548,7 +520,6 @@
             </button>
           </div>
 
-          <!-- Filters -->
           <div class="card">
             <div class="card-body">
               <div class="filters">
@@ -590,7 +561,6 @@
             </div>
           </div>
 
-          <!-- Products Table -->
           <div class="card">
             <div class="card-header">
               <h3><i class="fas fa-list"></i> Danh Sách Sản Phẩm</h3>
@@ -627,13 +597,12 @@
                   </tbody>
                 </table>
               </div>
-              <!-- Pagination -->
+
               <div class="pagination" id="productsPagination"></div>
             </div>
           </div>
         </div>
 
-        <!-- Categories Section -->
         <div id="categories" class="content-section">
           <div class="card">
             <div class="card-header">
@@ -667,7 +636,6 @@
           </div>
         </div>
 
-        <!-- Customers Section -->
         <div id="customers" class="content-section">
           <div class="card">
             <div class="card-header">
@@ -715,7 +683,6 @@
           </div>
         </div>
 
-        <!-- Coupons Section -->
         <div id="coupons" class="content-section">
           <div class="card">
             <div class="card-header">
@@ -751,7 +718,6 @@
           </div>
         </div>
 
-        <!-- Contacts Section -->
         <div id="contacts" class="content-section">
           <div class="card">
             <div class="card-header">
@@ -788,8 +754,7 @@
             </div>
           </div>
         </div>
-        
-        <!-- Gallery Section -->
+
         <div id="gallery" class="content-section">
           <div class="card">
             <div class="card-header">
@@ -825,8 +790,7 @@
             </div>
           </div>
         </div>
-        
-        <!-- News Section -->
+
         <div id="news" class="content-section">
           <div class="card">
             <div class="card-header">
@@ -865,7 +829,6 @@
           </div>
         </div>
 
-        <!-- Analytics Section -->
         <div id="analytics" class="content-section">
           <div class="card">
             <div class="card-header">
@@ -878,7 +841,7 @@
               </select>
             </div>
             <div class="card-body">
-              <!-- Revenue & Order Stats -->
+
               <div class="stats-grid" style="margin-bottom: 30px;">
                 <div class="stat-card">
                   <div class="stat-icon" style="background: linear-gradient(135deg, #c99366, #aa6a3f);">
@@ -933,7 +896,6 @@
                 </div>
               </div>
 
-              <!-- Charts Row -->
               <div class="admin-two-column-grid" style="margin-bottom: 30px;">
                 <div class="card">
                   <div class="card-header">
@@ -958,7 +920,6 @@
                 </div>
               </div>
 
-              <!-- Top Products & Categories -->
               <div class="admin-two-column-grid">
                 <div class="card">
                   <div class="card-header">
@@ -1008,14 +969,13 @@
           </div>
         </div>
 
-        <!-- Settings Section -->
         <div id="settings" class="content-section">
           <div class="card">
             <div class="card-header">
               <h3><i class="fas fa-cog"></i> Cài Đặt Hệ Thống</h3>
             </div>
             <div class="card-body">
-              <!-- Website Settings -->
+
               <div class="card" style="margin-bottom: 20px;">
                 <div class="card-header">
                   <h4>Thông Tin Website</h4>
@@ -1047,7 +1007,6 @@
                 </div>
               </div>
 
-              <!-- Order Settings -->
               <div class="card" style="margin-bottom: 20px;">
                 <div class="card-header">
                   <h4>Cài Đặt Đơn Hàng</h4>
@@ -1072,7 +1031,6 @@
                 </div>
               </div>
 
-              <!-- Payment Methods -->
               <div class="card" style="margin-bottom: 20px;">
                 <div class="card-header">
                   <h4>Phương Thức Thanh Toán</h4>
@@ -1102,7 +1060,6 @@
                 </div>
               </div>
 
-              <!-- Email Settings -->
               <div class="card">
                 <div class="card-header">
                   <h4>Cài Đặt Email</h4>
@@ -1137,10 +1094,6 @@
       </div>
     </div>
 
-    <!-- ============================================
-         MODALS - Order Detail & Update Status
-         ============================================ -->
-    <!-- Order Detail Modal -->
     <div class="modal-overlay" id="orderDetailModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -1154,7 +1107,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <!-- Order Info -->
+
           <div
             style="
               display: grid;
@@ -1207,7 +1160,6 @@
             </div>
           </div>
 
-          <!-- Order Items -->
           <h4 style="margin-bottom: 15px; color: var(--primary)">
             <i class="fas fa-box"></i> Sản Phẩm
           </h4>
@@ -1225,7 +1177,6 @@
             </table>
           </div>
 
-          <!-- Order Total -->
           <div
             style="
               text-align: right;
@@ -1287,7 +1238,6 @@
       </div>
     </div>
 
-    <!-- Update Status Modal -->
     <div class="modal-overlay" id="updateStatusModal">
       <div class="modal">
         <div class="modal-header">
@@ -1336,7 +1286,6 @@
       </div>
     </div>
 
-    <!-- Add/Edit Product Modal -->
     <div class="modal-overlay" id="productModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -1480,7 +1429,6 @@
       </div>
     </div>
 
-    <!-- Delete Product Confirmation Modal -->
     <div class="modal-overlay" id="deleteProductModal">
       <div class="modal">
         <div class="modal-header">
@@ -1517,7 +1465,6 @@
       </div>
     </div>
 
-    <!-- Category Modal -->
     <div class="modal-overlay" id="categoryModal">
       <div class="modal">
         <div class="modal-header">
@@ -1554,7 +1501,6 @@
       </div>
     </div>
 
-    <!-- Coupon Modal -->
     <div class="modal-overlay" id="couponModal">
       <div class="modal">
         <div class="modal-header">
@@ -1618,9 +1564,6 @@
       </div>
     </div>
 
-
-    
-    <!-- Contact Detail Modal -->
     <div class="modal-overlay" id="contactModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -1676,9 +1619,6 @@
       </div>
     </div>
 
-    <!-- ============================================
-         NOTIFICATION TOAST
-         ============================================ -->
     <div class="notification" id="notification">
       <i class="fas fa-check-circle"></i>
       <div class="notification-content">
@@ -1688,8 +1628,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- Gallery Modal -->
+
     <div class="modal-overlay" id="galleryModal">
       <div class="modal">
         <div class="modal-header">
@@ -1706,23 +1645,23 @@
               <input type="url" id="galleryImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
               <small style="color: #666;">Nhập URL hình ảnh hoặc upload lên server</small>
             </div>
-            
+
             <div class="form-group">
               <label for="galleryCaption">Tiêu Đề <span style="color: red;">*</span></label>
               <input type="text" id="galleryCaption" class="form-input" placeholder="Bó hoa đẹp" required />
             </div>
-            
+
             <div class="form-group">
               <label for="galleryDescription">Mô Tả</label>
               <textarea id="galleryDescription" class="form-input" rows="3" placeholder="Mô tả chi tiết về hình ảnh"></textarea>
             </div>
-            
+
             <div class="admin-two-column-grid admin-two-column-grid-tight">
               <div class="form-group">
                 <label for="galleryOrder">Thứ Tự Hiển Thị</label>
                 <input type="number" id="galleryOrder" class="form-input" value="0" min="0" />
               </div>
-              
+
               <div class="form-group">
                 <label>
                   <input type="checkbox" id="galleryActive" checked />
@@ -1730,8 +1669,7 @@
                 </label>
               </div>
             </div>
-            
-            <!-- Preview image -->
+
             <div class="form-group" id="galleryPreviewContainer" style="display: none;">
               <label>Xem Trước:</label>
               <img id="galleryPreview" style="max-width: 100%; border-radius: 8px; margin-top: 10px;" />
@@ -1746,8 +1684,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- News Modal -->
+
     <div class="modal-overlay" id="newsModal">
       <div class="modal" style="max-width: 800px;">
         <div class="modal-header">
@@ -1763,33 +1700,29 @@
               <label for="newsTitle">Tiêu Đề <span style="color: red;">*</span></label>
               <input type="text" id="newsTitle" class="form-input" placeholder="Nhập tiêu đề tin tức" required />
             </div>
-            
+
             <div class="form-group">
               <label for="newsSlug">Slug (URL) <span style="color: red;">*</span></label>
               <input type="text" id="newsSlug" class="form-input" placeholder="tu-dong-tao-hoac-nhap-slug" required />
               <small style="color: #666;">Slug sẽ tự động tạo từ tiêu đề, hoặc bạn có thể tự nhập</small>
             </div>
-            
-            
-            
-            
 
             <div class="form-group">
               <label for="newsExcerpt">Tóm Tắt <span style="color: red;">*</span></label>
               <textarea id="newsExcerpt" class="form-input" rows="2" placeholder="Tóm tắt ngắn gọn về bài viết" required></textarea>
             </div>
-            
+
             <div class="form-group">
               <label for="newsContent">Nội Dung <span style="color: rgb(222, 156, 156);">*</span></label>
               <textarea id="newsContent" class="form-input" rows="8" placeholder="Nội dung chi tiết bài viết (hỗ trợ HTML)" required></textarea>
               <small style="color: #666;">Có thể sử dụng HTML tags: &lt;p&gt;, &lt;h3&gt;, &lt;strong&gt;, &lt;ul&gt;, &lt;li&gt;, etc.</small>
             </div>
-            
+
             <div class="form-group">
               <label for="newsImageUrl">URL Hình Ảnh <span style="color: rgb(139, 35, 35);">*</span></label>
               <input type="url" id="newsImageUrl" class="form-input" placeholder="https://example.com/image.jpg" required />
             </div>
-            
+
             <div class="admin-two-column-grid admin-two-column-grid-tight">
               <div class="form-group">
                 <label for="newsCategory">Danh Mục <span style="color: rgb(157, 109, 109);">*</span></label>
@@ -1803,19 +1736,19 @@
                   <option value="birthday">Sinh nhật</option>
                 </select>
               </div>
-              
+
               <div class="form-group">
                 <label for="newsAuthor">Tác Giả</label>
                 <input type="text" id="newsAuthor" class="form-input" placeholder="Nhập tên tác giả" value="Admin" />
               </div>
             </div>
-            
+
             <div class="admin-two-column-grid admin-two-column-grid-tight">
               <div class="form-group">
                 <label for="newsPublishedDate">Ngày Đăng</label>
                 <input type="datetime-local" id="newsPublishedDate" class="form-input" />
               </div>
-              
+
               <div class="form-group">
                 <label>
                   <input type="checkbox" id="newsPublished" checked />
@@ -1823,8 +1756,7 @@
                 </label>
               </div>
             </div>
-            
-            <!-- Preview image -->
+
             <div class="form-group" id="newsPreviewContainer" style="display: none;">
               <label>Xem Trước Ảnh:</label>
               <img id="newsPreview" style="max-width: 100%; border-radius: 8px; margin-top: 10px;" />
@@ -1840,9 +1772,6 @@
       </div>
     </div>
 
-    <!-- ============================================
-         JAVASCRIPT DIRECTIVES
-         ============================================ -->
     <script>
       const contextPath = "${pageContext.request.contextPath}";
       window.adminUser = {
