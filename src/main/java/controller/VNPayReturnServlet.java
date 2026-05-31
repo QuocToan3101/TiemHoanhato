@@ -79,7 +79,7 @@ public class VNPayReturnServlet extends HttpServlet {
                             orderDAO.updatePaymentStatusIfCurrent(order.getId(), "pending", "failed");
                         }
 
-                        response.sendRedirect(request.getContextPath() + "/checkout?error=amount_mismatch");
+                        response.sendRedirect(request.getContextPath() + "/order-success?orderCode=" + vnp_TxnRef + "&payment=failed&message=" + java.net.URLEncoder.encode("Số tiền thanh toán không khớp với hóa đơn.", "UTF-8"));
                         return;
                     }
 
@@ -130,14 +130,17 @@ public class VNPayReturnServlet extends HttpServlet {
                 
                 // Redirect to error page
                 response.sendRedirect(request.getContextPath() + 
-                    "/checkout?error=payment_failed&message=" + 
+                    "/order-success?orderCode=" + vnp_TxnRef + 
+                    "&payment=failed&message=" + 
                     java.net.URLEncoder.encode(statusMessage, "UTF-8"));
             }
         } else {
             // Chữ ký không hợp lệ
             System.err.println("✗ Invalid VNPay signature!");
             response.sendRedirect(request.getContextPath() + 
-                "/checkout?error=invalid_signature");
+                "/order-success?orderCode=" + vnp_TxnRef + 
+                "&payment=failed&message=" + 
+                java.net.URLEncoder.encode("Chữ ký giao dịch từ cổng VNPay không hợp lệ.", "UTF-8"));
         }
     }
 }

@@ -47,6 +47,7 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
         --text-muted: #8b7d72;
         --success: #27ae60;
         --success-light: #d4edda;
+        --error: #e74c3c;
         --shadow-md: 0 8px 24px rgba(60, 41, 34, 0.1);
         --shadow-lg: 0 16px 48px rgba(60, 41, 34, 0.15);
         --radius-md: 16px;
@@ -122,6 +123,27 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
         font-size: 3rem;
         animation: checkmark 0.5s ease 0.3s both;
       }
+      /* Failure Header */
+      .failure-header {
+        background: linear-gradient(135deg, var(--error) 0%, #ff6b6b 100%);
+        padding: 3rem 2rem;
+        color: white;
+      }
+      .failure-icon {
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        animation: scaleIn 0.5s ease;
+      }
+      .failure-icon i {
+        font-size: 3rem;
+        color: white;
+      }
       @keyframes scaleIn {
         from {
           transform: scale(0);
@@ -153,6 +175,19 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       .success-header p {
         opacity: 0.9;
         font-size: 1rem;
+      }
+
+      .failure-header h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: white;
+      }
+
+      .failure-header p {
+        opacity: 0.9;
+        font-size: 1rem;
+        color: white;
       }
 
       /* Order Info */
@@ -322,6 +357,20 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
         box-shadow: 0 8px 20px rgba(201, 147, 102, 0.4);
       }
 
+      .btn-danger {
+        background: linear-gradient(
+          135deg,
+          var(--error) 0%,
+          #ff6b6b 100%
+        );
+        color: white;
+      }
+
+      .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+      }
+
       .btn-outline {
         background: white;
         border: 2px solid var(--border-color);
@@ -419,11 +468,11 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           margin-top: calc(var(--height-head) + 20px);
         }
 
-        .success-header {
+        .success-header, .failure-header {
           padding: 2rem 1.5rem;
         }
 
-        .success-header h1 {
+        .success-header h1, .failure-header h1 {
           font-size: 1.5rem;
         }
 
@@ -458,12 +507,15 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
     <div class="success-container">
       <div class="success-card">
 
-        <div class="success-header">
-          <div class="success-icon">
-            <i class="fas fa-check"></i>
+        <div class="${param.payment == 'failed' ? 'failure-header' : 'success-header'}">
+          <div class="${param.payment == 'failed' ? 'failure-icon' : 'success-icon'}">
+            <i class="fas ${param.payment == 'failed' ? 'fa-times' : 'fa-check'}"></i>
           </div>
           <h1>
             <c:choose>
+              <c:when test="${param.payment == 'failed'}">
+                Thanh toán không thành công
+              </c:when>
               <c:when test="${paymentPending}">
                 Đang chờ xác nhận thanh toán
               </c:when>
@@ -477,6 +529,9 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           </h1>
           <p>
             <c:choose>
+              <c:when test="${param.payment == 'failed'}">
+                ${not empty param.message ? param.message : 'Đã xảy ra lỗi khi thanh toán qua cổng VNPay.'}
+              </c:when>
               <c:when test="${paymentPending}">
                 Giao dịch VNPay của bạn đang được xác thực. Hóa đơn sẽ hiển thị sau khi thanh toán thành công.
               </c:when>
@@ -522,6 +577,14 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
                   <span class="detail-label">Trạng thái thanh toán</span>
                   <span class="detail-value" style="color: var(--success); font-weight: 600;">
                     <i class="fas fa-check-circle"></i> Đã thanh toán
+                  </span>
+                </div>
+              </c:if>
+              <c:if test="${param.payment == 'failed'}">
+                <div class="detail-row">
+                  <span class="detail-label">Trạng thái thanh toán</span>
+                  <span class="detail-value" style="color: var(--error); font-weight: 600;">
+                    <i class="fas fa-times-circle"></i> Chưa thanh toán (Thất bại)
                   </span>
                 </div>
               </c:if>
@@ -592,20 +655,40 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
         </div>
 
         <div class="success-actions">
-          <a
-            href="${pageContext.request.contextPath}/view/settingProfile.jsp"
-            class="btn btn-outline"
-          >
-            <i class="fas fa-history"></i>
-            Xem đơn hàng
-          </a>
-          <a
-            href="${pageContext.request.contextPath}/san-pham"
-            class="btn btn-primary"
-          >
-            <i class="fas fa-shopping-bag"></i>
-            Tiếp tục mua sắm
-          </a>
+          <c:choose>
+            <c:when test="${param.payment == 'failed'}">
+              <a
+                href="${pageContext.request.contextPath}/repay?orderCode=${param.orderCode}"
+                class="btn btn-danger"
+              >
+                <i class="fas fa-redo"></i>
+                Thử lại thanh toán
+              </a>
+              <a
+                href="${pageContext.request.contextPath}/view/settingProfile.jsp"
+                class="btn btn-outline"
+              >
+                <i class="fas fa-history"></i>
+                Xem đơn hàng
+              </a>
+            </c:when>
+            <c:otherwise>
+              <a
+                href="${pageContext.request.contextPath}/view/settingProfile.jsp"
+                class="btn btn-outline"
+              >
+                <i class="fas fa-history"></i>
+                Xem đơn hàng
+              </a>
+              <a
+                href="${pageContext.request.contextPath}/san-pham"
+                class="btn btn-primary"
+              >
+                <i class="fas fa-shopping-bag"></i>
+                Tiếp tục mua sắm
+              </a>
+            </c:otherwise>
+          </c:choose>
         </div>
 
         <div class="success-note">
@@ -669,7 +752,12 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       }
 
       // Run confetti on page load
-      document.addEventListener("DOMContentLoaded", createConfetti);
+      document.addEventListener("DOMContentLoaded", function() {
+        const paymentStatus = "${param.payment}";
+        if (paymentStatus !== 'failed') {
+          createConfetti();
+        }
+      });
     </script>
   </body>
 </html>

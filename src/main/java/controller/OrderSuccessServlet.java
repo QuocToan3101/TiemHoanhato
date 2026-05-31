@@ -41,10 +41,11 @@ public class OrderSuccessServlet extends HttpServlet {
                 request.setAttribute("order", order);
                 boolean isVnPayOrder = "vnpay".equalsIgnoreCase(order.getPaymentMethod());
                 boolean isPaid = "paid".equalsIgnoreCase(order.getPaymentStatus());
+                boolean isFailed = "failed".equalsIgnoreCase(order.getPaymentStatus()) || "failed".equals(request.getParameter("payment"));
 
-                request.setAttribute("showInvoice", !isVnPayOrder || isPaid);
+                request.setAttribute("showInvoice", !isVnPayOrder || isPaid || isFailed);
                 request.setAttribute("paymentConfirmed", isPaid);
-                request.setAttribute("paymentPending", isVnPayOrder && !isPaid);
+                request.setAttribute("paymentPending", isVnPayOrder && !isPaid && !isFailed);
             }
         }
         

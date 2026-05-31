@@ -2555,7 +2555,8 @@
                 console.error('Error:', error);
                 showToast('Lỗi kết nối', 'error');
             });
-        }
+        });
+    }
         
         function reorder(orderId) {
             fetch(contextPath + '/orders/reorder/' + orderId, {
@@ -2881,7 +2882,8 @@
                 console.error('Error:', error);
                 showToast('Có lỗi xảy ra', 'error');
             });
-        }
+        });
+    }
         
         // ==================== Change Password ====================
         function togglePassword(inputId) {
@@ -3665,7 +3667,8 @@
                 console.error('Error removing from wishlist:', error);
                 showToast('Có lỗi xảy ra', 'error');
             }
-        }
+        });
+    }
         
         async function addToCartFromWishlist(productId) {
             try {
