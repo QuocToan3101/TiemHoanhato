@@ -1636,22 +1636,25 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
           </div>
 
-          <div class="section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M20 7v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7"
-                stroke="#a97155"
-                stroke-width="1.4"
-              />
-
-              <path
-                d="M8 7V5a4 4 0 0 1 8 0v2"
-                stroke="#a97155"
-                stroke-width="1.4"
-              />
-            </svg>
-
-            Ghi lời chúc kèm bó hoa
+          <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; padding-right: 18px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M20 7v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7"
+                  stroke="#a97155"
+                  stroke-width="1.4"
+                />
+                <path
+                  d="M8 7V5a4 4 0 0 1 8 0v2"
+                  stroke="#a97155"
+                  stroke-width="1.4"
+                />
+              </svg>
+              Ghi lời chúc kèm bó hoa
+            </div>
+            <button type="button" class="btn-ai-card-trigger" onclick="showAICardModal()" style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(170,106,63,0.2); transition: all 0.2s;">
+              ✨ Tạo thiệp bằng AI
+            </button>
           </div>
 
           <div class="note" style="padding: 0 18px 18px">
@@ -1659,6 +1662,26 @@ uri="http://java.sun.com/jsp/jstl/core" %>
               id="giftNote"
               placeholder="VD: Chúc mừng sinh nhật em ✨"
             ></textarea>
+            
+            <!-- AI Card Preview Section -->
+            <div id="aiCardPreviewSection" style="display: none; margin-top: 15px; padding: 15px; border-radius: 12px; background: linear-gradient(135deg, rgba(201,147,102,0.08) 0%, rgba(170,106,63,0.08) 100%); border: 1px solid rgba(201,147,102,0.25);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-weight: 700; color: var(--brown-main); font-size: 14px; display: flex; align-items: center; gap: 6px;">
+                  🎁 Đã đính kèm thiệp AI thành công!
+                </span>
+                <button type="button" onclick="showAICardModal()" style="background: none; border: none; color: var(--accent-dark); font-weight: 600; cursor: pointer; font-size: 13px; text-decoration: underline; padding: 0;">
+                  Xem/Sửa thiệp
+                </button>
+              </div>
+              <div style="display: flex; gap: 15px; align-items: center;">
+                <div style="width: 80px; height: 53px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(201,147,102,0.2); background: #faf5ef; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                  <img id="aiCardPreviewImg" src="" style="width: 100%; height: 100%; object-fit: cover;" alt="Preview thiệp AI">
+                </div>
+                <div style="flex: 1; font-size: 13px; color: var(--brown-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; font-style: italic;" id="aiCardPreviewText">
+                  Nội dung thiệp...
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1824,126 +1847,139 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
     <div class="ai-modal" id="aiCardModal">
       <div class="ai-card">
+        <!-- Header -->
         <div class="ai-head">
-          <h3>Tạo thiệp tự động</h3>
-
+          <div class="ai-head-left">
+            <h3>✨ Tạo Thiệp AI</h3>
+            <p>Tạo những lời chúc ý nghĩa được cá nhân hóa bằng AI.</p>
+          </div>
           <button class="ai-close" onclick="closeAICardModal()">✕</button>
         </div>
 
+        <!-- Grid layout: 40% Form, 60% Preview -->
         <div class="ai-grid">
-
-          <div>
-            <div class="ai-field">
-              <label>Người nhận</label>
-
-              <input id="aiTo" placeholder="VD: Em Linh / Ba mẹ / Anh Tuấn" />
+          <!-- Left: Form Input (40%) -->
+          <div class="ai-form-container">
+            <!-- Theme Selection -->
+            <div class="ai-form-section">
+              <label class="ai-section-title">Chủ đề thiệp</label>
+              <div class="theme-grid" id="themeGrid">
+                <!-- JS will dynamically populate this with 9 themes -->
+              </div>
             </div>
 
-            <div class="ai-row">
-              <div class="ai-field">
-                <label>Dịp / Sự kiện</label>
-
-                <select id="aiOccasion">
-                  <option value="sinh nhật">Sinh nhật</option>
-
-                  <option value="kỷ niệm">Kỷ niệm</option>
-
-                  <option value="chúc mừng">Chúc mừng</option>
-
-                  <option value="cảm ơn">Cảm ơn</option>
-
-                  <option value="ngày đặc biệt">Ngày đặc biệt</option>
-
-                  <option value="an ủi">An á»§i</option>
-                </select>
+            <!-- Recipient & Sender -->
+            <div class="ai-form-section">
+              <label class="ai-section-title">Thông tin người nhận & gửi</label>
+              <div class="ai-row">
+                <div class="ai-field">
+                  <label>Người nhận</label>
+                  <input id="aiTo" placeholder="VD: Mẹ yêu, Em Linh" />
+                </div>
+                <div class="ai-field">
+                  <label>Người gửi</label>
+                  <input id="aiFrom" placeholder="VD: Tuấn Anh, Con gái" />
+                </div>
               </div>
+            </div>
 
+            <!-- Event & Holiday -->
+            <div class="ai-form-section">
+              <label class="ai-section-title">Thông tin sự kiện</label>
+              <div class="ai-row">
+                <div class="ai-field">
+                  <label>Dịp / Sự kiện</label>
+                  <select id="aiOccasion">
+                    <option value="sinhnhat">Sinh nhật</option>
+                    <option value="kyniem">Kỷ niệm</option>
+                    <option value="chucmung">Chúc mừng</option>
+                    <option value="camtaden">Cảm ơn</option>
+                    <option value="khaitruong">Khai trương</option>
+                    <option value="totnghiep">Tốt nghiệp</option>
+                  </select>
+                </div>
+                <div class="ai-field">
+                  <label>Ngày đặc biệt</label>
+                  <select id="aiHoliday">
+                    <option value="none">Không có</option>
+                    <option value="8/3">Quốc tế Phụ nữ (8/3)</option>
+                    <option value="20/10">Phụ nữ Việt Nam (20/10)</option>
+                    <option value="20/11">Nhà giáo Việt Nam (20/11)</option>
+                    <option value="tet">Tết Cổ Truyền</option>
+                    <option value="giangsinh">Giáng Sinh</option>
+                    <option value="letinhnhan">Lễ Tình Nhân</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tone -->
+            <div class="ai-form-section">
               <div class="ai-field">
                 <label>Giọng điệu</label>
-
                 <select id="aiTone">
-                  <option value="ấm áp">Ấm áp</option>
-
-                  <option value="hài hước">Hài hước</option>
-
-                  <option value="trang trọng">Trang trọng</option>
-
-                  <option value="ngọt ngào">Ngọt ngào</option>
-
-                  <option value="động viên">Động viên</option>
+                  <option value="warm">Ấm áp</option>
+                  <option value="sweet">Lãng mạn</option>
+                  <option value="formal">Trang trọng</option>
+                  <option value="funny">Vui vẻ</option>
+                  <option value="inspiring">Biết ơn</option>
+                  <option value="warm">Chân thành</option>
                 </select>
               </div>
             </div>
 
-            <div class="ai-row">
+            <!-- Content Area -->
+            <div class="ai-form-section" style="margin-bottom: 8px;">
               <div class="ai-field">
-                <label>Độ dài</label>
-
-                <select id="aiLength">
-                  <option value="ngắn">Ngắn</option>
-
-                  <option value="vừa">Vừa</option>
-
-                  <option value="dài">Dài</option>
-                </select>
-              </div>
-
-              <div class="ai-field">
-                <label>Người gửi (ký tên)</label>
-
-                <input id="aiFrom" placeholder="VD: Tên của bạn" />
+                <label>Nội dung thiệp</label>
+                <textarea id="aiManual" placeholder="Hãy chia sẻ cảm xúc hoặc để AI tự sáng tạo..." style="height: 110px; resize: none;"></textarea>
+                <div class="ai-textarea-actions">
+                  <button type="button" class="ai-btn-text" onclick="generateTextOnly()">
+                    ✨ AI tự viết
+                  </button>
+                  <button type="button" class="ai-btn-text" onclick="grabNoteFromCart()">
+                    📋 Lấy từ đơn hàng
+                  </button>
+                </div>
               </div>
             </div>
-
-            <div class="ai-field">
-              <label>Lời nhắn thành công (tùy chọn)</label>
-
-              <textarea
-                id="aiManual"
-                rows="3"
-                placeholder="Nếu đã ghi lời chúc ở ô 'Ghi lời chúc kèm bó hoa', bấm 'Lấy lời nhắn từ giờ' để dùng lại."
-              ></textarea>
-
-              <div class="ai-actions">
-                <button class="ai-btn secondary" onclick="grabNoteFromCart()">
-                  Lấy lời nhắn từ giờ
-                </button>
-
-                <span class="ai-hint"
-                  >Mẹo: để trống phần này nếu muốn AI tự sinh toàn bộ.</span
-                >
-              </div>
-            </div>
-
-            <div class="ai-actions">
-              <button class="ai-btn primary" onclick="createNewCard()">
-                🎨 Tạo thiệp mới
-              </button>
-
-              <button class="ai-btn secondary" onclick="downloadCard()">
-                📥 Tải PNG
-              </button>
-            </div>
-
-            <p class="ai-hint" style="margin-top: 8px; font-size: 13px;">
-              💡 Mẹo: Nhấn "Tạo thiệp mới" để AI sinh câu chúc và tạo ảnh thiệp đẹp tự động!
-            </p>
           </div>
 
-          <div>
+          <!-- Right: Live Preview (60%) -->
+          <div class="ai-preview-container">
             <div class="ai-canvas-wrap">
-              <canvas
-                id="aiCanvas"
-                width="900"
-                height="600"
-                class="ai-canvas"
-              ></canvas>
+              <canvas id="aiCanvas" width="1024" height="768" class="ai-canvas"></canvas>
+              
+              <!-- Canva-like Skeleton Shimmer Loader -->
+              <div id="aiCanvasLoader" class="ai-canvas-loader" style="display: none;">
+                <div class="ai-shimmer-card">
+                  <div class="ai-shimmer-flower"></div>
+                  <div class="ai-shimmer-line short"></div>
+                  <div class="ai-shimmer-line long"></div>
+                  <div class="ai-shimmer-line medium"></div>
+                  <div class="ai-shimmer-line short"></div>
+                </div>
+                <div class="ai-loader-progress">
+                  <div class="ai-loader-bar"></div>
+                </div>
+                <div id="aiLoaderText" class="ai-loader-text">🎨 Đang thiết kế thiệp...</div>
+              </div>
             </div>
 
-            <p class="ai-hint" style="margin-top: 8px">
-              Thiệp dùng tông nâu ấm của trang, kèm hoa 🌸.<br />Hình xuất
-              PNG 900×600.
-            </p>
+            <!-- Footer Actions inside Preview Column -->
+            <div class="ai-footer-actions" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+              <div style="display: flex; gap: 12px; width: 100%;">
+                <button type="button" class="ai-btn-footer secondary" onclick="createNewCard()" style="flex: 1; height: 52px; border-radius: 14px;">
+                  🔄 Tạo lại
+                </button>
+                <button type="button" class="ai-btn-footer secondary" onclick="downloadCard()" style="flex: 1; height: 52px; border-radius: 14px;">
+                  📥 Tải PNG
+                </button>
+              </div>
+              <button type="button" class="ai-btn-footer primary" onclick="attachCardToCart()" style="width: 100%; margin: 0; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #8B7BFF, #B3A7FF); box-shadow: 0 12px 32px rgba(139,123,255,.35);">
+                ✓ Đính kèm vào đơn hàng
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -2490,11 +2526,21 @@ uri="http://java.sun.com/jsp/jstl/core" %>
         }
       }
 
-      // Legacy function placeholders for compatibility
       function grabNoteFromCart() {
         const note = document.getElementById("giftNote")?.value?.trim();
-        if (note && window.aiCardModule?.store) {
-          window.aiCardModule.store.updateField('customMessage', note);
+        if (note) {
+          const aiManualInput = document.getElementById("aiManual");
+          if (aiManualInput) {
+            aiManualInput.value = note;
+            aiManualInput.dispatchEvent(new Event('input'));
+            if (window.aiCardUI && typeof window.aiCardUI.showSuccess === 'function') {
+              window.aiCardUI.showSuccess('Đã lấy lời chúc từ giỏ hàng!');
+            }
+          }
+        } else {
+          if (window.aiCardUI && typeof window.aiCardUI.showWarning === 'function') {
+            window.aiCardUI.showWarning('Không có lời chúc nào trong giỏ hàng để lấy!');
+          }
         }
       }
 
@@ -2517,13 +2563,37 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       // Initialize cart
 
       renderCart();
+
+      // Phục hồi preview thiệp AI từ Session (nếu có sẵn)
+      document.addEventListener('DOMContentLoaded', function() {
+        <c:if test="${not empty sessionScope.greetingCardMessage}">
+          const savedMessage = `<c:out value="${sessionScope.greetingCardMessage}" escapeXml="false"/>`;
+          const previewSection = document.getElementById('aiCardPreviewSection');
+          const previewImg = document.getElementById('aiCardPreviewImg');
+          const previewText = document.getElementById('aiCardPreviewText');
+          const giftNote = document.getElementById('giftNote');
+          
+          if (previewSection && previewImg && previewText) {
+            previewImg.src = `${pageContext.request.contextPath}/api/download-card?inline=true`;
+            previewText.textContent = savedMessage;
+            previewSection.style.display = 'block';
+          }
+          if (giftNote) {
+            giftNote.value = savedMessage;
+          }
+          
+          // Đồng bộ lại vào store của aiCardModule
+          if (window.aiCardModule && window.aiCardModule.store) {
+            window.aiCardModule.store.updateFields({
+              generatedMessage: savedMessage,
+              imageData: `${pageContext.request.contextPath}/api/download-card?inline=true`
+            });
+          }
+        </c:if>
+      });
     </script>
     <script src="${pageContext.request.contextPath}/js/cart-components.js"></script>
 
-    <script>
-      // Set global contextPath for AI Card API
-      const contextPath = '${pageContext.request.contextPath}';
-    </script>
     <script src="${pageContext.request.contextPath}/js/ai-card-store.js"></script>
     <script src="${pageContext.request.contextPath}/js/ai-card-api.js"></script>
     <script src="${pageContext.request.contextPath}/js/ai-card-ui.js"></script>

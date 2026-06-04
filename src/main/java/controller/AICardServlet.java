@@ -113,7 +113,6 @@ public class AICardServlet extends HttpServlet {
         try {
             // Parse request
             JsonObject requestJson = parseJsonRequest(request);
-            
             String recipient = requestJson.has("recipient") ? 
                 requestJson.get("recipient").getAsString().trim() : "";
             String occasion = requestJson.has("occasion") ? 
@@ -124,10 +123,12 @@ public class AICardServlet extends HttpServlet {
                 requestJson.get("customMessage").getAsString().trim() : "";
             String length = requestJson.has("length") ? 
                 requestJson.get("length").getAsString() : "trungbinh";
+            String holiday = requestJson.has("holiday") ? 
+                requestJson.get("holiday").getAsString() : "none";
             
             // Generate greeting sử dụng new service
             String generatedMessage = contentService.generateGreeting(
-                recipient, occasion, tone, customMessage, length
+                recipient, occasion, tone, customMessage, length, holiday
             );
             
             if (generatedMessage == null || generatedMessage.isEmpty()) {
@@ -180,6 +181,12 @@ public class AICardServlet extends HttpServlet {
                 requestJson.get("tone").getAsString() : "warm";
             String recipient = requestJson.has("recipient") ? 
                 requestJson.get("recipient").getAsString() : "";
+            String theme = requestJson.has("theme") ? 
+                requestJson.get("theme").getAsString() : "default";
+            String holiday = requestJson.has("holiday") ? 
+                requestJson.get("holiday").getAsString() : "none";
+            String sender = requestJson.has("sender") ? 
+                requestJson.get("sender").getAsString() : "";
             
             if (message.isEmpty()) {
                 throw new IllegalArgumentException("Message is required");
@@ -190,6 +197,9 @@ public class AICardServlet extends HttpServlet {
                 .recipient(recipient)
                 .occasion(occasion)
                 .tone(tone)
+                .theme(theme)
+                .holiday(holiday)
+                .sender(sender)
                 .generatedMessage(message)
                 .source("render-service")
                 .build();
@@ -286,10 +296,16 @@ public class AICardServlet extends HttpServlet {
                 requestJson.get("customMessage").getAsString().trim() : "";
             String length = requestJson.has("length") ? 
                 requestJson.get("length").getAsString() : "trungbinh";
+            String theme = requestJson.has("theme") ? 
+                requestJson.get("theme").getAsString() : "default";
+            String holiday = requestJson.has("holiday") ? 
+                requestJson.get("holiday").getAsString() : "none";
+            String sender = requestJson.has("sender") ? 
+                requestJson.get("sender").getAsString() : "";
             
             // Step 1: Generate text
             String generatedMessage = contentService.generateGreeting(
-                recipient, occasion, tone, customMessage, length
+                recipient, occasion, tone, customMessage, length, holiday
             );
             
             // Step 2: Build card state
@@ -297,6 +313,9 @@ public class AICardServlet extends HttpServlet {
                 .recipient(recipient)
                 .occasion(occasion)
                 .tone(tone)
+                .theme(theme)
+                .holiday(holiday)
+                .sender(sender)
                 .customMessage(customMessage)
                 .length(length)
                 .generatedMessage(generatedMessage)
@@ -371,8 +390,13 @@ public class AICardServlet extends HttpServlet {
         
         // Set download headers
         response.setContentType("image/png");
-        response.setHeader("Content-Disposition", 
-            "attachment; filename=\"thiep-" + System.currentTimeMillis() + ".png\"");
+        String inline = request.getParameter("inline");
+        if ("true".equalsIgnoreCase(inline)) {
+            response.setHeader("Content-Disposition", "inline; filename=\"card.png\"");
+        } else {
+            response.setHeader("Content-Disposition", 
+                "attachment; filename=\"thiep-" + System.currentTimeMillis() + ".png\"");
+        }
         response.setContentLength(imageBytes.length);
         
         // Write image to response

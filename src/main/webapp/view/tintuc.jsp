@@ -1,340 +1,323 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html>
-<html lang="vi">
-  <head>
-    <!-- [FIX #1] charset phải là thẻ đầu tiên để browser decode HTML đúng trước khi parse bất kỳ nội dung nào -->
-    <meta charset="utf-8" />
-    <%@ include file="partials/head-icons.jsp" %>
+  <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+      <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+        <!DOCTYPE html>
+        <html lang="vi">
 
-    <title>Tin Tức - La Vie Est Belle - Flower & Gift</title>
+        <head>
+          <!-- [FIX #1] charset phải là thẻ đầu tiên để browser decode HTML đúng trước khi parse bất kỳ nội dung nào -->
+          <meta charset="utf-8" />
+          <%@ include file="partials/head-icons.jsp" %>
 
-    <!-- Google Fonts: load sớm nhất để tránh FOUT -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
-      rel="stylesheet"
-    />
+            <title>Tin Tức</title>
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="${fn:escapeXml(csrfToken)}">
-    <script>window.csrfToken = '<c:out value="${csrfToken}" />';</script>
+            <!-- Google Fonts: load sớm nhất để tránh FOUT -->
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+            <link
+              href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
+              rel="stylesheet" />
 
-    <!-- [FIX #2] Giữ lại cả hai GTM container vì chúng dùng ID khác nhau (GTM-W8R4GL2 và GTM-NSBT6HTK).
+            <!-- CSRF Token -->
+            <meta name="csrf-token" content="${fn:escapeXml(csrfToken)}">
+            <script>window.csrfToken = '<c:out value="${csrfToken}" />';</script>
+
+            <!-- [FIX #2] Giữ lại cả hai GTM container vì chúng dùng ID khác nhau (GTM-W8R4GL2 và GTM-NSBT6HTK).
          Nếu chỉ cần một, hãy xóa bỏ block không dùng. -->
-    <!-- Google Tag Manager: GTM-W8R4GL2 -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-          "gtm.start": new Date().getTime(),
-          event: "gtm.js",
-        });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != "dataLayer" ? "&l=" + l : "";
-        j.async = true;
-        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, "script", "dataLayer", "GTM-W8R4GL2");
-    </script>
-    <!-- End Google Tag Manager: GTM-W8R4GL2 -->
+            <!-- Google Tag Manager: GTM-W8R4GL2 -->
+            <script>
+              (function (w, d, s, l, i) {
+                w[l] = w[l] || [];
+                w[l].push({
+                  "gtm.start": new Date().getTime(),
+                  event: "gtm.js",
+                });
+                var f = d.getElementsByTagName(s)[0],
+                  j = d.createElement(s),
+                  dl = l != "dataLayer" ? "&l=" + l : "";
+                j.async = true;
+                j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+                f.parentNode.insertBefore(j, f);
+              })(window, document, "script", "dataLayer", "GTM-W8R4GL2");
+            </script>
+            <!-- End Google Tag Manager: GTM-W8R4GL2 -->
 
-    <!-- Google Tag Manager: GTM-NSBT6HTK -->
-    <script>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-          "gtm.start": new Date().getTime(),
-          event: "gtm.js",
-        });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != "dataLayer" ? "&l=" + l : "";
-        j.async = true;
-        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
-    </script>
-    <!-- End Google Tag Manager: GTM-NSBT6HTK -->
+            <!-- Google Tag Manager: GTM-NSBT6HTK -->
+            <script>
+              (function (w, d, s, l, i) {
+                w[l] = w[l] || [];
+                w[l].push({
+                  "gtm.start": new Date().getTime(),
+                  event: "gtm.js",
+                });
+                var f = d.getElementsByTagName(s)[0],
+                  j = d.createElement(s),
+                  dl = l != "dataLayer" ? "&l=" + l : "";
+                j.async = true;
+                j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+                f.parentNode.insertBefore(j, f);
+              })(window, document, "script", "dataLayer", "GTM-NSBT6HTK");
+            </script>
+            <!-- End Google Tag Manager: GTM-NSBT6HTK -->
 
-    <link
-      rel="shortcut icon"
-      href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245"
-      type="image/x-icon"
-    />
+            <link rel="shortcut icon" href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245"
+              type="image/x-icon" />
 
-    <link
-      rel="icon"
-      href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245"
-      type="image/png"
-    />
+            <link rel="icon" href="//cdn.hstatic.net/themes/200000846175/1001403720/14/favicon.png?v=245"
+              type="image/png" />
 
-    <meta content="width=device-width,user-scalable=0" name="viewport" />
+            <meta content="width=device-width,user-scalable=0" name="viewport" />
 
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+            <meta http-equiv="x-ua-compatible" content="ie=edge" />
 
-    <meta name="HandheldFriendly" content="true" />
+            <meta name="HandheldFriendly" content="true" />
 
-    <meta name="revisit-after" content="1 day" />
+            <meta name="revisit-after" content="1 day" />
 
-    <meta
-      name="description"
-      content="Khám phá những câu chuyện về hoa và cuộc sống đẹp đẽ"
-    />
+            <meta name="description" content="Khám phá những câu chuyện về hoa và cuộc sống đẹp đẽ" />
 
-    <link rel="canonical" href="https://tiemhoanhato.site/pages/news" />
+            <link rel="canonical" href="https://tiemhoanhato.site/pages/news" />
 
-    <meta name="robots" content="index,follow,noodp" />
+            <meta name="robots" content="index,follow,noodp" />
 
-    <!-- Shop CSS Variables -->
+            <!-- Shop CSS Variables -->
 
 
 
-    <style>
-      :root {
-        --bg-soldout: url(//cdn.hstatic.net/themes/200000846175/1001403720/14/hethang.png?v=245);
+            <style>
+              :root {
+                --bg-soldout: url(//cdn.hstatic.net/themes/200000846175/1001403720/14/hethang.png?v=245);
 
-        --bgshop: #000000;
+                --bgshop: #000000;
 
-        --colorshop: #000000;
+                --colorshop: #000000;
 
-        --colorshophover: #212020;
+                --colorshophover: #212020;
 
-        --bgfooter: #ffffff;
+                --bgfooter: #ffffff;
 
-        --colorfooter: #000000;
+                --colorfooter: #000000;
 
-        --colorbgmenumb: #ffffff;
+                --colorbgmenumb: #ffffff;
 
-        --colortextmenumb: #000000;
+                --colortextmenumb: #000000;
 
-        --height-head: 72px;
+                --height-head: 72px;
 
-        --bg-page: #faf5ef;
+                --bg-page: #faf5ef;
 
-        --brown-main: #3c2922;
+                --brown-main: #3c2922;
 
-        --brown-soft: #6c5845;
+                --brown-soft: #6c5845;
 
-        --accent: #c99366;
+                --accent: #c99366;
 
-        --accent-dark: #aa6a3f;
-      }
-    </style>
+                --accent-dark: #aa6a3f;
+              }
+            </style>
 
-    <!-- Modern News Page Styles -->
+            <!-- Modern News Page Styles -->
 
-    <style>
-      * {
-        margin: 0;
+            <style>
+              * {
+                margin: 0;
 
-        padding: 0;
+                padding: 0;
 
-        box-sizing: border-box;
-      }
+                box-sizing: border-box;
+              }
 
-      body {
-        font-family: "Crimson Text", -apple-system, BlinkMacSystemFont,
-          "Segoe UI", sans-serif;
+              body {
+                font-family: "Crimson Text", -apple-system, BlinkMacSystemFont,
+                  "Segoe UI", sans-serif;
 
-        background: linear-gradient(
-            135deg,
-            rgba(201, 147, 102, 0.95) 0%,
-            rgba(170, 106, 63, 0.95) 100%
-          ),
-          url("https://images.unsplash.com/photo-1487070183336-b863922373d4?w=1200")
-            center/cover;
+                background: linear-gradient(135deg,
+                    rgba(201, 147, 102, 0.95) 0%,
+                    rgba(170, 106, 63, 0.95) 100%),
+                  url("https://images.unsplash.com/photo-1487070183336-b863922373d4?w=1200") center/cover;
 
-        color: var(--brown-main);
+                color: var(--brown-main);
 
-        line-height: 1.6;
-      }
-      /* Hero Section */
-      .news-hero {
-         background: linear-gradient(
-            135deg,
-            rgba(201, 147, 102, 0.95) 0%,
-            rgba(170, 106, 63, 0.95) 100%
-          ),
-          url("https://images.unsplash.com/photo-1487070183336-b863922373d4?w=1200")
-            center/cover;
-        color: #fff;
+                line-height: 1.6;
+              }
 
-        padding: 4rem 2rem;
+              /* Hero Section */
+              .news-hero {
+                background: linear-gradient(135deg,
+                    rgba(201, 147, 102, 0.95) 0%,
+                    rgba(170, 106, 63, 0.95) 100%),
+                  url("https://images.unsplash.com/photo-1487070183336-b863922373d4?w=1200") center/cover;
+                color: #fff;
 
-        text-align: center;
+                padding: 4rem 2rem;
 
-        position: relative;
+                text-align: center;
 
-        overflow: hidden;
-      }
+                position: relative;
 
-      .news-hero::before {
-        content: "";
+                overflow: hidden;
+              }
 
-        position: absolute;
+              .news-hero::before {
+                content: "";
 
-        top: -50%;
+                position: absolute;
 
-        right: -10%;
+                top: -50%;
 
-        width: 500px;
+                right: -10%;
 
-        height: 500px;
+                width: 500px;
 
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.1) 0%,
-          transparent 70%
-        );
+                height: 500px;
 
-        border-radius: 50%;
-      }
+                background: radial-gradient(circle,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    transparent 70%);
 
-      .news-hero::after {
-        content: "";
+                border-radius: 50%;
+              }
 
-        position: absolute;
+              .news-hero::after {
+                content: "";
 
-        bottom: -30%;
+                position: absolute;
 
-        left: -5%;
+                bottom: -30%;
 
-        width: 400px;
+                left: -5%;
 
-        height: 400px;
+                width: 400px;
 
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.08) 0%,
-          transparent 70%
-        );
+                height: 400px;
 
-        border-radius: 50%;
-      }
+                background: radial-gradient(circle,
+                    rgba(255, 255, 255, 0.08) 0%,
+                    transparent 70%);
 
-      .hero-content {
-        position: relative;
+                border-radius: 50%;
+              }
 
-        z-index: 1;
+              .hero-content {
+                position: relative;
 
-        max-width: 800px;
+                z-index: 1;
 
-        margin: 0 auto;
-      }
+                max-width: 800px;
 
-      .news-hero h1 {
-        font-size: 3.5rem;
+                margin: 0 auto;
+              }
 
-        font-weight: 700;
+              .news-hero h1 {
+                font-size: 3.5rem;
 
-        margin-bottom: 1rem;
+                font-weight: 700;
 
-        letter-spacing: -0.02em;
+                margin-bottom: 1rem;
 
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
+                letter-spacing: -0.02em;
 
-      .news-hero p {
-        font-size: 1.25rem;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+              }
 
-        opacity: 0.95;
+              .news-hero p {
+                font-size: 1.25rem;
 
-        font-style: italic;
-      }
+                opacity: 0.95;
 
-      /* Search & Filter Section */
-    
-      .search-filter-section {
-        background: #ffffff;
+                font-style: italic;
+              }
 
-        padding: 2rem;
+              /* Search & Filter Section */
 
-        margin: -3rem auto 3rem;
+              .search-filter-section {
+                background: #ffffff;
 
-        max-width: 1200px;
+                padding: 2rem;
 
-        border-radius: 20px;
+                margin: -3rem auto 3rem;
 
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+                max-width: 1200px;
 
-        position: relative;
+                border-radius: 20px;
 
-        z-index: 10;
-      }
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 
-      .search-wrapper {
-        display: flex;
+                position: relative;
 
-        gap: 1rem;
+                z-index: 10;
+              }
 
-        margin-bottom: 1.5rem;
-      }
+              .search-wrapper {
+                display: flex;
 
-      .search-input {
-        flex: 1;
+                gap: 1rem;
 
-        padding: 1rem 1.5rem;
+                margin-bottom: 1.5rem;
+              }
 
-        border: 2px solid #f0e8df;
+              .search-input {
+                flex: 1;
 
-        border-radius: 50px;
+                padding: 1rem 1.5rem;
 
-        font-size: 1rem;
+                border: 2px solid #f0e8df;
 
-        font-family: "Crimson Text", serif;
+                border-radius: 50px;
 
-        transition: all 0.3s ease;
+                font-size: 1rem;
 
-        background: #faf8f5;
-      }
+                font-family: "Crimson Text", serif;
 
-      .search-input:focus {
-        outline: none;
+                transition: all 0.3s ease;
 
-        border-color: var(--accent);
+                background: #faf8f5;
+              }
 
-        background: #fff;
+              .search-input:focus {
+                outline: none;
 
-        box-shadow: 0 4px 12px rgba(201, 147, 102, 0.15);
-      }
+                border-color: var(--accent);
 
-      .search-btn {
-        padding: 1rem 2.5rem;
+                background: #fff;
 
-        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+                box-shadow: 0 4px 12px rgba(201, 147, 102, 0.15);
+              }
 
-        color: #ffffff;
+              .search-btn {
+                padding: 1rem 2.5rem;
 
-        border: none;
+                background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        border-radius: 50px;
+                color: #ffffff;
 
-        font-weight: 600;
+                border: none;
 
-        font-size: 1rem;
+                border-radius: 50px;
 
-        cursor: pointer;
+                font-weight: 600;
 
-        transition: all 0.3s ease;
+                font-size: 1rem;
 
-        box-shadow: 0 4px 15px rgba(200, 200, 88, 0.3);
-      }
+                cursor: pointer;
 
-      .search-btn:hover {
-        transform: translateY(-2px);
+                transition: all 0.3s ease;
 
-        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
-      }
+                box-shadow: 0 4px 15px rgba(200, 200, 88, 0.3);
+              }
 
-      .search-btn:active {
-        transform: translateY(0);
-      }
-      /*padding: 0.5rem 1.25rem;
+              .search-btn:hover {
+                transform: translateY(-2px);
+
+                box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+              }
+
+              .search-btn:active {
+                transform: translateY(0);
+              }
+
+              /*padding: 0.5rem 1.25rem;
 
         border-radius: 60px;
 
@@ -352,232 +335,231 @@
 
         color: var(--brown-soft);*/
 
-      /* Filter Chips */
-      .chip {
-        padding: 0.5rem 1.25rem;
+              /* Filter Chips */
+              .chip {
+                padding: 0.5rem 1.25rem;
 
-        border-radius: 50px;
+                border-radius: 50px;
 
-        background: #f0e8df;
+                background: #f0e8df;
 
-        border: 2px solid transparent;
+                border: 2px solid transparent;
 
-        cursor: pointer;
+                cursor: pointer;
 
-        font-weight: 500;
+                font-weight: 500;
 
-        font-size: 0.9rem;
+                font-size: 0.9rem;
 
-        transition: all 0.3s ease;
+                transition: all 0.3s ease;
 
-        color: var(--brown-soft);
-      }
-      .filter-chips {
-        display: flex;
+                color: var(--brown-soft);
+              }
 
-        flex-wrap: wrap;
+              .filter-chips {
+                display: flex;
 
-        gap: 0.75rem;
-      }
+                flex-wrap: wrap;
 
-      .filter-label {
-        font-weight: 600;
+                gap: 0.75rem;
+              }
 
-        color: var(--brown-soft);
+              .filter-label {
+                font-weight: 600;
 
-        margin-right: 0.5rem;
+                color: var(--brown-soft);
 
-        display: flex;
+                margin-right: 0.5rem;
 
-        align-items: center;
-      }
+                display: flex;
 
-      
+                align-items: center;
+              }
 
-      .chip:hover {
-        background: #b07d50;
 
-        transform: translateY(-2px);
-      }
 
-      .chip.active {
-        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+              .chip:hover {
+                background: #b07d50;
 
-        color: #ffffff;
+                transform: translateY(-2px);
+              }
 
-        box-shadow: 0 4px 12px rgba(201, 147, 102, 0.3);
-      }
+              .chip.active {
+                background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-      /* Main Container */
+                color: #ffffff;
 
-      .news-container {
-        max-width: 1400px;
+                box-shadow: 0 4px 12px rgba(201, 147, 102, 0.3);
+              }
 
-        margin: 0 auto;
+              /* Main Container */
 
-        padding: 0 2rem 4rem;
-      }
+              .news-container {
+                max-width: 1400px;
 
-      .news-layout {
-        display: grid;
+                margin: 0 auto;
 
-        grid-template-columns: 1fr 350px;
+                padding: 0 2rem 4rem;
+              }
 
-        gap: 3rem;
-      }
+              .news-layout {
+                display: grid;
 
-      /* News Grid */
-      .news-card {
-        background: #ffffff;
+                grid-template-columns: 1fr 350px;
 
-        border-radius: 20px;
+                gap: 3rem;
+              }
 
-        overflow: hidden;
+              /* News Grid */
+              .news-card {
+                background: #ffffff;
 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+                border-radius: 20px;
 
-        border: 1px solid rgba(210, 180, 160, 0.2);
+                overflow: hidden;
 
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 
-        cursor: pointer;
+                border: 1px solid rgba(210, 180, 160, 0.2);
 
-        display: flex;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
-        flex-direction: column;
+                cursor: pointer;
 
-        animation: fadeInUp 0.6s ease-out;
-      }
+                display: flex;
 
-      .news-grid {
-        display: grid;
+                flex-direction: column;
 
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                animation: fadeInUp 0.6s ease-out;
+              }
 
-        gap: 2rem;
-      }
+              .news-grid {
+                display: grid;
 
-      
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 
-      .news-card:hover {
-        transform: translateY(-8px);
+                gap: 2rem;
+              }
 
-        box-shadow: 0 12px 30px rgba(160, 130, 100, 0.2);
-      }
 
-      .news-image-wrapper {
-        position: relative;
 
-        width: 100%;
+              .news-card:hover {
+                transform: translateY(-8px);
 
-        height: 240px;
+                box-shadow: 0 12px 30px rgba(160, 130, 100, 0.2);
+              }
 
-        overflow: hidden;
-      }
+              .news-image-wrapper {
+                position: relative;
 
-      .news-thumb {
-        width: 100%;
+                width: 100%;
 
-        height: 100%;
+                height: 240px;
 
-        object-fit: cover;
+                overflow: hidden;
+              }
 
-        transition: transform 0.6s ease;
-      }
+              .news-thumb {
+                width: 100%;
 
-      .news-card:hover .news-thumb {
-        transform: scale(1.1);
-      }
+                height: 100%;
 
-      .news-overlay {
-        position: absolute;
+                object-fit: cover;
 
-        top: 0;
+                transition: transform 0.6s ease;
+              }
 
-        left: 0;
+              .news-card:hover .news-thumb {
+                transform: scale(1.1);
+              }
 
-        right: 0;
+              .news-overlay {
+                position: absolute;
 
-        bottom: 0;
+                top: 0;
 
-        background: linear-gradient(
-          180deg,
-          transparent 0%,
-          rgba(0, 0, 0, 0.3) 100%
-        );
+                left: 0;
 
-        opacity: 0;
+                right: 0;
 
-        transition: opacity 0.3s ease;
-      }
+                bottom: 0;
 
-      .news-card:hover .news-overlay {
-        opacity: 1;
-      }
-      .news-meta {
-        display: flex;
+                background: linear-gradient(180deg,
+                    transparent 0%,
+                    rgba(0, 0, 0, 0.3) 100%);
 
-        align-items: center;
+                opacity: 0;
 
-        gap: 0.75rem;
+                transition: opacity 0.3s ease;
+              }
 
-        margin-bottom: 0.75rem;
+              .news-card:hover .news-overlay {
+                opacity: 1;
+              }
 
-        font-size: 0.875rem;
-      }
-      .news-content {
-        padding: 1.75rem;
+              .news-meta {
+                display: flex;
 
-        display: flex;
+                align-items: center;
 
-        flex-direction: column;
+                gap: 0.75rem;
 
-        flex: 1;
-      }
+                margin-bottom: 0.75rem;
 
-      
+                font-size: 0.875rem;
+              }
 
-      .news-category {
-        display: inline-block;
+              .news-content {
+                padding: 1.75rem;
 
-        padding: 0.25rem 0.875rem;
+                display: flex;
 
-        background: linear-gradient(
-          135deg,
-          rgba(201, 147, 102, 0.12),
-          rgba(170, 106, 63, 0.12)
-        );
+                flex-direction: column;
 
-        color: var(--accent-dark);
+                flex: 1;
+              }
 
-        border-radius: 50px;
 
-        font-weight: 700;
 
-        font-size: 0.75rem;
+              .news-category {
+                display: inline-block;
 
-        text-transform: uppercase;
+                padding: 0.25rem 0.875rem;
 
-        letter-spacing: 0.8px;
-      }
+                background: linear-gradient(135deg,
+                    rgba(201, 147, 102, 0.12),
+                    rgba(170, 106, 63, 0.12));
 
-      .news-date {
-        color: var(--brown-soft);
+                color: var(--accent-dark);
 
-        display: flex;
+                border-radius: 50px;
 
-        align-items: center;
+                font-weight: 700;
 
-        gap: 0.25rem;
-      }
+                font-size: 0.75rem;
 
-      .news-date::before {
-        content: "•";
+                text-transform: uppercase;
 
-        font-size: 0.6rem;
-      }
+                letter-spacing: 0.8px;
+              }
 
-      /* 
+              .news-date {
+                color: var(--brown-soft);
+
+                display: flex;
+
+                align-items: center;
+
+                gap: 0.25rem;
+              }
+
+              .news-date::before {
+                content: "•";
+
+                font-size: 0.6rem;
+              }
+
+              /* 
         color: var(--brown-soft);
 
         margin-bottom: 1.5rem;
@@ -597,1411 +579,1370 @@
         overflow: hidden;
       */
 
-      .news-excerpt {
-        color: var(--brown-soft);
+              .news-excerpt {
+                color: var(--brown-soft);
 
-        margin-bottom: 1.25rem;
+                margin-bottom: 1.25rem;
 
-        flex: 1;
+                flex: 1;
 
-        line-height: 1.7;
+                line-height: 1.7;
 
-        display: -webkit-box;
+                display: -webkit-box;
 
-        -webkit-line-clamp: 3;
+                -webkit-line-clamp: 3;
 
-        line-clamp: 3;
+                line-clamp: 3;
 
-        -webkit-box-orient: vertical;
+                -webkit-box-orient: vertical;
 
-        overflow: hidden;
-      }
+                overflow: hidden;
+              }
 
-      .news-link {
-        display: inline-flex;
+              .news-link {
+                display: inline-flex;
 
-        align-items: center;
+                align-items: center;
 
-        gap: 0.5rem;
+                gap: 0.5rem;
 
-        color: var(--accent-dark);
+                color: var(--accent-dark);
 
-        font-weight: 600;
+                font-weight: 600;
 
-        text-decoration: none;
+                text-decoration: none;
 
-        transition: all 0.3s ease;
+                transition: all 0.3s ease;
 
-        font-size: 0.95rem;
-      }
+                font-size: 0.95rem;
+              }
 
-      .news-heading {
-        font-size: 1.35rem;
+              .news-heading {
+                font-size: 1.35rem;
 
-        font-weight: 700;
+                font-weight: 700;
 
-        margin-bottom: 0.75rem;
+                margin-bottom: 0.75rem;
 
-        color: var(--brown-main);
+                color: var(--brown-main);
 
-        line-height: 1.4;
+                line-height: 1.4;
 
-        display: -webkit-box;
+                display: -webkit-box;
 
-        -webkit-line-clamp: 2;
+                -webkit-line-clamp: 2;
 
-        line-clamp: 2;
+                line-clamp: 2;
 
-        -webkit-box-orient: vertical;
+                -webkit-box-orient: vertical;
 
-        overflow: hidden;
-      }
+                overflow: hidden;
+              }
 
-      .news-link::after {
-        content: "→";
+              .news-link::after {
+                content: "→";
 
-        transition: transform 0.3s ease;
-      }
+                transition: transform 0.3s ease;
+              }
 
-      .news-card:hover .news-link::after {
-        transform: translateX(5px);
-      }
+              .news-card:hover .news-link::after {
+                transform: translateX(5px);
+              }
 
-      /* Sidebar */
+              /* Sidebar */
 
-      .news-sidebar {
-        position: sticky;
+              .news-sidebar {
+                position: sticky;
 
-        top: 100px;
-      }
+                top: 100px;
+              }
 
-      .sidebar-widget {
-        background: #fff;
+              .sidebar-widget {
+                background: #fff;
 
-        padding: 2rem;
+                padding: 2rem;
 
-        border-radius: 20px;
+                border-radius: 20px;
 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 
-        margin-bottom: 2rem;
+                margin-bottom: 2rem;
 
-        border: 1px solid rgba(210, 180, 160, 0.15);
-      }
+                border: 1px solid rgba(210, 180, 160, 0.15);
+              }
 
-      .sidebar-title {
-        font-size: 1.35rem;
+              .sidebar-title {
+                font-size: 1.35rem;
 
-        font-weight: 700;
+                font-weight: 700;
 
-        margin-bottom: 1.25rem;
+                margin-bottom: 1.25rem;
 
-        color: var(--brown-main);
+                color: var(--brown-main);
 
-        display: flex;
+                display: flex;
 
-        align-items: center;
+                align-items: center;
 
-        gap: 0.5rem;
-      }
+                gap: 0.5rem;
+              }
 
-      .sidebar-title::before {
-        content: "";
+              .sidebar-title::before {
+                content: "";
 
-        width: 4px;
+                width: 4px;
 
-        height: 24px;
+                height: 24px;
 
-        background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+                background: linear-gradient(180deg, var(--accent), var(--accent-dark));
 
-        border-radius: 10px;
-      }
+                border-radius: 10px;
+              }
 
-      .recent-posts {
-        list-style: none;
-      }
+              .recent-posts {
+                list-style: none;
+              }
 
-      .recent-post-item {
-        padding: 1rem 0;
+              .recent-post-item {
+                padding: 1rem 0;
 
-        border-bottom: 1px solid rgba(210, 180, 160, 0.3);
+                border-bottom: 1px solid rgba(210, 180, 160, 0.3);
 
-        transition: all 0.3s ease;
+                transition: all 0.3s ease;
 
-        cursor: pointer;
-      }
+                cursor: pointer;
+              }
 
-      .recent-post-item:last-child {
-        border-bottom: none;
-      }
+              .recent-post-item:last-child {
+                border-bottom: none;
+              }
 
-      .recent-post-item:hover {
-        padding-left: 0.75rem;
-      }
-      .recent-post-title {
-        color: var(--brown-main);
+              .recent-post-item:hover {
+                padding-left: 0.75rem;
+              }
 
-        font-weight: 600;
+              .recent-post-title {
+                color: var(--brown-main);
 
-        font-size: 1rem;
+                font-weight: 600;
 
-        margin-bottom: 0.25rem;
+                font-size: 1rem;
 
-        line-height: 1.4;
-      }
+                margin-bottom: 0.25rem;
 
-      .recent-post-date {
-        font-size: 0.8rem;
+                line-height: 1.4;
+              }
 
-        color: var(--brown-soft);
+              .recent-post-date {
+                font-size: 0.8rem;
 
-        font-style: italic;
-      }
+                color: var(--brown-soft);
 
-      .sidebar-note {
-        color: var(--brown-soft);
+                font-style: italic;
+              }
 
-        line-height: 1.7;
+              .sidebar-note {
+                color: var(--brown-soft);
 
-        font-size: 0.95rem;
+                line-height: 1.7;
 
-        background: linear-gradient(
-          135deg,
-          rgba(201, 147, 102, 0.05),
-          rgba(170, 106, 63, 0.05)
-        );
+                font-size: 0.95rem;
 
-        padding: 1.25rem;
+                background: linear-gradient(135deg,
+                    rgba(201, 147, 102, 0.05),
+                    rgba(170, 106, 63, 0.05));
 
-        border-radius: 12px;
+                padding: 1.25rem;
 
-        border-left: 4px solid var(--accent);
-      }
+                border-radius: 12px;
 
-      /* Search empty state */
-      
-      .search-empty-state {
-        display: none;
+                border-left: 4px solid var(--accent);
+              }
 
-        flex-direction: column;
+              /* Search empty state */
 
-        align-items: center;
+              .search-empty-state {
+                display: none;
 
-        justify-content: center;
+                flex-direction: column;
 
-        padding: 4rem 2rem;
+                align-items: center;
 
-        text-align: center;
+                justify-content: center;
 
-        grid-column: 1 / -1;
-      }
+                padding: 4rem 2rem;
 
-      .search-empty-state.visible {
-        display: flex;
-      }
+                text-align: center;
 
-      .search-empty-icon {
-        font-size: 3rem;
+                grid-column: 1 / -1;
+              }
 
-        margin-bottom: 1rem;
+              .search-empty-state.visible {
+                display: flex;
+              }
 
-        opacity: 0.4;
-      }
+              .search-empty-icon {
+                font-size: 3rem;
 
-      .search-empty-title {
-        font-size: 1.25rem;
+                margin-bottom: 1rem;
 
-        font-weight: 700;
+                opacity: 0.4;
+              }
 
-        color: var(--brown-main);
+              .search-empty-title {
+                font-size: 1.25rem;
 
-        margin-bottom: 0.5rem;
-      }
+                font-weight: 700;
 
-      .search-empty-desc {
-        font-size: 0.95rem;
+                color: var(--brown-main);
 
-        color: var(--brown-soft);
+                margin-bottom: 0.5rem;
+              }
 
-        line-height: 1.6;
-      }
+              .search-empty-desc {
+                font-size: 0.95rem;
 
-      .search-empty-keyword {
-        font-style: italic;
+                color: var(--brown-soft);
 
-        color: var(--accent-dark);
-      }
+                line-height: 1.6;
+              }
 
-      /* Sidebar recent post link */
+              .search-empty-keyword {
+                font-style: italic;
 
-      .recent-post-item[data-href]:hover .recent-post-title {
-        color: var(--accent-dark);
+                color: var(--accent-dark);
+              }
 
-        text-decoration: underline;
+              /* Sidebar recent post link */
 
-        text-underline-offset: 3px;
-      }
+              .recent-post-item[data-href]:hover .recent-post-title {
+                color: var(--accent-dark);
 
-      /* Load More Button */
+                text-decoration: underline;
 
-      .load-more-section {
-        text-align: center;
+                text-underline-offset: 3px;
+              }
 
-        margin-top: 3rem;
+              /* Load More Button */
 
-        padding: 2rem 0;
-      }
+              .load-more-section {
+                text-align: center;
 
-      .load-more-btn {
-        padding: 1rem 3rem;
+                margin-top: 3rem;
 
-        background: transparent;
+                padding: 2rem 0;
+              }
 
-        color: var(--accent-dark);
+              .load-more-btn {
+                padding: 1rem 3rem;
 
-        border: 2px solid var(--accent);
+                background: transparent;
 
-        border-radius: 50px;
+                color: var(--accent-dark);
 
-        font-weight: 600;
+                border: 2px solid var(--accent);
 
-        font-size: 1rem;
+                border-radius: 50px;
 
-        cursor: pointer;
+                font-weight: 600;
 
-        transition: all 0.3s ease;
+                font-size: 1rem;
 
-        box-shadow: 0 4px 15px rgba(201, 147, 102, 0.15);
-      }
+                cursor: pointer;
 
-      .load-more-btn:hover {
-        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+                transition: all 0.3s ease;
 
-        color: #ffffff;
+                box-shadow: 0 4px 15px rgba(201, 147, 102, 0.15);
+              }
 
-        transform: translateY(-3px);
+              .load-more-btn:hover {
+                background: linear-gradient(135deg, var(--accent), var(--accent-dark));
 
-        box-shadow: 0 6px 20px rgba(201, 147, 102, 0.3);
-      }
+                color: #ffffff;
 
-      /* Responsive Design */
+                transform: translateY(-3px);
 
-      @media (max-width: 1200px) {
-        .news-layout {
-          grid-template-columns: 1fr;
-        }
+                box-shadow: 0 6px 20px rgba(201, 147, 102, 0.3);
+              }
 
-        .news-sidebar {
-          position: static;
-        }
-      }
+              /* Responsive Design */
 
-      @media (max-width: 768px) {
-        .news-hero h1 {
-          font-size: 2.5rem;
-        }
+              @media (max-width: 1200px) {
+                .news-layout {
+                  grid-template-columns: 1fr;
+                }
 
-        .news-hero p {
-          font-size: 1.1rem;
-        }
+                .news-sidebar {
+                  position: static;
+                }
+              }
 
-        .search-filter-section {
-          margin: -2rem 1rem 2rem;
+              @media (max-width: 768px) {
+                .news-hero h1 {
+                  font-size: 2.5rem;
+                }
 
-          padding: 1.5rem;
-        }
+                .news-hero p {
+                  font-size: 1.1rem;
+                }
 
-        .search-wrapper {
-          flex-direction: column;
-        }
+                .search-filter-section {
+                  margin: -2rem 1rem 2rem;
 
-        .news-grid {
-          grid-template-columns: 1fr;
-        }
+                  padding: 1.5rem;
+                }
 
-        .news-container {
-          padding: 0 1rem 2rem;
-        }
-      }
+                .search-wrapper {
+                  flex-direction: column;
+                }
 
-      /* Animations */
+                .news-grid {
+                  grid-template-columns: 1fr;
+                }
 
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
+                .news-container {
+                  padding: 0 1rem 2rem;
+                }
+              }
 
-          transform: translateY(30px);
-        }
+              /* Animations */
 
-        to {
-          opacity: 1;
+              @keyframes fadeInUp {
+                from {
+                  opacity: 0;
 
-          transform: translateY(0);
-        }
-      }
+                  transform: translateY(30px);
+                }
 
-      .news-card:nth-child(1) {
-        animation-delay: 0.1s;
-      }
+                to {
+                  opacity: 1;
 
-      .news-card:nth-child(2) {
-        animation-delay: 0.15s;
-      }
+                  transform: translateY(0);
+                }
+              }
 
-      .news-card:nth-child(3) {
-        animation-delay: 0.2s;
-      }
+              .news-card:nth-child(1) {
+                animation-delay: 0.1s;
+              }
 
-      .news-card:nth-child(4) {
-        animation-delay: 0.25s;
-      }
+              .news-card:nth-child(2) {
+                animation-delay: 0.15s;
+              }
 
-      .news-card:nth-child(5) {
-        animation-delay: 0.3s;
-      }
+              .news-card:nth-child(3) {
+                animation-delay: 0.2s;
+              }
 
-      .news-card:nth-child(6) {
-        animation-delay: 0.35s;
-      }
+              .news-card:nth-child(4) {
+                animation-delay: 0.25s;
+              }
 
-      /* Skeleton Loading */
+              .news-card:nth-child(5) {
+                animation-delay: 0.3s;
+              }
 
-      @keyframes shimmer {
-        0% { background-position: -600px 0; }
-        100% { background-position: 600px 0; }
-      }
+              .news-card:nth-child(6) {
+                animation-delay: 0.35s;
+              }
 
-      .skeleton-card {
-        background: #ffffff;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-        border: 1px solid rgba(210, 180, 160, 0.2);
-        display: flex;
-        flex-direction: column;
-      }
+              /* Skeleton Loading */
 
-      .skeleton-shimmer {
-        background: linear-gradient(
-          90deg,
-          #f0e8df 0px,
-          #faf5ef 40%,
-          #f0e8df 80%
-        );
-        background-size: 600px 100%;
-        animation: shimmer 1.6s infinite linear;
-      }
+              @keyframes shimmer {
+                0% {
+                  background-position: -600px 0;
+                }
 
-      .skeleton-image {
-        width: 100%;
-        height: 240px;
-      }
+                100% {
+                  background-position: 600px 0;
+                }
+              }
 
-      .skeleton-body {
-        padding: 1.75rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
+              .skeleton-card {
+                background: #ffffff;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+                border: 1px solid rgba(210, 180, 160, 0.2);
+                display: flex;
+                flex-direction: column;
+              }
 
-      .skeleton-meta {
-        height: 20px;
-        width: 45%;
-        border-radius: 50px;
-      }
+              .skeleton-shimmer {
+                background: linear-gradient(90deg,
+                    #f0e8df 0px,
+                    #faf5ef 40%,
+                    #f0e8df 80%);
+                background-size: 600px 100%;
+                animation: shimmer 1.6s infinite linear;
+              }
 
-      .skeleton-title {
-        height: 22px;
-        width: 90%;
-        border-radius: 6px;
-      }
+              .skeleton-image {
+                width: 100%;
+                height: 240px;
+              }
 
-      .skeleton-title-short {
-        height: 22px;
-        width: 65%;
-        border-radius: 6px;
-      }
+              .skeleton-body {
+                padding: 1.75rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+              }
 
-      .skeleton-line {
-        height: 15px;
-        border-radius: 4px;
-      }
+              .skeleton-meta {
+                height: 20px;
+                width: 45%;
+                border-radius: 50px;
+              }
 
-      .skeleton-line-short {
-        height: 15px;
-        width: 75%;
-        border-radius: 4px;
-      }
+              .skeleton-title {
+                height: 22px;
+                width: 90%;
+                border-radius: 6px;
+              }
 
-      .skeleton-link {
-        height: 16px;
-        width: 30%;
-        border-radius: 4px;
-        margin-top: 0.5rem;
-      }
-    </style>
+              .skeleton-title-short {
+                height: 22px;
+                width: 65%;
+                border-radius: 6px;
+              }
 
-    <link
-      href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"
-      rel="preload stylesheet"
-      as="style"
-      type="text/css"
-    />
+              .skeleton-line {
+                height: 15px;
+                border-radius: 4px;
+              }
 
-    <link
-      href="//cdn.hstatic.net/themes/200000846175/1001403720/14/styles-new.scss.css?v=245"
-      rel="preload stylesheet"
-      as="style"
-      type="text/css"
-    />
+              .skeleton-line-short {
+                height: 15px;
+                width: 75%;
+                border-radius: 4px;
+              }
 
-    <link
-      href="//cdn.hstatic.net/themes/200000846175/1001403720/14/style-page.scss.css?v=245"
-      rel="preload stylesheet"
-      as="style"
-      type="text/css"
-    />
+              .skeleton-link {
+                height: 16px;
+                width: 30%;
+                border-radius: 4px;
+                margin-top: 0.5rem;
+              }
+            </style>
 
-    <link
-      rel="preload"
-      as="image"
-      href="//cdn.hstatic.net/themes/200000846175/1001403720/14/logo.png?v=245"
-    />
+            <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/plugin-style.css?v=245"
+              rel="preload stylesheet" as="style" type="text/css" />
 
-    <!-- jQuery từ CDN đáng tin cậy -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+            <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/styles-new.scss.css?v=245"
+              rel="preload stylesheet" as="style" type="text/css" />
 
-    <script>
-      localStorage.setItem("shop_id", "themes/200000846175/1001403720");
+            <link href="//cdn.hstatic.net/themes/200000846175/1001403720/14/style-page.scss.css?v=245"
+              rel="preload stylesheet" as="style" type="text/css" />
 
-      const tbag_varible = {
-        template: "page",
+            <link rel="preload" as="image" href="//cdn.hstatic.net/themes/200000846175/1001403720/14/logo.png?v=245" />
 
-        navLeftText:
-          '<button class="slick-prev slick-arrow custom-style" aria-label="Previous"><span class="arrow-custom arrow-left"><div class="arrow-top"></div><div class="arrow-bottom"></div></span></button>',
+            <!-- jQuery từ CDN đáng tin cậy -->
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+              integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-        navRightText:
-          '<button class="slick-next slick-arrow custom-style" aria-label="Next"><span class="arrow-custom arrow-right"><div class="arrow-top"></div><div class="arrow-bottom"></div></span></button>',
+            <script>
+              localStorage.setItem("shop_id", "themes/200000846175/1001403720");
 
-        checklocation: "false",
+              const tbag_varible = {
+                template: "page",
 
-        checkproducthot: "true",
+                navLeftText:
+                  '<button class="slick-prev slick-arrow custom-style" aria-label="Previous"><span class="arrow-custom arrow-left"><div class="arrow-top"></div><div class="arrow-bottom"></div></span></button>',
 
-        checkproductrelated: "true",
+                navRightText:
+                  '<button class="slick-next slick-arrow custom-style" aria-label="Next"><span class="arrow-custom arrow-right"><div class="arrow-top"></div><div class="arrow-bottom"></div></span></button>',
 
-        checkproductseen: "false",
+                checklocation: "false",
 
-        heartactive:
-          "//cdn.hstatic.net/themes/200000846175/1001403720/14/heart-fill.svg?v=245",
+                checkproducthot: "true",
 
-        addtocart:
-          "//cdn.hstatic.net/themes/200000846175/1001403720/14/add-to-cart.svg?v=245",
+                checkproductrelated: "true",
 
-        heart:
-          "//cdn.hstatic.net/themes/200000846175/1001403720/14/heart.svg?v=245",
+                checkproductseen: "false",
 
-        sgnotify: "false",
+                heartactive:
+                  "//cdn.hstatic.net/themes/200000846175/1001403720/14/heart-fill.svg?v=245",
 
-        recaptchajs:
-          "https://www.google.com/recaptcha/api.js?render=6LdD18MUAAAAAHqKl3Avv8W-tREL6LangePxQLM-",
+                addtocart:
+                  "//cdn.hstatic.net/themes/200000846175/1001403720/14/add-to-cart.svg?v=245",
 
-        jsonmap:
-          "https://file.hstatic.net/200000397757/file/hethongcuahang_f1ee212eddc04706b09d43518b50a964.json",
+                heart:
+                  "//cdn.hstatic.net/themes/200000846175/1001403720/14/heart.svg?v=245",
 
-        typepaginate: "default",
+                sgnotify: "false",
 
-        typeimage: false,
+                recaptchajs:
+                  "https://www.google.com/recaptcha/api.js?render=6LdD18MUAAAAAHqKl3Avv8W-tREL6LangePxQLM-",
 
-        trash:
-          "//cdn.hstatic.net/themes/200000846175/1001403720/14/trash.svg?v=245",
+                jsonmap:
+                  "https://file.hstatic.net/200000397757/file/hethongcuahang_f1ee212eddc04706b09d43518b50a964.json",
 
-        cancel:
-          "//cdn.hstatic.net/themes/200000846175/1001403720/14/cancel.svg?v=245",
+                typepaginate: "default",
 
-        productjson: { error: "json not allowed for this object" },
+                typeimage: false,
 
-        producthandle: "",
+                trash:
+                  "//cdn.hstatic.net/themes/200000846175/1001403720/14/trash.svg?v=245",
 
-        typerelated: "type",
+                cancel:
+                  "//cdn.hstatic.net/themes/200000846175/1001403720/14/cancel.svg?v=245",
 
-        vendorurl: "/collections/vendors?q=&view=related-product",
+                productjson: { error: "json not allowed for this object" },
 
-        typeurl: "/collections/types?q=&view=related-product",
+                producthandle: "",
 
-        sortbydefault: "",
-      };
+                typerelated: "type",
 
-      if (typeof Haravan === "undefined") {
-        Haravan = {};
-      }
+                vendorurl: "/collections/vendors?q=&view=related-product",
 
-      // [FIX #3] Chỉ giữ một giá trị Haravan.shop. Đã xóa dòng gán đè "lavieestbelle.myharavan.com".
-      // Nếu cần dùng domain Haravan nội bộ, hãy lưu vào một biến riêng, ví dụ: Haravan.internalDomain
-      Haravan.shop = "tiemhoanhato.site";
+                typeurl: "/collections/types?q=&view=related-product",
 
-      Haravan.culture = "vi-VN";
+                sortbydefault: "",
+              };
 
-      // Haravan.internalDomain = "lavieestbelle.myharavan.com"; // bỏ comment nếu cần dùng
+              if (typeof Haravan === "undefined") {
+                Haravan = {};
+              }
 
-      Haravan.theme = {
-        name: "Customize Lavieestbelle",
-        id: 1001403720,
-        role: "main",
-      };
+              // [FIX #3] Chỉ giữ một giá trị Haravan.shop. Đã xóa dòng gán đè "lavieestbelle.myharavan.com".
+              // Nếu cần dùng domain Haravan nội bộ, hãy lưu vào một biến riêng, ví dụ: Haravan.internalDomain
+              Haravan.shop = "tiemhoanhato.site";
 
-      Haravan.domain = "tiemhoanhato.site";
-    </script>
+              Haravan.culture = "vi-VN";
 
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+              // Haravan.internalDomain = "lavieestbelle.myharavan.com"; // bỏ comment nếu cần dùng
 
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
-    
-    <!-- CSRF Token Helper -->
-    <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
-  </head>
+              Haravan.theme = {
+                name: "Customize Lavieestbelle",
+                id: 1001403720,
+                role: "main",
+              };
 
-  <body id="wandave-theme" class="index" data-theme="tbag-fashion">
-    <!-- Google Tag Manager (noscript) -->
+              Haravan.domain = "tiemhoanhato.site";
+            </script>
 
-    <noscript
-      ><iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-W8R4GL2"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript>
+            <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet" />
 
-    <noscript
-      ><iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-NSBT6HTK"
-        height="0"
-        width="0"
-        style="display: none; visibility: hidden"
-      ></iframe
-    ></noscript>
+            <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script>
 
-    <%@ include file="partials/header.jsp" %>
+            <!-- CSRF Token Helper -->
+            <script src="${pageContext.request.contextPath}/js/csrf-helper.js"></script>
+        </head>
 
-    <main>
-      <!-- Hero Section -->
+        <body id="wandave-theme" class="index" data-theme="tbag-fashion">
+          <!-- Google Tag Manager (noscript) -->
 
-      <section class="news-hero">
-        <div class="hero-content">
-          <h1>Tin Tức & Cảm Hứng</h1>
+          <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8R4GL2" height="0" width="0"
+              style="display: none; visibility: hidden"></iframe></noscript>
 
-          <p>Khám phá những câu chuyện về hoa và cuộc sống đẹp đẽ</p>
-        </div>
-      </section>
+          <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSBT6HTK" height="0" width="0"
+              style="display: none; visibility: hidden"></iframe></noscript>
 
-      <!-- Search & Filter -->
+          <%@ include file="partials/header.jsp" %>
 
-      <div class="search-filter-section">
-        <div class="search-wrapper">
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Tìm kiếm bài viết..."
-            id="searchInput"
-          />
+            <main>
+              <!-- Hero Section -->
 
-          <button class="search-btn" id="searchBtn">Tìm kiếm</button>
-        </div>
+              <section class="news-hero">
+                <div class="hero-content">
+                  <h1>Tin Tức & Cảm Hứng</h1>
 
-        <div class="filter-chips">
-          <span class="filter-label">Lọc theo:</span>
+                  <p>Khám phá những câu chuyện về hoa và cuộc sống đẹp đẽ</p>
+                </div>
+              </section>
 
-          <div class="chip active" data-filter="all">Tất cả</div>
+              <!-- Search & Filter -->
 
-          <div class="chip" data-filter="tips">Tips chọn hoa</div>
+              <div class="search-filter-section">
+                <div class="search-wrapper">
+                  <input type="text" class="search-input" placeholder="Tìm kiếm bài viết..." id="searchInput" />
 
-          <div class="chip" data-filter="birthday">Sinh nhật</div>
+                  <button class="search-btn" id="searchBtn">Tìm kiếm</button>
+                </div>
 
-          <div class="chip" data-filter="opening">Khai trương</div>
+                <div class="filter-chips">
+                  <span class="filter-label">Lọc theo:</span>
 
-          <div class="chip" data-filter="proposal">Cầu hôn</div>
+                  <div class="chip active" data-filter="all">Tất cả</div>
 
-          <div class="chip" data-filter="wedding">Đám cưới</div>
+                  <div class="chip" data-filter="tips">Tips chọn hoa</div>
 
-          <div class="chip" data-filter="story">Story từ Tiệm</div>
+                  <div class="chip" data-filter="birthday">Sinh nhật</div>
 
-          <div class="chip" data-filter="budget">Ngân sách</div>
-        </div>
-      </div>
+                  <div class="chip" data-filter="opening">Khai trương</div>
 
-      <!-- Main Content -->
+                  <div class="chip" data-filter="proposal">Cầu hôn</div>
 
-      <div class="news-container">
-        <div class="news-layout">
-          <!-- News Grid -->
+                  <div class="chip" data-filter="wedding">Đám cưới</div>
 
-          <div>
-            <section class="news-grid" id="newsGrid">
-              <!-- Empty state (hiển thị khi search không có kết quả) -->
-              <div class="search-empty-state" id="searchEmptyState">
-                <div class="search-empty-icon">🌸</div>
-                <div class="search-empty-title">Không tìm thấy bài viết nào</div>
-                <div class="search-empty-desc">
-                  Không có kết quả cho từ khóa
-                  <span class="search-empty-keyword" id="searchEmptyKeyword"></span>.<br/>
-                  Hãy thử từ khóa khác hoặc xem tất cả bài viết.
+                  <div class="chip" data-filter="story">Story từ Tiệm</div>
+
+                  <div class="chip" data-filter="budget">Ngân sách</div>
                 </div>
               </div>
 
-              <!-- Article 1 -->
+              <!-- Main Content -->
 
-              <article class="news-card" data-category="tips">
-                <div class="news-image-wrapper">
-                  <img
-                    class="news-thumb"
-                    src="https://cdn.hstatic.net/files/200000846175/file/caf51f824f9dc2c39b8c.jpg"
-                    alt="Bó hoa pastel dịu dàng"
-                  />
+              <div class="news-container">
+                <div class="news-layout">
+                  <!-- News Grid -->
 
-                  <div class="news-overlay"></div>
-                </div>
+                  <div>
+                    <section class="news-grid" id="newsGrid">
+                      <!-- Empty state (hiển thị khi search không có kết quả) -->
+                      <div class="search-empty-state" id="searchEmptyState">
+                        <div class="search-empty-icon">🌸</div>
+                        <div class="search-empty-title">Không tìm thấy bài viết nào</div>
+                        <div class="search-empty-desc">
+                          Không có kết quả cho từ khóa
+                          <span class="search-empty-keyword" id="searchEmptyKeyword"></span>.<br />
+                          Hãy thử từ khóa khác hoặc xem tất cả bài viết.
+                        </div>
+                      </div>
 
-                <div class="news-content">
-                  <div class="news-meta">
-                    <span class="news-category">Tips chọn hoa</span>
+                      <!-- Article 1 -->
 
-                    <span class="news-date">17/3/2026</span>
+                      <article class="news-card" data-category="tips">
+                        <div class="news-image-wrapper">
+                          <img class="news-thumb"
+                            src="https://cdn.hstatic.net/files/200000846175/file/caf51f824f9dc2c39b8c.jpg"
+                            alt="Bó hoa pastel dịu dàng" />
+
+                          <div class="news-overlay"></div>
+                        </div>
+
+                        <div class="news-content">
+                          <div class="news-meta">
+                            <span class="news-category">Tips chọn hoa</span>
+
+                            <span class="news-date">17/3/2026</span>
+                          </div>
+
+                          <h2 class="news-heading">
+                            Gợi ý chọn bó hoa pastel cho ngày Giỗ Tổ Hùng Vương
+                          </h2>
+
+                          <p class="news-excerpt">
+                            Bó hoa pastel cho Giỗ Tổ nên ưu tiên Sen hồng, Cúc mẫu đơn hoặc Hồng kem. Phối màu nã nhặn
+                            (trắng - hồng phấn - xanh lơ) tạo vẻ đẹp thanh tao, thành kính. Kiểu bó tròn đầy đặn, gói
+                            giấy trung tính giúp tôn vinh sự sang trọng, thể hiện trọn vẹn đạo lý "Uống nước nhớ nguồn"
+                            và lòng tri ân sâu sắc.
+                          </p>
+
+                          <a href="${pageContext.request.contextPath}/news/hoa-pastel-gio-to-hung-vuong"
+                            class="news-link">Xem chi tiết</a>
+                        </div>
+                      </article>
+
+                      <!-- Article 2 -->
+
+                      <article class="news-card" data-category="opening">
+                        <div class="news-image-wrapper">
+                          <img class="news-thumb"
+                            src="https://product.hstatic.net/200000846175/product/w6_57fe7e7ee65f4097aef741ba053a4609.jpg"
+                            alt="Hoa cho ngày khai trương" />
+
+                          <div class="news-overlay"></div>
+                        </div>
+
+                        <div class="news-content">
+                          <div class="news-meta">
+                            <span class="news-category">Khai trương</span>
+
+                            <span class="news-date">02/11/2025</span>
+                          </div>
+
+                          <h2 class="news-heading">
+                            Chọn kệ hoa khai trương sao cho tinh tế mà vẫn sang trọng?
+                          </h2>
+
+                          <p class="news-excerpt">
+                            Không phải cứ thật to là sẽ đẹp – đôi khi một kệ hoa vừa
+                            phải, phối màu chuẩn và câu chúc được chăm chút lại gây ấn
+                            tượng hơn rất nhiều.
+                          </p>
+
+                          <a href="${pageContext.request.contextPath}/news/chon-ke-hoa-khai-truong"
+                            class="news-link">Xem chi tiết</a>
+                        </div>
+                      </article>
+
+                      <!-- Article 3 -->
+
+                      <article class="news-card" data-category="story">
+                        <div class="news-image-wrapper">
+                          <img class="news-thumb"
+                            src="https://cdn.hstatic.net/files/200000846175/file/z5318389113228_bf05d1d394f756ddf038d8894726eb4c_cf4c6b6a880841b6b51d904a62b0035c.jpg"
+                            alt="Hoa và quà tặng" />
+
+                          <div class="news-overlay"></div>
+                        </div>
+
+                        <div class="news-content">
+                          <div class="news-meta">
+                            <span class="news-category">Story từ Tiệm</span>
+
+                            <span class="news-date">25/10/2025</span>
+                          </div>
+
+                          <h2 class="news-heading">
+                            Một ngày chuẩn bị 20 đơn "tỏ tình" cùng nhà tớ
+                          </h2>
+
+                          <p class="news-excerpt">
+                            Có những ngày Tiệm nhận rất nhiều đơn "bí mật" – người gửi
+                            giấu tên, chỉ nhắn một câu: "Nhờ Tiệm giúp em nói phần còn
+                            lại nhé…".
+                          </p>
+
+                          <a href="${pageContext.request.contextPath}/news/mot-ngay-chuan-bi-20-don-to-tinh"
+                            class="news-link">Xem chi tiết</a>
+                        </div>
+                      </article>
+
+                      <!-- Article 4 -->
+
+                      <article class="news-card" data-category="budget">
+                        <div class="news-image-wrapper">
+                          <img class="news-thumb"
+                            src="https://file.hstatic.net/200000846175/article/6_d6bdb32719444cc5ad4a6193f4c065f1_master.png"
+                            alt="Bó hoa theo ngân sách" />
+
+                          <div class="news-overlay"></div>
+                        </div>
+
+                        <div class="news-content">
+                          <div class="news-meta">
+                            <span class="news-category">Ngân sách</span>
+
+                            <span class="news-date">18/10/2025</span>
+                          </div>
+
+                          <h2 class="news-heading">
+                            Tặng hoa với ngân sách vừa phải nhưng vẫn thật chỉn chu
+                          </h2>
+
+                          <p class="news-excerpt">
+                            Bạn không cần chi quá nhiều để có một bó hoa xinh – Ưu tiên hoa Cát Tường hoặc Cúc mẫu đơn
+                            nội địa tông hồng kem, trắng để tiết kiệm chi phí. Phối cùng nhiều lá bạc, hoa baby giúp bó
+                            hoa đầy đặn, sang trọng. Sử dụng giấy gói Kraft hoặc nơ tối giản giúp tổng thể trông chỉn
+                            chu, thành kính mà vẫn vừa vặn ngân sách.
+                          </p>
+
+                          <a href="${pageContext.request.contextPath}/news/tang-hoa-ngan-sach-vua-phai"
+                            class="news-link">Xem chi tiết</a>
+                        </div>
+                      </article>
+
+                      <!-- Article 5 -->
+
+                      <article class="news-card" data-category="proposal">
+                        <div class="news-image-wrapper">
+                          <img class="news-thumb"
+                            src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=400"
+                            alt="Hoa cầu hôn" />
+
+                          <div class="news-overlay"></div>
+                        </div>
+
+                        <div class="news-content">
+                          <div class="news-meta">
+                            <span class="news-category">Cầu hôn</span>
+
+                            <span class="news-date">12/10/2025</span>
+                          </div>
+
+                          <h2 class="news-heading">
+                            Bó hoa cầu hôn hoàn hảo: Chọn sao cho đúng ý?
+                          </h2>
+
+                          <p class="news-excerpt">
+                            Một khoảnh khắc trọng đại cần một bó hoa đặc biệt. Hãy để
+                            chúng tôi giúp bạn tìm được "chìa khóa" cho trái tim người
+                            ấy.
+                          </p>
+
+                          <a href="${pageContext.request.contextPath}/news/bo-hoa-cau-hon-hoan-hao"
+                            class="news-link">Xem chi tiết</a>
+                        </div>
+                      </article>
+
+                      <!-- Article 6 -->
+
+                      <article class="news-card" data-category="tips">
+                        <div class="news-image-wrapper">
+                          <img class="news-thumb"
+                            src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=400"
+                            alt="Chăm sóc hoa" />
+
+                          <div class="news-overlay"></div>
+                        </div>
+
+                        <div class="news-content">
+                          <div class="news-meta">
+                            <span class="news-category">Tips chọn hoa</span>
+
+                            <span class="news-date">05/10/2025</span>
+                          </div>
+
+                          <h2 class="news-heading">
+                            5 bí quyết giữ hoa tươi lâu mà ít ai biết
+                          </h2>
+
+                          <p class="news-excerpt">
+                            Đừng để bó hoa đẹp của bạn chỉ tồn tại vài ngày. Với những
+                            mẹo đơn giản này, hoa có thể tươi hơn bạn nghĩ rất nhiều.
+                          </p>
+
+                          <a href="${pageContext.request.contextPath}/news/5-bi-quyet-giu-hoa-tuoi-lau"
+                            class="news-link">Xem chi tiết</a>
+                        </div>
+                      </article>
+
+                      <!-- Article 7 -->
+
+                      <article class="news-card" data-category="tips">
+                        <div class="news-image-wrapper">
+                          <img class="news-thumb" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
+                            alt="Chọn hoa theo màu sắc" />
+
+                          <div class="news-overlay"></div>
+                        </div>
+
+                        <div class="news-content">
+                          <div class="news-meta">
+                            <span class="news-category">Tips chọn hoa</span>
+
+                            <span class="news-date">05/3/2026</span>
+                          </div>
+
+                          <h2 class="news-heading">
+                            Ý nghĩa màu sắc hoa – Chọn đúng tông để nói đúng điều muốn nói
+                          </h2>
+
+                          <p class="news-excerpt">
+                            Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu
+                            cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ.
+                          </p>
+
+                          <a href="${pageContext.request.contextPath}/news/y-nghia-mau-sac-hoa" class="news-link">Xem
+                            chi tiết</a>
+                        </div>
+                      </article>
+                    </section>
+
+                    <!-- Load More -->
+
+                    <div class="load-more-section">
+                      <button class="load-more-btn" id="loadMoreBtn">
+                        Xem thêm bài viết
+                      </button>
+                    </div>
                   </div>
 
-                  <h2 class="news-heading">
-                    Gợi ý chọn bó hoa pastel cho ngày Giỗ Tổ Hùng Vương
-                  </h2>
+                  <!-- Sidebar -->
 
-                  <p class="news-excerpt">
-                    Bó hoa pastel cho Giỗ Tổ nên ưu tiên Sen hồng, Cúc mẫu đơn hoặc Hồng kem. Phối màu nã nhặn (trắng - hồng phấn - xanh lơ) tạo vẻ đẹp thanh tao, thành kính. Kiểu bó tròn đầy đặn, gói giấy trung tính giúp tôn vinh sự sang trọng, thể hiện trọn vẹn đạo lý "Uống nước nhớ nguồn" và lòng tri ân sâu sắc.
-                  </p>
+                  <aside class="news-sidebar">
+                    <div class="sidebar-widget">
+                      <h3 class="sidebar-title">Tin mới nhất</h3>
 
-                  <a href="${pageContext.request.contextPath}/news/hoa-pastel-gio-to-hung-vuong" class="news-link">Xem chi tiết</a>
+                      <ul class="recent-posts">
+                        <li class="recent-post-item"
+                          data-href="${pageContext.request.contextPath}/news/hoa-pastel-mua-cuoi-nam">
+                          <div class="recent-post-title">
+                            Hoa pastel cho mùa cuối năm
+                          </div>
+
+                          <div class="recent-post-date">09/11/2025</div>
+                        </li>
+
+                        <li class="recent-post-item"
+                          data-href="${pageContext.request.contextPath}/news/5-mau-bo-hoa-an-toan">
+                          <div class="recent-post-title">
+                            5 mẫu bó hoa "an toàn" nhưng không nhàm chán
+                          </div>
+
+                          <div class="recent-post-date">03/11/2025</div>
+                        </li>
+
+                        <li class="recent-post-item"
+                          data-href="${pageContext.request.contextPath}/news/chon-hoa-theo-cung-hoang-dao">
+                          <div class="recent-post-title">
+                            Chọn hoa theo cung hoàng đạo – bạn đã thử chưa?
+                          </div>
+
+                          <div class="recent-post-date">27/10/2025</div>
+                        </li>
+
+                        <li class="recent-post-item"
+                          data-href="${pageContext.request.contextPath}/news/bi-mat-bo-hoa-trieu-view">
+                          <div class="recent-post-title">
+                            Bí mật của những bó hoa "triệu view"
+                          </div>
+
+                          <div class="recent-post-date">20/10/2025</div>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div class="sidebar-widget">
+                      <h3 class="sidebar-title">Góc nhỏ từ nhà tớ</h3>
+
+                      <p class="sidebar-note">
+                        Nếu bạn có một câu chuyện về hoa cùng Tiệm, hãy nhắn cho tụi
+                        mình – biết đâu câu chuyện đó sẽ xuất hiện trong chuyên mục
+                        "Story từ nhà tớ" 💌
+                      </p>
+                    </div>
+                  </aside>
                 </div>
-              </article>
+              </div>
+            </main>
 
-              <!-- Article 2 -->
+            <%@ include file="partials/footer.jsp" %>
 
-              <article class="news-card" data-category="opening">
-                <div class="news-image-wrapper">
-                  <img
-                    class="news-thumb"
-                    src="https://product.hstatic.net/200000846175/product/w6_57fe7e7ee65f4097aef741ba053a4609.jpg"
-                    alt="Hoa cho ngày khai trương"
-                  />
+              <!-- Modals - giữ nguyên -->
 
-                  <div class="news-overlay"></div>
-                </div>
+              <div class="modal" id="pro-qv-wanda"></div>
 
-                <div class="news-content">
-                  <div class="news-meta">
-                    <span class="news-category">Khai trương</span>
+              <div class="modal" id="success-cart-wanda">
+                <div class="row">
+                  <div class="modal-content">
+                    <div class="modal-icon sweet-alert">
+                      <div class="sa-icon sa-success animate">
+                        <span class="sa-line sa-tip animateSuccessTip"></span>
 
-                    <span class="news-date">02/11/2025</span>
+                        <span class="sa-line sa-long animateSuccessLong"></span>
+
+                        <div class="sa-placeholder"></div>
+
+                        <div class="sa-fix"></div>
+                      </div>
+                    </div>
+
+                    <div class="modal-body text-center">
+                      <p class="modal-title">Thêm vào giờ thành công</p>
+
+                      <div class="media-success"></div>
+                    </div>
                   </div>
-
-                  <h2 class="news-heading">
-                    Chọn kệ hoa khai trương sao cho tinh tế mà vẫn sang trọng?
-                  </h2>
-
-                  <p class="news-excerpt">
-                    Không phải cứ thật to là sẽ đẹp – đôi khi một kệ hoa vừa
-                    phải, phối màu chuẩn và câu chúc được chăm chút lại gây ấn
-                    tượng hơn rất nhiều.
-                  </p>
-
-                  <a href="${pageContext.request.contextPath}/news/chon-ke-hoa-khai-truong" class="news-link">Xem chi tiết</a>
                 </div>
-              </article>
+              </div>
 
-              <!-- Article 3 -->
+              <div class="modal" id="cart-mini-wanda">
+                <div class="modal-header">Giỏ hàng</div>
 
-              <article class="news-card" data-category="story">
-                <div class="news-image-wrapper">
-                  <img
-                    class="news-thumb"
-                    src="https://cdn.hstatic.net/files/200000846175/file/z5318389113228_bf05d1d394f756ddf038d8894726eb4c_cf4c6b6a880841b6b51d904a62b0035c.jpg"
-                    alt="Hoa và quà tặng"
-                  />
+                <div class="modal-content">
+                  <div class="cart-view clearfix">
+                    <div class="cart-scroll">
+                      <table id="cart-view">
+                        <tbody></tbody>
+                      </table>
+                    </div>
 
-                  <div class="news-overlay"></div>
-                </div>
+                    <span class="line"></span>
 
-                <div class="news-content">
-                  <div class="news-meta">
-                    <span class="news-category">Story từ Tiệm</span>
+                    <table class="table-total">
+                      <tbody>
+                        <tr>
+                          <td class="text-left title-total">TỔNG TIỀN:</td>
 
-                    <span class="news-date">25/10/2025</span>
+                          <td class="text-right" id="total-view-cart"></td>
+                        </tr>
+
+                        <tr>
+                          <td colspan="2">
+                            <a href="cart.jsp" class="wanda-checkout-url btn">Thanh toán</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-
-                  <h2 class="news-heading">
-                    Một ngày chuẩn bị 20 đơn "tỏ tình" cùng nhà tớ
-                  </h2>
-
-                  <p class="news-excerpt">
-                    Có những ngày Tiệm nhận rất nhiều đơn "bí mật" – người gửi
-                    giấu tên, chỉ nhắn một câu: "Nhờ Tiệm giúp em nói phần còn
-                    lại nhé…".
-                  </p>
-
-                  <a href="${pageContext.request.contextPath}/news/mot-ngay-chuan-bi-20-don-to-tinh" class="news-link">Xem chi tiết</a>
                 </div>
-              </article>
+              </div>
 
-              <!-- Article 4 -->
+              <div class="modal" id="modal-error">
+                <img src="//cdn.hstatic.net/themes/200000846175/1001403720/14/alert.png?v=245" width="44" height="38" />
 
-              <article class="news-card" data-category="budget">
-                <div class="news-image-wrapper">
-                  <img
-                    class="news-thumb"
-                    src="https://file.hstatic.net/200000846175/article/6_d6bdb32719444cc5ad4a6193f4c065f1_master.png"
-                    alt="Bó hoa theo ngân sách"
-                  />
+                <span class="title">Thông báo!</span>
 
-                  <div class="news-overlay"></div>
-                </div>
+                <p></p>
+              </div>
 
-                <div class="news-content">
-                  <div class="news-meta">
-                    <span class="news-category">Ngân sách</span>
+              <div class="modal" id="success-subcribe-wanda">
+                <div class="row">
+                  <div class="modal-content">
+                    <div class="modal-icon sweet-alert">
+                      <div class="sa-icon sa-success animate">
+                        <span class="sa-line sa-tip animateSuccessTip"></span>
 
-                    <span class="news-date">18/10/2025</span>
+                        <span class="sa-line sa-long animateSuccessLong"></span>
+
+                        <div class="sa-placeholder"></div>
+
+                        <div class="sa-fix"></div>
+                      </div>
+                    </div>
+
+                    <div class="modal-body text-center">
+                      <p class="modal-title">
+                        Đăng ký thành công.<br />Thông báo sẽ tự động tắt sau 3 giây
+                      </p>
+                    </div>
                   </div>
-
-                  <h2 class="news-heading">
-                    Tặng hoa với ngân sách vừa phải nhưng vẫn thật chỉn chu
-                  </h2>
-
-                  <p class="news-excerpt">
-                    Bạn không cần chi quá nhiều để có một bó hoa xinh – Ưu tiên hoa Cát Tường hoặc Cúc mẫu đơn nội địa tông hồng kem, trắng để tiết kiệm chi phí. Phối cùng nhiều lá bạc, hoa baby giúp bó hoa đầy đặn, sang trọng. Sử dụng giấy gói Kraft hoặc nơ tối giản giúp tổng thể trông chỉn chu, thành kính mà vẫn vừa vặn ngân sách.
-                  </p>
-
-                  <a href="${pageContext.request.contextPath}/news/tang-hoa-ngan-sach-vua-phai" class="news-link">Xem chi tiết</a>
                 </div>
-              </article>
-
-              <!-- Article 5 -->
-
-              <article class="news-card" data-category="proposal">
-                <div class="news-image-wrapper">
-                  <img
-                    class="news-thumb"
-                    src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=400"
-                    alt="Hoa cầu hôn"
-                  />
-
-                  <div class="news-overlay"></div>
-                </div>
-
-                <div class="news-content">
-                  <div class="news-meta">
-                    <span class="news-category">Cầu hôn</span>
-
-                    <span class="news-date">12/10/2025</span>
-                  </div>
-
-                  <h2 class="news-heading">
-                    Bó hoa cầu hôn hoàn hảo: Chọn sao cho đúng ý?
-                  </h2>
-
-                  <p class="news-excerpt">
-                    Một khoảnh khắc trọng đại cần một bó hoa đặc biệt. Hãy để
-                    chúng tôi giúp bạn tìm được "chìa khóa" cho trái tim người
-                    ấy.
-                  </p>
-
-                  <a href="${pageContext.request.contextPath}/news/bo-hoa-cau-hon-hoan-hao" class="news-link">Xem chi tiết</a>
-                </div>
-              </article>
-
-              <!-- Article 6 -->
-
-              <article class="news-card" data-category="tips">
-                <div class="news-image-wrapper">
-                  <img
-                    class="news-thumb"
-                    src="https://images.unsplash.com/photo-1487070183336-b863922373d4?w=400"
-                    alt="Chăm sóc hoa"
-                  />
-
-                  <div class="news-overlay"></div>
-                </div>
-
-                <div class="news-content">
-                  <div class="news-meta">
-                    <span class="news-category">Tips chọn hoa</span>
-
-                    <span class="news-date">05/10/2025</span>
-                  </div>
-
-                  <h2 class="news-heading">
-                    5 bí quyết giữ hoa tươi lâu mà ít ai biết
-                  </h2>
-
-                  <p class="news-excerpt">
-                    Đừng để bó hoa đẹp của bạn chỉ tồn tại vài ngày. Với những
-                    mẹo đơn giản này, hoa có thể tươi hơn bạn nghĩ rất nhiều.
-                  </p>
-
-                  <a href="${pageContext.request.contextPath}/news/5-bi-quyet-giu-hoa-tuoi-lau" class="news-link">Xem chi tiết</a>
-                </div>
-              </article>
-
-              <!-- Article 7 -->
-
-              <article class="news-card" data-category="tips">
-                <div class="news-image-wrapper">
-                  <img
-                    class="news-thumb"
-                    src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400"
-                    alt="Chọn hoa theo màu sắc"
-                  />
-
-                  <div class="news-overlay"></div>
-                </div>
-
-                <div class="news-content">
-                  <div class="news-meta">
-                    <span class="news-category">Tips chọn hoa</span>
-
-                    <span class="news-date">05/3/2026</span>
-                  </div>
-
-                  <h2 class="news-heading">
-                    Ý nghĩa màu sắc hoa – Chọn đúng tông để nói đúng điều muốn nói
-                  </h2>
-
-                  <p class="news-excerpt">
-                    Đừng để hoa chóng tàn làm mất đi vẻ tôn nghiêm; hãy lưu lại ngay 5 bí quyết giữ hoa tươi lâu cực đơn giản mà ít ai biết sau đây để sắc hoa luôn bền đẹp trong suốt ngày đại lễ.
-                  </p>
-
-                  <a href="${pageContext.request.contextPath}/news/y-nghia-mau-sac-hoa" class="news-link">Xem chi tiết</a>
-                </div>
-              </article>
-            </section>
-
-            <!-- Load More -->
-
-            <div class="load-more-section">
-              <button class="load-more-btn" id="loadMoreBtn">
-                Xem thêm bài viết
-              </button>
-            </div>
-          </div>
-
-          <!-- Sidebar -->
-
-          <aside class="news-sidebar">
-            <div class="sidebar-widget">
-              <h3 class="sidebar-title">Tin mới nhất</h3>
-
-              <ul class="recent-posts">
-                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/hoa-pastel-mua-cuoi-nam">
-                  <div class="recent-post-title">
-                    Hoa pastel cho mùa cuối năm
-                  </div>
-
-                  <div class="recent-post-date">09/11/2025</div>
-                </li>
-
-                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/5-mau-bo-hoa-an-toan">
-                  <div class="recent-post-title">
-                    5 mẫu bó hoa "an toàn" nhưng không nhàm chán
-                  </div>
-
-                  <div class="recent-post-date">03/11/2025</div>
-                </li>
-
-                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/chon-hoa-theo-cung-hoang-dao">
-                  <div class="recent-post-title">
-                    Chọn hoa theo cung hoàng đạo – bạn đã thử chưa?
-                  </div>
-
-                  <div class="recent-post-date">27/10/2025</div>
-                </li>
-
-                <li class="recent-post-item" data-href="${pageContext.request.contextPath}/news/bi-mat-bo-hoa-trieu-view">
-                  <div class="recent-post-title">
-                    Bí mật của những bó hoa "triệu view"
-                  </div>
-
-                  <div class="recent-post-date">20/10/2025</div>
-                </li>
-              </ul>
-            </div>
-
-            <div class="sidebar-widget">
-              <h3 class="sidebar-title">Góc nhỏ từ nhà tớ</h3>
-
-              <p class="sidebar-note">
-                Nếu bạn có một câu chuyện về hoa cùng Tiệm, hãy nhắn cho tụi
-                mình – biết đâu câu chuyện đó sẽ xuất hiện trong chuyên mục
-                "Story từ nhà tớ" 💌
-              </p>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </main>
-
-    <%@ include file="partials/footer.jsp" %>
-
-    <!-- Modals - giữ nguyên -->
-
-    <div class="modal" id="pro-qv-wanda"></div>
-
-    <div class="modal" id="success-cart-wanda">
-      <div class="row">
-        <div class="modal-content">
-          <div class="modal-icon sweet-alert">
-            <div class="sa-icon sa-success animate">
-              <span class="sa-line sa-tip animateSuccessTip"></span>
-
-              <span class="sa-line sa-long animateSuccessLong"></span>
-
-              <div class="sa-placeholder"></div>
-
-              <div class="sa-fix"></div>
-            </div>
-          </div>
-
-          <div class="modal-body text-center">
-            <p class="modal-title">Thêm vào giờ thành công</p>
-
-            <div class="media-success"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal" id="cart-mini-wanda">
-      <div class="modal-header">Giỏ hàng</div>
-
-      <div class="modal-content">
-        <div class="cart-view clearfix">
-          <div class="cart-scroll">
-            <table id="cart-view">
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <span class="line"></span>
-
-          <table class="table-total">
-            <tbody>
-              <tr>
-                <td class="text-left title-total">TỔNG TIỀN:</td>
-
-                <td class="text-right" id="total-view-cart"></td>
-              </tr>
-
-              <tr>
-                <td colspan="2">
-                  <a href="cart.jsp" class="wanda-checkout-url btn"
-                    >Thanh toán</a
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal" id="modal-error">
-      <img
-        src="//cdn.hstatic.net/themes/200000846175/1001403720/14/alert.png?v=245"
-        width="44"
-        height="38"
-      />
-
-      <span class="title">Thông báo!</span>
-
-      <p></p>
-    </div>
-
-    <div class="modal" id="success-subcribe-wanda">
-      <div class="row">
-        <div class="modal-content">
-          <div class="modal-icon sweet-alert">
-            <div class="sa-icon sa-success animate">
-              <span class="sa-line sa-tip animateSuccessTip"></span>
-
-              <span class="sa-line sa-long animateSuccessLong"></span>
-
-              <div class="sa-placeholder"></div>
-
-              <div class="sa-fix"></div>
-            </div>
-          </div>
-
-          <div class="modal-body text-center">
-            <p class="modal-title">
-              Đăng ký thành công.<br />Thông báo sẽ tự động tắt sau 3 giây
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- JavaScript -->
-
-    <script>
-      // Filter functionality
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("searchInput");
-
-        const searchBtn = document.getElementById("searchBtn");
-
-        const loadMoreBtn = document.getElementById("loadMoreBtn");
-
-        // Filter chips và card click được xử lý bởi initFilterAndCardEvents() (event delegation)
-        // — không gán event trực tiếp ở đây để tránh double-trigger
-
-        // Search functionality
-
-        function performSearch() {
-          const searchTerm = searchInput.value.toLowerCase().trim();
-          const newsCards = document.querySelectorAll(".news-card");
-
-          if (searchTerm === "") {
-            document.getElementById("searchEmptyState").classList.remove("visible");
-            newsCards.forEach((card) => {
-              card.style.display = "flex";
-            });
-
-            return;
-          }
-
-          let foundCount = 0;
-
-          newsCards.forEach((card) => {
-            const title = card
-              .querySelector(".news-heading")
-              .textContent.toLowerCase();
-
-            const excerpt = card
-              .querySelector(".news-excerpt")
-              .textContent.toLowerCase();
-
-            if (title.includes(searchTerm) || excerpt.includes(searchTerm)) {
-              card.style.display = "flex";
-
-              card.style.animation = "fadeInUp 0.6s ease-out";
-
-              foundCount++;
-            } else {
-              card.style.display = "none";
-            }
-          });
-
-          const searchEmptyState = document.getElementById("searchEmptyState");
-          const searchEmptyKeyword = document.getElementById("searchEmptyKeyword");
-
-          if (foundCount === 0) {
-            searchEmptyState.classList.add("visible");
-            searchEmptyKeyword.textContent = '"' + searchTerm + '"';
-          } else {
-            searchEmptyState.classList.remove("visible");
-            searchEmptyKeyword.textContent = "";
-          }
-        }
-
-        searchBtn.addEventListener("click", performSearch);
-
-        searchInput.addEventListener("keypress", function (e) {
-          if (e.key === "Enter") {
-            performSearch();
-          }
-        });
-
-        // Load more functionality
-
-        loadMoreBtn.addEventListener("click", function () {
-          loadMoreNews();
-        });
-
-        // Khởi tạo event delegation một lần duy nhất
-        initFilterAndCardEvents();
-
-        // Recent posts click
-        const recentPosts = document.querySelectorAll(".recent-post-item");
-
-        recentPosts.forEach((post) => {
-          post.addEventListener("click", function () {
-            const href = this.getAttribute("data-href");
-            if (href && href !== "#") {
-              window.location.href = href;
-            }
-          });
-        });
-        
-        // Load news from database
-        loadNewsFromDB();
-
-        // Initialize AOS if available
-
-        if (typeof AOS !== "undefined") {
-          AOS.init({
-            duration: 800,
-
-            once: true,
-
-            offset: 100,
-          });
-        }
-      });
-      
-      // Load news function
-      const contextPath = '${pageContext.request.contextPath}';
-      const PAGE_SIZE = 9;
-      let currentPage = 1;
-      let isLoadingMore = false;
-
-      function escapeHtml(value) {
-        return String(value == null ? '' : value)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-      }
-
-      function safeImageUrl(url) {
-        const clean = (url || '').trim();
-        if (!clean) return 'https://via.placeholder.com/400x300?text=No+Image';
-        if (/^(https?:)?\/\//i.test(clean) || clean.startsWith(contextPath + '/')) {
-          return clean;
-        }
-        return 'https://via.placeholder.com/400x300?text=No+Image';
-      }
-
-      function safeSlug(slug) {
-        return slug ? encodeURIComponent(slug) : '';
-      }
-
-      function formatPublishedDate(rawDate) {
-        const date = rawDate ? new Date(rawDate) : null;
-        return date && !isNaN(date) ? date.toLocaleDateString('vi-VN') : '';
-      }
-
-      function buildSkeletonCard() {
-        const card = document.createElement('div');
-        card.className = 'skeleton-card';
-        card.setAttribute('data-skeleton', 'true');
-        card.innerHTML =
-          '<div class="skeleton-image skeleton-shimmer"></div>' +
-          '<div class="skeleton-body">' +
-            '<div class="skeleton-meta skeleton-shimmer"></div>' +
-            '<div class="skeleton-title skeleton-shimmer"></div>' +
-            '<div class="skeleton-title-short skeleton-shimmer"></div>' +
-            '<div class="skeleton-line skeleton-shimmer"></div>' +
-            '<div class="skeleton-line skeleton-shimmer"></div>' +
-            '<div class="skeleton-line-short skeleton-shimmer"></div>' +
-            '<div class="skeleton-link skeleton-shimmer"></div>' +
-          '</div>';
-        return card;
-      }
-
-      function showSkeletons(count) {
-        const newsGrid = document.getElementById('newsGrid');
-        for (let i = 0; i < count; i++) {
-          newsGrid.appendChild(buildSkeletonCard());
-        }
-      }
-
-      function removeSkeletons() {
-        const newsGrid = document.getElementById('newsGrid');
-        newsGrid.querySelectorAll('[data-skeleton]').forEach(function(el) {
-          el.remove();
-        });
-      }
-
-      async function loadNewsFromDB(page, append) {
-        page = page || 1;
-        append = append || false;
-        try {
-          const newsGrid = document.getElementById('newsGrid');
-
-          // Hiển thị skeleton trước khi fetch
-          if (!append) {
-            newsGrid.innerHTML = '';
-          }
-          showSkeletons(PAGE_SIZE);
-
-          const url = contextPath + '/api/news/list?page=' + page + '&pageSize=' + PAGE_SIZE;
-          const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-          const result = await response.json();
-
-          // Xóa skeleton sau khi có dữ liệu
-          removeSkeletons();
-          
-          if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-            result.data.forEach(news => {
-              newsGrid.appendChild(buildNewsCard(news));
-            });
-            
-            // Ẩn nút if hết dữ liệu (ít hơn PAGE_SIZE hoặc ở server có báo hasMore=false)
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
-            const hasMore = result.hasMore !== undefined ? result.hasMore : (result.data.length === PAGE_SIZE);
-            if (!hasMore) {
-              loadMoreBtn.textContent = 'Đã hiển thị tất cả';
-              loadMoreBtn.disabled = true;
-            } else {
-              loadMoreBtn.textContent = 'Xem thêm bài viết';
-              loadMoreBtn.disabled = false;
-            }
-
-            // Re-attach filter events with fresh nodes — không cần với event delegation
-          } else if (!append) {
-            // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
-          }
-        } catch (error) {
-          removeSkeletons();
-          console.error('Error loading news:', error);
-        }
-      }
-
-      function buildNewsCard(news) {
-        const title = escapeHtml(news.title || 'Bài viết');
-        const excerpt = escapeHtml(news.excerpt || '');
-        const category = escapeHtml(getCategoryName(news.category));
-        const imageUrl = safeImageUrl(news.imageUrl);
-        const formattedDate = formatPublishedDate(news.publishedDate);
-        const slugPath = news.slug ? '/news/' + safeSlug(news.slug) : '/news';
-
-        const article = document.createElement('article');
-        article.className = 'news-card';
-        article.setAttribute('data-category', news.category || 'all');
-        article.style.animation = 'fadeInUp 0.6s ease-out';
-        
-        article.innerHTML = '<div class="news-image-wrapper">' +
-          '<img class="news-thumb" src="' + imageUrl + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
-          '<div class="news-overlay"></div>' +
-          '</div>' +
-          '<div class="news-content">' +
-            '<div class="news-meta">' +
-              '<span class="news-category">' + category + '</span>' +
-              '<span class="news-date">' + formattedDate + '</span>' +
-            '</div>' +
-            '<h2 class="news-heading">' + title + '</h2>' +
-            '<p class="news-excerpt">' + excerpt + '</p>' +
-            '<a href="' + contextPath + slugPath + '" class="news-link">Xem chi tiết</a>' +
-          '</div>';
-        
-        return article;
-      }
-
-      async function loadMoreNews() {
-        if (isLoadingMore) return;
-        isLoadingMore = true;
-
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
-        const originalText = loadMoreBtn.textContent;
-        loadMoreBtn.textContent = 'Đang tải...';
-        loadMoreBtn.disabled = true;
-
-        currentPage += 1;
-        await loadNewsFromDB(currentPage, true);
-
-        isLoadingMore = false;
-        // Nút sẽ được bật lại bên trong loadNewsFromDB nếu còn dữ liệu
-      }
-      
-      function getCategoryName(category) {
-        const categories = {
-          'tips': 'Tips chọn hoa',
-          'opening': 'Khai trương',
-          'story': 'Câu chuyện',
-          'proposal': 'Cầu hôn',
-          'wedding': 'Đám cưới',
-          'birthday': 'Sinh nhật',
-          'budget': 'Ngân sách'
-        };
-        return categories[category] || category;
-      }
-      
-function initFilterAndCardEvents() {
-        const filterChips = document.querySelector(".filter-chips");
-        const newsGrid   = document.getElementById("newsGrid");
-
-        // --- Chip filter: delegation trên container .filter-chips ---
-        if (filterChips && !filterChips._delegated) {
-          filterChips._delegated = true;
-          filterChips.addEventListener("click", function (e) {
-            const btn = e.target.closest(".chip");
-            if (!btn) return;
-
-            document.querySelectorAll(".chip").forEach(function (b) {
-              b.classList.remove("active");
-            });
-            btn.classList.add("active");
-
-            const filter = btn.getAttribute("data-filter");
-            document.querySelectorAll(".news-card").forEach(function (card) {
-              const category = card.getAttribute("data-category");
-              card.style.display = (filter === "all" || category === filter) ? "flex" : "none";
-            });
-          });
-        }
-
-        // --- Card click: delegation trên #newsGrid ---
-        if (newsGrid && !newsGrid._delegated) {
-          newsGrid._delegated = true;
-          newsGrid.addEventListener("click", function (e) {
-            if (e.target.classList.contains("news-link")) return;
-            const card = e.target.closest(".news-card");
-            if (!card) return;
-            const link = card.querySelector(".news-link");
-            if (link) window.location.href = link.getAttribute("href");
-          });
-        }
-      }
-      // Async loading
-
-      var checkapp = false;
-
-      let loadasyncdefer = () => {};
-
-      // [FIX #4] Thêm resolve() sau khi dispatch xong các setTimeout,
-      // tránh Promise bị treo mãi mãi không bao giờ settle.
-      function resolveAfter5Seconds() {
-        return new Promise((resolve) => {
-          if (tbag_varible.template == "index") {
-            setTimeout(() => {
-              if (typeof loadslider === "function") loadslider();
-            }, 100);
-          }
-
-          setTimeout(() => {
-            loadasyncdefer();
-            resolve(); // Promise settle sau khi loadasyncdefer được lên lịch
-          }, 200);
-        });
-      }
-
-      async function asyncCall() {
-        await resolveAfter5Seconds();
-      }
-    </script>
-
-    <script
-      type="text/javascript"
-      src="//cdn.hstatic.net/themes/200000846175/1001403720/14/pluginscript.js?v=245"
-      defer
-    ></script>
-
-    <script
-      type="text/javascript"
-      src="//cdn.hstatic.net/themes/200000846175/1001403720/14/main-scripts.js?v=245"
-      defer
-    ></script>
-
-    <script
-      type="text/javascript"
-      src="//cdn.hstatic.net/themes/200000846175/1001403720/14/main-page.js?v=245"
-      defer
-    ></script>
-  </body>
-</html>
+              </div>
+
+              <!-- JavaScript -->
+
+              <script>
+                // Filter functionality
+
+                document.addEventListener("DOMContentLoaded", function () {
+                  const searchInput = document.getElementById("searchInput");
+
+                  const searchBtn = document.getElementById("searchBtn");
+
+                  const loadMoreBtn = document.getElementById("loadMoreBtn");
+
+                  // Filter chips và card click được xử lý bởi initFilterAndCardEvents() (event delegation)
+                  // — không gán event trực tiếp ở đây để tránh double-trigger
+
+                  // Search functionality
+
+                  function performSearch() {
+                    const searchTerm = searchInput.value.toLowerCase().trim();
+                    const newsCards = document.querySelectorAll(".news-card");
+
+                    if (searchTerm === "") {
+                      document.getElementById("searchEmptyState").classList.remove("visible");
+                      newsCards.forEach((card) => {
+                        card.style.display = "flex";
+                      });
+
+                      return;
+                    }
+
+                    let foundCount = 0;
+
+                    newsCards.forEach((card) => {
+                      const title = card
+                        .querySelector(".news-heading")
+                        .textContent.toLowerCase();
+
+                      const excerpt = card
+                        .querySelector(".news-excerpt")
+                        .textContent.toLowerCase();
+
+                      if (title.includes(searchTerm) || excerpt.includes(searchTerm)) {
+                        card.style.display = "flex";
+
+                        card.style.animation = "fadeInUp 0.6s ease-out";
+
+                        foundCount++;
+                      } else {
+                        card.style.display = "none";
+                      }
+                    });
+
+                    const searchEmptyState = document.getElementById("searchEmptyState");
+                    const searchEmptyKeyword = document.getElementById("searchEmptyKeyword");
+
+                    if (foundCount === 0) {
+                      searchEmptyState.classList.add("visible");
+                      searchEmptyKeyword.textContent = '"' + searchTerm + '"';
+                    } else {
+                      searchEmptyState.classList.remove("visible");
+                      searchEmptyKeyword.textContent = "";
+                    }
+                  }
+
+                  searchBtn.addEventListener("click", performSearch);
+
+                  searchInput.addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                      performSearch();
+                    }
+                  });
+
+                  // Load more functionality
+
+                  loadMoreBtn.addEventListener("click", function () {
+                    loadMoreNews();
+                  });
+
+                  // Khởi tạo event delegation một lần duy nhất
+                  initFilterAndCardEvents();
+
+                  // Recent posts click
+                  const recentPosts = document.querySelectorAll(".recent-post-item");
+
+                  recentPosts.forEach((post) => {
+                    post.addEventListener("click", function () {
+                      const href = this.getAttribute("data-href");
+                      if (href && href !== "#") {
+                        window.location.href = href;
+                      }
+                    });
+                  });
+
+                  // Load news from database
+                  loadNewsFromDB();
+
+                  // Initialize AOS if available
+
+                  if (typeof AOS !== "undefined") {
+                    AOS.init({
+                      duration: 800,
+
+                      once: true,
+
+                      offset: 100,
+                    });
+                  }
+                });
+
+                // Load news function
+                const contextPath = '${pageContext.request.contextPath}';
+                const PAGE_SIZE = 9;
+                let currentPage = 1;
+                let isLoadingMore = false;
+
+                function escapeHtml(value) {
+                  return String(value == null ? '' : value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+                }
+
+                function safeImageUrl(url) {
+                  const clean = (url || '').trim();
+                  if (!clean) return 'https://via.placeholder.com/400x300?text=No+Image';
+                  if (/^(https?:)?\/\//i.test(clean) || clean.startsWith(contextPath + '/')) {
+                    return clean;
+                  }
+                  return 'https://via.placeholder.com/400x300?text=No+Image';
+                }
+
+                function safeSlug(slug) {
+                  return slug ? encodeURIComponent(slug) : '';
+                }
+
+                function formatPublishedDate(rawDate) {
+                  const date = rawDate ? new Date(rawDate) : null;
+                  return date && !isNaN(date) ? date.toLocaleDateString('vi-VN') : '';
+                }
+
+                function buildSkeletonCard() {
+                  const card = document.createElement('div');
+                  card.className = 'skeleton-card';
+                  card.setAttribute('data-skeleton', 'true');
+                  card.innerHTML =
+                    '<div class="skeleton-image skeleton-shimmer"></div>' +
+                    '<div class="skeleton-body">' +
+                    '<div class="skeleton-meta skeleton-shimmer"></div>' +
+                    '<div class="skeleton-title skeleton-shimmer"></div>' +
+                    '<div class="skeleton-title-short skeleton-shimmer"></div>' +
+                    '<div class="skeleton-line skeleton-shimmer"></div>' +
+                    '<div class="skeleton-line skeleton-shimmer"></div>' +
+                    '<div class="skeleton-line-short skeleton-shimmer"></div>' +
+                    '<div class="skeleton-link skeleton-shimmer"></div>' +
+                    '</div>';
+                  return card;
+                }
+
+                function showSkeletons(count) {
+                  const newsGrid = document.getElementById('newsGrid');
+                  for (let i = 0; i < count; i++) {
+                    newsGrid.appendChild(buildSkeletonCard());
+                  }
+                }
+
+                function removeSkeletons() {
+                  const newsGrid = document.getElementById('newsGrid');
+                  newsGrid.querySelectorAll('[data-skeleton]').forEach(function (el) {
+                    el.remove();
+                  });
+                }
+
+                async function loadNewsFromDB(page, append) {
+                  page = page || 1;
+                  append = append || false;
+                  try {
+                    const newsGrid = document.getElementById('newsGrid');
+
+                    // Hiển thị skeleton trước khi fetch
+                    if (!append) {
+                      newsGrid.innerHTML = '';
+                    }
+                    showSkeletons(PAGE_SIZE);
+
+                    const url = contextPath + '/api/news/list?page=' + page + '&pageSize=' + PAGE_SIZE;
+                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    const result = await response.json();
+
+                    // Xóa skeleton sau khi có dữ liệu
+                    removeSkeletons();
+
+                    if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+                      result.data.forEach(news => {
+                        newsGrid.appendChild(buildNewsCard(news));
+                      });
+
+                      // Ẩn nút if hết dữ liệu (ít hơn PAGE_SIZE hoặc ở server có báo hasMore=false)
+                      const loadMoreBtn = document.getElementById('loadMoreBtn');
+                      const hasMore = result.hasMore !== undefined ? result.hasMore : (result.data.length === PAGE_SIZE);
+                      if (!hasMore) {
+                        loadMoreBtn.textContent = 'Đã hiển thị tất cả';
+                        loadMoreBtn.disabled = true;
+                      } else {
+                        loadMoreBtn.textContent = 'Xem thêm bài viết';
+                        loadMoreBtn.disabled = false;
+                      }
+
+                      // Re-attach filter events with fresh nodes — không cần với event delegation
+                    } else if (!append) {
+                      // Trang đầu không có dữ liệu — giữ nguyên bài viết hardcode
+                    }
+                  } catch (error) {
+                    removeSkeletons();
+                    console.error('Error loading news:', error);
+                  }
+                }
+
+                function buildNewsCard(news) {
+                  const title = escapeHtml(news.title || 'Bài viết');
+                  const excerpt = escapeHtml(news.excerpt || '');
+                  const category = escapeHtml(getCategoryName(news.category));
+                  const imageUrl = safeImageUrl(news.imageUrl);
+                  const formattedDate = formatPublishedDate(news.publishedDate);
+                  const slugPath = news.slug ? '/news/' + safeSlug(news.slug) : '/news';
+
+                  const article = document.createElement('article');
+                  article.className = 'news-card';
+                  article.setAttribute('data-category', news.category || 'all');
+                  article.style.animation = 'fadeInUp 0.6s ease-out';
+
+                  article.innerHTML = '<div class="news-image-wrapper">' +
+                    '<img class="news-thumb" src="' + imageUrl + '" alt="' + title + '" onerror="this.src=\'https://via.placeholder.com/400x300?text=No+Image\'" />' +
+                    '<div class="news-overlay"></div>' +
+                    '</div>' +
+                    '<div class="news-content">' +
+                    '<div class="news-meta">' +
+                    '<span class="news-category">' + category + '</span>' +
+                    '<span class="news-date">' + formattedDate + '</span>' +
+                    '</div>' +
+                    '<h2 class="news-heading">' + title + '</h2>' +
+                    '<p class="news-excerpt">' + excerpt + '</p>' +
+                    '<a href="' + contextPath + slugPath + '" class="news-link">Xem chi tiết</a>' +
+                    '</div>';
+
+                  return article;
+                }
+
+                async function loadMoreNews() {
+                  if (isLoadingMore) return;
+                  isLoadingMore = true;
+
+                  const loadMoreBtn = document.getElementById('loadMoreBtn');
+                  const originalText = loadMoreBtn.textContent;
+                  loadMoreBtn.textContent = 'Đang tải...';
+                  loadMoreBtn.disabled = true;
+
+                  currentPage += 1;
+                  await loadNewsFromDB(currentPage, true);
+
+                  isLoadingMore = false;
+                  // Nút sẽ được bật lại bên trong loadNewsFromDB nếu còn dữ liệu
+                }
+
+                function getCategoryName(category) {
+                  const categories = {
+                    'tips': 'Tips chọn hoa',
+                    'opening': 'Khai trương',
+                    'story': 'Câu chuyện',
+                    'proposal': 'Cầu hôn',
+                    'wedding': 'Đám cưới',
+                    'birthday': 'Sinh nhật',
+                    'budget': 'Ngân sách'
+                  };
+                  return categories[category] || category;
+                }
+
+                function initFilterAndCardEvents() {
+                  const filterChips = document.querySelector(".filter-chips");
+                  const newsGrid = document.getElementById("newsGrid");
+
+                  // --- Chip filter: delegation trên container .filter-chips ---
+                  if (filterChips && !filterChips._delegated) {
+                    filterChips._delegated = true;
+                    filterChips.addEventListener("click", function (e) {
+                      const btn = e.target.closest(".chip");
+                      if (!btn) return;
+
+                      document.querySelectorAll(".chip").forEach(function (b) {
+                        b.classList.remove("active");
+                      });
+                      btn.classList.add("active");
+
+                      const filter = btn.getAttribute("data-filter");
+                      document.querySelectorAll(".news-card").forEach(function (card) {
+                        const category = card.getAttribute("data-category");
+                        card.style.display = (filter === "all" || category === filter) ? "flex" : "none";
+                      });
+                    });
+                  }
+
+                  // --- Card click: delegation trên #newsGrid ---
+                  if (newsGrid && !newsGrid._delegated) {
+                    newsGrid._delegated = true;
+                    newsGrid.addEventListener("click", function (e) {
+                      if (e.target.classList.contains("news-link")) return;
+                      const card = e.target.closest(".news-card");
+                      if (!card) return;
+                      const link = card.querySelector(".news-link");
+                      if (link) window.location.href = link.getAttribute("href");
+                    });
+                  }
+                }
+                // Async loading
+
+                var checkapp = false;
+
+                let loadasyncdefer = () => { };
+
+                // [FIX #4] Thêm resolve() sau khi dispatch xong các setTimeout,
+                // tránh Promise bị treo mãi mãi không bao giờ settle.
+                function resolveAfter5Seconds() {
+                  return new Promise((resolve) => {
+                    if (tbag_varible.template == "index") {
+                      setTimeout(() => {
+                        if (typeof loadslider === "function") loadslider();
+                      }, 100);
+                    }
+
+                    setTimeout(() => {
+                      loadasyncdefer();
+                      resolve(); // Promise settle sau khi loadasyncdefer được lên lịch
+                    }, 200);
+                  });
+                }
+
+                async function asyncCall() {
+                  await resolveAfter5Seconds();
+                }
+              </script>
+
+              <script type="text/javascript"
+                src="//cdn.hstatic.net/themes/200000846175/1001403720/14/pluginscript.js?v=245" defer></script>
+
+              <script type="text/javascript"
+                src="//cdn.hstatic.net/themes/200000846175/1001403720/14/main-scripts.js?v=245" defer></script>
+
+              <script type="text/javascript"
+                src="//cdn.hstatic.net/themes/200000846175/1001403720/14/main-page.js?v=245" defer></script>
+        </body>
+
+        </html>

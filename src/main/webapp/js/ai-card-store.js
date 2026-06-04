@@ -12,8 +12,10 @@ class AICardStore {
       occasion: 'sinhnhat',
       tone: 'warm',
       customMessage: '',
-      length: 'trungbinh',
+      length: 'medium',
       sender: '',
+      theme: 'luxury_rose',
+      holiday: 'none',
       
       // Generated content
       generatedMessage: '',
@@ -172,8 +174,10 @@ class AICardStore {
       occasion: 'sinhnhat',
       tone: 'warm',
       customMessage: '',
-      length: 'trungbinh',
+      length: 'medium',
       sender: '',
+      theme: 'luxury_rose',
+      holiday: 'none',
       generatedMessage: '',
       imageData: '',
       backgroundImageUrl: '',

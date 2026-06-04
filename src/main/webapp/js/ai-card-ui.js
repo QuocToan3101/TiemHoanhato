@@ -3,13 +3,121 @@
  * Handles all UI rendering and DOM manipulation
  */
 
+const CARD_THEMES = [
+  { id: 'luxury_rose', name: 'Luxury Rose', bg: '#FDF7F7', text: '#C97B84', border: '#EAB8B8', flower: 'rose' },
+  { id: 'sunflower_birthday', name: 'Hướng Dương', bg: '#FFF8E7', text: '#8F6B00', border: '#FFD95A', flower: 'sunflower' },
+  { id: 'wedding_gold', name: 'Wedding Gold', bg: '#FFFFFF', text: '#5A4B29', border: '#D4AF37', flower: 'baby_flower' },
+  { id: 'mothers_day', name: 'Ngày Của Mẹ', bg: '#FFF0F5', text: '#8B4513', border: '#FFB6C1', flower: 'carnation' },
+  { id: 'graduation', name: 'Tốt Nghiệp', bg: '#F3F0FC', text: '#3F1B93', border: '#B197FC', flower: 'sunflower_eucalyptus' },
+  { id: 'christmas', name: 'Giáng Sinh', bg: '#FFF5F5', text: '#C92A2A', border: '#FFA8A8', flower: 'christmas' },
+  { id: 'thank_you', name: 'Lời Cảm Ơn', bg: '#F4F9F4', text: '#2E7D32', border: '#A9DFBF', flower: 'tulip' },
+  { id: 'congratulation', name: 'Chúc Mừng', bg: '#F0F4C3', text: '#0E6251', border: '#76D7C4', flower: 'hydrangea' },
+  { id: 'valentine', name: 'Lễ Tình Nhân', bg: '#FFF5F5', text: '#C92A2A', border: '#FFA8A8', flower: 'red_rose' }
+];
+
 class AICardUI {
   constructor(containerSelector = '#aiCardModal') {
     this.container = document.querySelector(containerSelector);
     this.backdrop = document.querySelector('#aiCardBackdrop');
+    this.selectedTheme = 'luxury_rose';
     
     if (!this.container) {
       console.warn('⚠️ AI Card container not found');
+    }
+  }
+
+  /**
+   * Render theme cards dynamically
+   */
+  initThemes() {
+    const grid = document.getElementById('themeGrid');
+    if (!grid) return;
+
+    grid.innerHTML = CARD_THEMES.map(theme => {
+      const isSelected = this.selectedTheme === theme.id;
+      return `
+        <div class="theme-card" data-id="${theme.id}" data-text="${theme.text}" style="
+          border-radius: 16px;
+          height: 90px;
+          border: 1.5px solid ${isSelected ? '#8B7BFF' : 'rgba(255,255,255,0.08)'};
+          background: ${isSelected ? 'rgba(139,123,255,0.15)' : '#262A40'};
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+          transition: all 0.25s ease;
+          box-shadow: ${isSelected ? '0 0 24px rgba(139,123,255,0.3)' : 'none'};
+          box-sizing: border-box;
+          gap: 6px;
+        ">
+          <span style="font-size: 28px; line-height: 1;">
+            ${this._getFlowerIcon(theme.flower)}
+          </span>
+          <span class="theme-name-text" style="font-size: 11px; font-weight: 600; color: ${isSelected ? '#FFFFFF' : '#B6BDD3'}; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; transition: color 0.2s;">
+            ${theme.name}
+          </span>
+        </div>
+      `;
+    }).join('');
+
+    // Add click listeners
+    grid.querySelectorAll('.theme-card').forEach(card => {
+      card.addEventListener('click', () => {
+        this.selectTheme(card.dataset.id);
+      });
+    });
+  }
+
+  _getFlowerIcon(flower) {
+    switch(flower) {
+      case 'rose': return '🌹';
+      case 'red_rose': return '🌹';
+      case 'sunflower': return '🌻';
+      case 'baby_flower': return '💍';
+      case 'carnation': return '💖';
+      case 'tulip': return '🌸';
+      case 'peony': return '🌸';
+      case 'hydrangea': return '💐';
+      case 'sunflower_eucalyptus': return '🎓';
+      case 'christmas': return '🎄';
+      default: return '✿';
+    }
+  }
+
+  /**
+   * Select and highlight theme
+   */
+  selectTheme(themeId) {
+    this.selectedTheme = themeId;
+    aiCardStore.updateField('theme', themeId);
+    
+    // Highlight in UI
+    const themeCards = document.querySelectorAll('.theme-card');
+    themeCards.forEach(card => {
+      const isSelected = card.dataset.id === themeId;
+      if (isSelected) {
+        card.classList.add('active');
+        card.style.borderColor = '#8B7BFF';
+        card.style.background = 'rgba(139,123,255,0.15)';
+        card.style.boxShadow = '0 0 24px rgba(139,123,255,0.3)';
+        const nameText = card.querySelector('.theme-name-text');
+        if (nameText) nameText.style.color = '#FFFFFF';
+      } else {
+        card.classList.remove('active');
+        card.style.borderColor = 'rgba(255,255,255,0.08)';
+        card.style.background = '#262A40';
+        card.style.boxShadow = 'none';
+        const nameText = card.querySelector('.theme-name-text');
+        if (nameText) nameText.style.color = '#B6BDD3';
+      }
+    });
+
+    // Instant image regeneration on theme change
+    const state = aiCardStore.getState();
+    if (state.generatedMessage) {
+      aiCardModule._regenerateImage();
     }
   }
   
@@ -17,70 +125,51 @@ class AICardUI {
    * Show loading state
    */
   showLoading(message = 'Đang xử lý...') {
+    const loader = document.getElementById('aiCanvasLoader');
     const canvas = document.getElementById('aiCanvas');
-    if (!canvas) return;
+    if (!loader || !canvas) return;
     
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
+    canvas.style.display = 'none';
+    loader.style.display = 'flex';
     
-    // Clear canvas
-    ctx.fillStyle = '#f9f9f9';
-    ctx.fillRect(0, 0, w, h);
+    const textEl = document.getElementById('aiLoaderText');
+    if (textEl) {
+      textEl.textContent = message;
+    }
     
-    // Draw loading spinner
-    ctx.save();
-    ctx.translate(w / 2, h / 2);
+    // Cycle loading texts every 2 seconds
+    const messages = [
+      '🎨 Đang thiết kế thiệp...',
+      '✍️ AI đang viết lời chúc...',
+      '🖼️ Đang dựng bố cục...'
+    ];
+    let idx = 0;
     
-    // Background circle
-    ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
-    ctx.fillRect(-100, -100, 200, 200);
-    ctx.fillStyle = 'rgba(102, 126, 234, 0.05)';
-    ctx.beginPath();
-    ctx.arc(0, 0, 100, 0, Math.PI * 2);
-    ctx.fill();
+    if (this.loadingInterval) {
+      clearInterval(this.loadingInterval);
+    }
     
-    // Spinner arc
-    ctx.strokeStyle = 'rgb(102, 126, 234)';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(0, 0, 60, 0, Math.PI);
-    ctx.stroke();
-    
-    // Text
-    ctx.fillStyle = '#333';
-    ctx.font = 'bold 16px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(message, 0, 100);
-    
-    ctx.restore();
+    this.loadingInterval = setInterval(() => {
+      idx = (idx + 1) % messages.length;
+      if (textEl) {
+        textEl.textContent = messages[idx];
+      }
+    }, 2000);
   }
   
   /**
-   * Show skeleton loading (placeholder animation)
+   * Hide loading state
    */
-  showSkeleton() {
+  hideLoading() {
+    const loader = document.getElementById('aiCanvasLoader');
     const canvas = document.getElementById('aiCanvas');
-    if (!canvas) return;
+    if (loader) loader.style.display = 'none';
+    if (canvas) canvas.style.display = 'block';
     
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    
-    // Background
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, w, h);
-    
-    // Animated gradient skeleton
-    const gradient = ctx.createLinearGradient(0, 0, w, 0);
-    gradient.addColorStop(0, '#f0f0f0');
-    gradient.addColorStop(0.5, '#e0e0e0');
-    gradient.addColorStop(1, '#f0f0f0');
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(50, 100, w - 100, 120);
-    ctx.fillRect(50, 250, w - 100, 120);
-    ctx.fillRect(50, 400, w - 100, 100);
+    if (this.loadingInterval) {
+      clearInterval(this.loadingInterval);
+      this.loadingInterval = null;
+    }
   }
   
   /**
@@ -102,11 +191,13 @@ class AICardUI {
       // Draw image
       ctx.drawImage(img, 0, 0);
       
+      this.hideLoading();
       console.log('✓ Card image rendered');
     };
     
     img.onerror = () => {
       console.error('❌ Failed to render card image');
+      this.hideLoading();
       this.showError('Không thể hiển thị ảnh thiệp');
     };
     
@@ -217,7 +308,8 @@ class AICardUI {
       aiTone: state.tone,
       aiManual: state.customMessage,
       aiLength: state.length,
-      aiFrom: state.sender
+      aiFrom: state.sender,
+      aiHoliday: state.holiday || 'none'
     };
     
     for (const [id, value] of Object.entries(fields)) {
@@ -225,6 +317,10 @@ class AICardUI {
       if (element) {
         element.value = value;
       }
+    }
+
+    if (state.theme) {
+      this.selectedTheme = state.theme;
     }
   }
   
@@ -237,8 +333,10 @@ class AICardUI {
       occasion: document.getElementById('aiOccasion')?.value || 'sinhnhat',
       tone: document.getElementById('aiTone')?.value || 'warm',
       customMessage: document.getElementById('aiManual')?.value?.trim() || '',
-      length: document.getElementById('aiLength')?.value || 'trungbinh',
-      sender: document.getElementById('aiFrom')?.value?.trim() || ''
+      length: document.getElementById('aiLength')?.value || 'medium',
+      sender: document.getElementById('aiFrom')?.value?.trim() || '',
+      theme: this.selectedTheme || 'luxury_rose',
+      holiday: document.getElementById('aiHoliday')?.value || 'none'
     };
   }
   
@@ -297,6 +395,28 @@ class AICardUI {
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  /**
+   * Update AI Card preview section on the cart page
+   */
+  updateCartPreview(message, base64ImageData) {
+    const previewSection = document.getElementById('aiCardPreviewSection');
+    const previewImg = document.getElementById('aiCardPreviewImg');
+    const previewText = document.getElementById('aiCardPreviewText');
+    const giftNote = document.getElementById('giftNote');
+    
+    if (previewSection && previewImg && previewText) {
+      if (base64ImageData) {
+        previewImg.src = base64ImageData.startsWith('data:') ? base64ImageData : ('data:image/png;base64,' + base64ImageData);
+      }
+      previewText.textContent = message;
+      previewSection.style.display = 'block';
+    }
+    
+    if (giftNote) {
+      giftNote.value = message;
     }
   }
 }

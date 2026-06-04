@@ -42,12 +42,15 @@ class AICardAPI {
   /**
    * Generate card image
    */
-  async generateCardImage(message, occasion, tone, recipient) {
+  async generateCardImage(message, occasion, tone, recipient, theme, holiday, sender) {
     const response = await this._apiCall('/api/generate-card-image', 'POST', {
       message,
       occasion,
       tone,
-      recipient
+      recipient,
+      theme,
+      holiday,
+      sender
     });
     
     return response;

@@ -58,9 +58,17 @@ public class AIContentService {
      */
     public String generateGreeting(String recipient, String occasion, 
                                    String tone, String customMessage, String length) {
+        return generateGreeting(recipient, occasion, tone, customMessage, length, "none");
+    }
+
+    /**
+     * Sinh lời chúc thiệp bằng AI hoặc fallback có thêm holiday
+     */
+    public String generateGreeting(String recipient, String occasion, 
+                                   String tone, String customMessage, String length, String holiday) {
         
         // Kiểm tra cache trước
-        String cacheKey = buildCacheKey(recipient, occasion, tone, length);
+        String cacheKey = buildCacheKey(recipient, occasion, tone, length, holiday);
         if (responseCache.containsKey(cacheKey)) {
             System.out.println("✓ Cache hit for greeting: " + cacheKey);
             return responseCache.get(cacheKey);
@@ -71,7 +79,7 @@ public class AIContentService {
         // Thử dùng AI (Gemini)
         if (isAIEnabled()) {
             try {
-                result = callGeminiAPI(recipient, occasion, tone, customMessage, length);
+                result = callGeminiAPI(recipient, occasion, tone, customMessage, length, holiday);
                 if (result != null && !result.trim().isEmpty()) {
                     System.out.println("✓ Gemini AI generated successfully");
                     responseCache.put(cacheKey, result);
@@ -92,14 +100,14 @@ public class AIContentService {
      * Gọi Gemini API để sinh lời chúc
      */
     private String callGeminiAPI(String recipient, String occasion, String tone,
-                                 String customMessage, String length) throws IOException {
+                                 String customMessage, String length, String holiday) throws IOException {
         
         String apiKey = config.getGeminiApiKey();
         if (apiKey == null || apiKey.equals("YOUR_GEMINI_API_KEY_HERE")) {
             throw new IllegalArgumentException("Gemini API key not configured");
         }
         
-        String prompt = buildOptimizedPrompt(recipient, occasion, tone, customMessage, length);
+        String prompt = GeminiPromptBuilder.getInstance().buildPrompt(recipient, occasion, tone, customMessage, length, holiday);
         
         // Tạo request JSON cho Gemini API
         JsonObject requestBody = new JsonObject();
@@ -237,7 +245,7 @@ public class AIContentService {
             greeting.append(body).append("\n\n");
             greeting.append(closer);
             
-            if ("dai".equals(length)) {
+            if ("dai".equals(length) || "long".equals(length)) {
                 greeting.append("\n\nP/S: Cảm ơn bạn đã là chính mình! 🌸");
             }
             
@@ -338,20 +346,29 @@ public class AIContentService {
     }
     
     private String getLengthDescription(String length) {
-        switch (length) {
-            case "ngan": return "Ngắn gọn (1-2 câu)";
-            case "trungbinh": return "Trung bình (2-3 câu)";
-            case "dai": return "Dài (3-4 câu + P/S)";
-            default: return "Vừa phải";
+        if (length == null) return "Vừa phải";
+        switch (length.toLowerCase().trim()) {
+            case "ngan":
+            case "short": 
+                return "Ngắn gọn (1-2 câu)";
+            case "trungbinh":
+            case "medium": 
+                return "Trung bình (2-3 câu)";
+            case "dai":
+            case "long": 
+                return "Dài (3-4 câu + P/S)";
+            default: 
+                return "Vừa phải";
         }
     }
     
-    private String buildCacheKey(String recipient, String occasion, String tone, String length) {
-        return String.format("%s|%s|%s|%s",
-            recipient.hashCode(),
+    private String buildCacheKey(String recipient, String occasion, String tone, String length, String holiday) {
+        return String.format("%s|%s|%s|%s|%s",
+            recipient != null ? recipient.hashCode() : 0,
             occasion,
             tone,
-            length
+            length,
+            holiday != null ? holiday : ""
         );
     }
     

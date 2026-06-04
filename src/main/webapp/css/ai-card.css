@@ -1,35 +1,31 @@
-/* ==========================================
-   AI Card Feature - Modern UI/UX CSS
-   Premium Glassmorphism + Gradients
-   ========================================== */
+/* ==========================================================================
+   AI Card Feature - SaaS Studio UI/UX CSS (Canva/Notion AI Style 2026)
+   ========================================================================== */
 
 :root {
-  --ai-primary: #667eea;
-  --ai-primary-dark: #764ba2;
-  --ai-secondary: #f093fb;
-  --ai-success: #4ecca3;
-  --ai-danger: #ff6b6b;
-  --ai-warning: #ffa500;
-  
-  --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-blur: 12px;
-  --glass-border: rgba(255, 255, 255, 0.3);
-  
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.16);
+  --ai-bg: #151824;
+  --ai-surface: #1F2233;
+  --ai-card: #262A40;
+  --ai-primary: #8B7BFF;
+  --ai-primary-hover: #7868F7;
+  --ai-accent: #C6BCFF;
+  --ai-text: #FFFFFF;
+  --ai-text-secondary: #B6BDD3;
+  --ai-border: rgba(255,255,255,0.08);
+  --ai-success: #22C55E;
+  --ai-danger: #EF4444;
 }
 
 /* ========== Modal Backdrop ========== */
 .ai-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(20, 20, 30, 0.4);
-  backdrop-filter: blur(6px) saturate(120%);
-  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  background: rgba(10, 10, 16, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: none;
-  z-index: 999999998 !important;
-  animation: fadeIn 0.3s ease-out;
+  z-index: 99999998 !important;
+  animation: ai-fade-in 0.3s ease-out forwards;
 }
 
 .ai-modal-backdrop.active {
@@ -44,9 +40,9 @@
   align-items: center;
   justify-content: center;
   z-index: 999999999 !important;
-  padding: 20px;
+  padding: 24px;
   overflow-y: auto;
-  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: ai-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .ai-modal.active {
@@ -55,32 +51,19 @@
 
 /* ========== Card Container ========== */
 .ai-card {
-  width: min(1100px, 96vw);
-  max-height: 90vh;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 28px;
-  box-shadow: var(--shadow-lg);
+  width: min(1160px, 96vw);
+  background: var(--ai-bg);
+  border: 1px solid var(--ai-border);
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  
-  /* Glassmorphism effect */
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.96) 0%,
-    rgba(255, 253, 252, 0.94) 100%
-  );
 }
 
 /* ========== Header ========== */
 .ai-head {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 0.5) 100%
-  );
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--ai-border);
   padding: 24px 32px;
   display: flex;
   justify-content: space-between;
@@ -89,53 +72,52 @@
   flex-shrink: 0;
 }
 
-.ai-head h3 {
+.ai-head-left h3 {
   margin: 0;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--ai-primary) 0%, var(--ai-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--ai-text);
   letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-head-left p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: var(--ai-text-secondary);
 }
 
 /* Close button */
 .ai-close {
   width: 40px;
   height: 40px;
-  border: 2px solid var(--glass-border);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--ai-border);
+  background: var(--ai-surface);
   border-radius: 50%;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  color: #333;
+  color: var(--ai-text);
   
   &:hover {
-    background: #ff6b6b;
-    color: white;
-    border-color: #ff6b6b;
-    transform: scale(1.1) rotate(90deg);
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    background: var(--ai-card);
+    border-color: var(--ai-accent);
+    transform: scale(1.08) rotate(90deg);
   }
 }
 
-/* ========== Content Area ========== */
-.ai-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 32px;
-}
-
+/* ========== Grid Layout (40% / 60%) ========== */
 .ai-grid {
   display: grid;
-  grid-template-columns: 420px 1fr;
-  gap: 32px;
-  align-items: start;
+  grid-template-columns: 4.2fr 5.8fr;
+  align-items: stretch;
+  min-height: 560px;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1024px) {
@@ -144,380 +126,373 @@
   }
 }
 
-@media (max-width: 768px) {
-  .ai-content {
-    padding: 20px;
-  }
-  
-  .ai-grid {
-    gap: 24px;
-  }
-}
-
-/* ========== Form Fields ========== */
-.ai-form-section {
+/* ========== Form Column (40%) ========== */
+.ai-form-container {
+  padding: 24px 32px;
+  border-right: 1px solid var(--ai-border);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  overflow-y: auto;
+  max-height: calc(85vh - 90px);
 }
 
-.ai-field {
+.ai-form-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.ai-field label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #666;
+.ai-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ai-accent);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px;
+  margin-bottom: 2px;
+}
+
+/* ========== Theme Card Grid ========== */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.theme-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 123, 255, 0.4) !important;
+}
+
+.theme-card.active {
+  animation: pulse-border 1.5s infinite alternate;
+}
+
+/* ========== Inputs & Forms ========== */
+.ai-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ai-text-secondary);
 }
 
 .ai-field input,
-.ai-field select,
-.ai-field textarea {
-  padding: 12px 16px;
-  border: 2px solid var(--glass-border);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.8);
+.ai-field select {
+  padding: 0 16px;
+  height: 52px;
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
   font-size: 14px;
-  color: #333;
+  color: var(--ai-text);
   font-family: inherit;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
   
   &:focus {
     outline: none;
     border-color: var(--ai-primary);
-    background: white;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 4px rgba(139, 123, 255, 0.15);
   }
   
   &::placeholder {
-    color: #999;
+    color: rgba(255, 255, 255, 0.25);
   }
 }
 
-/* ========== Row Layout ========== */
+.ai-field textarea {
+  padding: 14px 16px;
+  height: 140px;
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 14px;
+  color: var(--ai-text);
+  font-family: inherit;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+  line-height: 1.5;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--ai-primary);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 4px rgba(139, 123, 255, 0.15);
+  }
+  
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.25);
+  }
+}
+
 .ai-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-@media (max-width: 640px) {
-  .ai-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ========== Action Buttons ========== */
-.ai-actions {
+/* Textarea small actions */
+.ai-textarea-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 16px;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
 }
 
-.ai-btn {
-  padding: 12px 20px;
+.ai-btn-text {
+  background: none;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  white-space: nowrap;
-  
-  &:hover {
-    transform: translateY(-2px);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-/* Primary button */
-.ai-btn.primary {
-  background: linear-gradient(135deg, var(--ai-primary) 0%, var(--ai-primary-dark) 100%);
-  color: white;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-  padding: 14px 24px;
-  font-size: 15px;
-  
-  &:hover {
-    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
-  }
-}
-
-/* Secondary button */
-.ai-btn.secondary {
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--ai-primary);
-  border: 2px solid var(--ai-primary);
-  box-shadow: var(--shadow-sm);
-  
-  &:hover {
-    background: rgba(102, 126, 234, 0.08);
-  }
-}
-
-/* ========== Hint Text ========== */
-.ai-hint {
   font-size: 12px;
-  color: #999;
-  line-height: 1.5;
-  margin-top: 8px;
+  font-weight: 600;
+  color: var(--ai-accent);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: var(--ai-text);
+    background: rgba(255, 255, 255, 0.05);
+    transform: scale(1.02);
+  }
 }
 
-/* ========== Canvas Preview Area ========== */
+/* ========== Live Preview Column (60%) ========== */
+.ai-preview-container {
+  padding: 24px 32px;
+  background: var(--ai-surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+}
+
 .ai-canvas-wrap {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 250, 255, 0.9) 100%);
-  border: 2px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 20px;
-  display: grid;
-  place-items: center;
-  min-height: 500px;
-  overflow: auto;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(45deg, 
-      transparent 30%, 
-      rgba(102, 126, 234, 0.03) 50%, 
-      transparent 70%);
-    pointer-events: none;
-    border-radius: 14px;
-  }
-}
-
-canvas.ai-canvas {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  position: relative;
-  z-index: 1;
-}
-
-/* ========== Loading Skeleton ========== */
-.ai-skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  border-radius: 8px;
-}
-
-.ai-skeleton-text {
-  height: 16px;
-  margin-bottom: 12px;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.ai-skeleton-input {
-  height: 44px;
-  margin-bottom: 16px;
-}
-
-/* ========== Loading State ========== */
-.ai-loading {
+  flex: 1;
+  border: 1px solid var(--ai-border);
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 20px;
-  color: var(--ai-primary);
-  font-weight: 600;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
-.ai-loading::before {
-  content: '';
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(102, 126, 234, 0.3);
-  border-top-color: var(--ai-primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-/* ========== Success State ========== */
-.ai-success-state {
-  text-align: center;
-  padding: 32px;
-  background: linear-gradient(135deg, rgba(76, 204, 163, 0.1) 0%, rgba(76, 204, 163, 0.05) 100%);
+canvas.ai-canvas {
+  max-width: 100%;
+  max-height: 420px;
+  height: auto;
   border-radius: 16px;
-  border: 2px solid rgba(76, 204, 163, 0.2);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+  display: block;
+  animation: canvas-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.ai-success-state .icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  animation: bounce 0.6s ease-out;
+/* ========== Shimmer Loader Overlay ========== */
+.ai-canvas-loader {
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 34, 51, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  z-index: 10;
 }
 
-.ai-success-state p {
-  color: var(--ai-success);
-  font-weight: 600;
+.ai-shimmer-card {
+  width: 280px;
+  height: 180px;
+  background: var(--ai-card);
+  border: 1px solid var(--ai-border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
 }
 
-/* ========== Error State ========== */
-.ai-error-state {
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
-  border: 2px solid rgba(255, 107, 107, 0.2);
-  border-radius: 12px;
-  padding: 16px;
-  color: #d32f2f;
+.ai-shimmer-flower {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  align-self: center;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer-anim 1.5s infinite linear;
+}
+
+.ai-shimmer-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer-anim 1.5s infinite linear;
+}
+
+.ai-shimmer-line.short { width: 35%; align-self: center; }
+.ai-shimmer-line.medium { width: 65%; }
+.ai-shimmer-line.long { width: 90%; }
+
+.ai-loader-progress {
+  width: 240px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ai-loader-bar {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, var(--ai-primary), var(--ai-accent));
+  border-radius: 2px;
+  animation: loading-bar-anim 1.8s infinite ease-in-out;
+}
+
+.ai-loader-text {
   font-size: 14px;
-  margin-bottom: 16px;
+  font-weight: 600;
+  color: var(--ai-accent);
+  letter-spacing: 0.5px;
+}
+
+/* ========== Footer CTAs ========== */
+.ai-footer-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.ai-btn-footer {
+  height: 52px;
+  padding: 0 24px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.ai-btn-footer:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.ai-btn-footer.primary {
+  background: linear-gradient(135deg, var(--ai-primary) 0%, var(--ai-accent) 100%);
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 12px 32px rgba(139, 123, 255, 0.35);
+  flex: 1.5;
+}
+
+.ai-btn-footer.primary:hover {
+  box-shadow: 0 16px 40px rgba(139, 123, 255, 0.45);
+}
+
+.ai-btn-footer.secondary {
+  background: var(--ai-card);
+  color: #FFFFFF;
+  border: 1px solid var(--ai-border);
+  flex: 1;
+  
+  &:hover {
+    background: #323754;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
 }
 
 /* ========== Animations ========== */
-@keyframes fadeIn {
+@keyframes ai-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ai-slide-in {
   from {
     opacity: 0;
+    transform: scale(0.95) translateY(10px);
   }
   to {
     opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
-@keyframes slideIn {
+@keyframes shimmer-anim {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes loading-bar-anim {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(150%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes canvas-reveal {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: translateY(20px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
-@keyframes slideInRight {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+@keyframes pulse-border {
+  from { box-shadow: 0 0 12px rgba(139,123,255,0.2); }
+  to { box-shadow: 0 0 28px rgba(139,123,255,0.45); }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* ========== Responsive Breakpoints ========== */
+@media (max-width: 768px) {
+  .ai-modal {
+    padding: 12px;
   }
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-/* ========== Responsive ========== */
-@media (max-width: 640px) {
   .ai-card {
-    border-radius: 16px;
+    border-radius: 12px;
+    max-height: 95vh;
   }
-  
   .ai-head {
     padding: 16px 20px;
   }
-  
-  .ai-head h3 {
-    font-size: 20px;
+  .ai-head-left h3 {
+    font-size: 18px;
   }
-  
-  .ai-content {
-    padding: 20px;
-  }
-  
-  .ai-canvas-wrap {
-    min-height: 320px;
-  }
-}
-
-/* ========== Dark Mode Support ========== */
-@media (prefers-color-scheme: dark) {
-  .ai-card {
-    background: linear-gradient(
-      135deg,
-      rgba(40, 40, 50, 0.95) 0%,
-      rgba(35, 35, 45, 0.94) 100%
-    );
-  }
-  
-  .ai-head {
-    background: linear-gradient(
-      180deg,
-      rgba(40, 40, 50, 1) 0%,
-      rgba(40, 40, 50, 0.5) 100%
-    );
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .ai-field input,
-  .ai-field select,
-  .ai-field textarea {
-    background: rgba(60, 60, 70, 0.8);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.1);
-    
-    &:focus {
-      background: rgba(60, 60, 70, 1);
-      border-color: var(--ai-primary);
-    }
-  }
-  
-  .ai-canvas-wrap {
-    background: linear-gradient(135deg, rgba(50, 50, 60, 0.9) 0%, rgba(45, 45, 60, 0.9) 100%);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
-/* ========== Print Styles ========== */
-@media print {
-  .ai-modal-backdrop,
-  .ai-head,
-  .ai-actions {
-    display: none;
-  }
-  
-  .ai-card {
-    box-shadow: none;
-    border: none;
+  .ai-form-container {
+    padding: 16px 20px;
     max-height: none;
+  }
+  .ai-preview-container {
+    padding: 16px 20px;
+  }
+  .ai-canvas-wrap {
+    min-height: 300px;
+    padding: 16px;
   }
 }
