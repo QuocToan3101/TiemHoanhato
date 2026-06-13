@@ -51,8 +51,8 @@ public class AICardService {
         }
         
         String apiKey = config.getGeminiApiKey();
-        if (apiKey == null || apiKey.equals("YOUR_GEMINI_API_KEY_HERE")) {
-            System.err.println("Gemini API key not configured. Using fallback message.");
+        if (apiKey == null || config.isPlaceholder(apiKey)) {
+            System.err.println("Gemini API key not configured or is a placeholder. Using fallback message.");
             return generateFallbackMessage(recipient, occasion, tone, customMessage, length);
         }
         

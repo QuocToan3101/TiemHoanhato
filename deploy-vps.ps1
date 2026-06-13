@@ -1,5 +1,5 @@
 param(
-    [string]$ServerIp = "180.93.165.99",
+    [string]$ServerIp = "103.6.235.210",
     [string]$ServerUser = "root",
     [string]$WarPath = ".\build\libs\flowerstore.war",
     [string]$RemoteWarName = "flowerstore.war",
@@ -136,7 +136,7 @@ systemctl enable "$TOMCAT_PKG" nginx
 
 # Automatically configure JAVA_HOME for Tomcat to use the installed Java 21 JRE
 if [ -f "/etc/default/$TOMCAT_PKG" ]; then
-    if ! grep -q "JAVA_HOME" "/etc/default/$TOMCAT_PKG"; then
+    if ! grep -q "^JAVA_HOME" "/etc/default/$TOMCAT_PKG"; then
         echo "JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64" >> "/etc/default/$TOMCAT_PKG"
     fi
 fi

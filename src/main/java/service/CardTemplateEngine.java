@@ -75,9 +75,14 @@ public class CardTemplateEngine {
         svg.append("      <stop offset='100%' stop-color='").append(bg2).append("' />\n");
         svg.append("    </linearGradient>\n");
         
-        // Soft drop shadow for elements if needed
         svg.append("    <filter id='softShadow' x='-10%' y='-10%' width='120%' height='120%'>\n");
-        svg.append("      <feDropShadow dx='0' dy='4' stdDeviation='6' flood-color='#000000' flood-opacity='0.08'/>\n");
+        svg.append("      <feGaussianBlur in='SourceAlpha' stdDeviation='6'/>\n");
+        svg.append("      <feOffset dx='0' dy='4'/>\n");
+        svg.append("      <feComponentTransfer><feFuncA type='linear' slope='0.08'/></feComponentTransfer>\n");
+        svg.append("      <feMerge>\n");
+        svg.append("        <feMergeNode/>\n");
+        svg.append("        <feMergeNode in='SourceGraphic'/>\n");
+        svg.append("      </feMerge>\n");
         svg.append("    </filter>\n");
         svg.append("  </defs>\n");
 

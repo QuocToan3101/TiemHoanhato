@@ -103,7 +103,7 @@ public class AIContentService {
                                  String customMessage, String length, String holiday) throws IOException {
         
         String apiKey = config.getGeminiApiKey();
-        if (apiKey == null || apiKey.equals("YOUR_GEMINI_API_KEY_HERE")) {
+        if (apiKey == null || config.isPlaceholder(apiKey)) {
             throw new IllegalArgumentException("Gemini API key not configured");
         }
         
@@ -380,7 +380,7 @@ public class AIContentService {
     private boolean isAIEnabled() {
         return config.isGeminiEnabled() && 
                config.getGeminiApiKey() != null &&
-               !config.getGeminiApiKey().equals("YOUR_GEMINI_API_KEY_HERE");
+               !config.isPlaceholder(config.getGeminiApiKey());
     }
     
     /**

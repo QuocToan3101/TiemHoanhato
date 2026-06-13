@@ -58,7 +58,7 @@ public class AppConfig {
         return null;
     }
 
-    private boolean isPlaceholder(String value) {
+    public boolean isPlaceholder(String value) {
         if (value == null) {
             return true;
         }

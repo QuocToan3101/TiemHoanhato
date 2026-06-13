@@ -39,8 +39,8 @@ class AICardUI {
         <div class="theme-card" data-id="${theme.id}" data-text="${theme.text}" style="
           border-radius: 16px;
           height: 90px;
-          border: 1.5px solid ${isSelected ? '#8B7BFF' : 'rgba(255,255,255,0.08)'};
-          background: ${isSelected ? 'rgba(139,123,255,0.15)' : '#262A40'};
+          border: 1.5px solid ${isSelected ? '#a97155' : 'rgba(169,113,85,0.15)'};
+          background: ${isSelected ? 'rgba(169,113,85,0.1)' : '#ffffff'};
           cursor: pointer;
           display: flex;
           flex-direction: column;
@@ -48,14 +48,14 @@ class AICardUI {
           justify-content: center;
           padding: 8px;
           transition: all 0.25s ease;
-          box-shadow: ${isSelected ? '0 0 24px rgba(139,123,255,0.3)' : 'none'};
+          box-shadow: ${isSelected ? '0 0 16px rgba(169,113,85,0.2)' : 'none'};
           box-sizing: border-box;
           gap: 6px;
         ">
           <span style="font-size: 28px; line-height: 1;">
             ${this._getFlowerIcon(theme.flower)}
           </span>
-          <span class="theme-name-text" style="font-size: 11px; font-weight: 600; color: ${isSelected ? '#FFFFFF' : '#B6BDD3'}; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; transition: color 0.2s;">
+          <span class="theme-name-text" style="font-size: 11px; font-weight: 600; color: ${isSelected ? '#a97155' : '#7a6e65'}; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; transition: color 0.2s;">
             ${theme.name}
           </span>
         </div>
@@ -99,18 +99,18 @@ class AICardUI {
       const isSelected = card.dataset.id === themeId;
       if (isSelected) {
         card.classList.add('active');
-        card.style.borderColor = '#8B7BFF';
-        card.style.background = 'rgba(139,123,255,0.15)';
-        card.style.boxShadow = '0 0 24px rgba(139,123,255,0.3)';
+        card.style.borderColor = '#a97155';
+        card.style.background = 'rgba(169,113,85,0.1)';
+        card.style.boxShadow = '0 0 16px rgba(169,113,85,0.2)';
         const nameText = card.querySelector('.theme-name-text');
-        if (nameText) nameText.style.color = '#FFFFFF';
+        if (nameText) nameText.style.color = '#a97155';
       } else {
         card.classList.remove('active');
-        card.style.borderColor = 'rgba(255,255,255,0.08)';
-        card.style.background = '#262A40';
+        card.style.borderColor = 'rgba(169,113,85,0.15)';
+        card.style.background = '#ffffff';
         card.style.boxShadow = 'none';
         const nameText = card.querySelector('.theme-name-text');
-        if (nameText) nameText.style.color = '#B6BDD3';
+        if (nameText) nameText.style.color = '#7a6e65';
       }
     });
 
